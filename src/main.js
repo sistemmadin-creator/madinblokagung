@@ -1422,6 +1422,135 @@ function hapusFotoSantri() {
   if (statusEl) statusEl.innerText = 'Belum ada foto dipilih (Otomatis dikompresi agar ringan).';
 }
 
+async function bukaKameraSantri() {
+  // Jika perangkat tidak mendukung mediaDevices (atau di HP yang lebih nyaman pakai kamera bawaan), fallback ke input file kamera
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    document.getElementById('inputCameraFotoSantri').click();
+    return;
+  }
+
+  let stream = null;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
+      audio: false
+    });
+
+    const { isConfirmed } = await Swal.fire({
+      title: 'Ambil Foto Kamera',
+      html: `
+        <div class="d-flex flex-column align-items-center">
+          <video id="webcamVideoSantri" autoplay playsinline style="width: 100%; max-width: 360px; border-radius: 12px; background: #000;"></video>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: '<i class="bi bi-camera-fill me-1"></i> Jepret Foto',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#0f766e',
+      didOpen: () => {
+        const videoEl = document.getElementById('webcamVideoSantri');
+        if (videoEl) videoEl.srcObject = stream;
+      },
+      preConfirm: () => {
+        const videoEl = document.getElementById('webcamVideoSantri');
+        if (!videoEl) return null;
+        const canvas = document.createElement('canvas');
+        const maxDim = 600;
+        let w = videoEl.videoWidth || 640;
+        let h = videoEl.videoHeight || 480;
+        if (w > h && w > maxDim) {
+          h = Math.round(h * (maxDim / w));
+          w = maxDim;
+        } else if (h >= w && h > maxDim) {
+          w = Math.round(w * (maxDim / h));
+          h = maxDim;
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0, w, h);
+        return canvas.toDataURL('image/jpeg', 0.75);
+      },
+      willClose: () => {
+        if (stream) {
+          stream.getTracks().forEach(track => track.stop());
+        }
+      }
+    });
+
+    if (isConfirmed && Swal.getPopup()) {
+      // Nilai hasil preConfirm diteruskan otomatis oleh SweetAlert2
+    }
+  } catch (err) {
+    // Jika webcam tidak diizinkan / tidak ditemukan, buka file picker kamera bawaan
+    if (stream) stream.getTracks().forEach(track => track.stop());
+    document.getElementById('inputCameraFotoSantri').click();
+  }
+}
+
+// Tangkap hasil jepretan kamera dari SweetAlert2
+window.bukaKameraSantri = async function () {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    document.getElementById('inputCameraFotoSantri').click();
+    return;
+  }
+
+  let stream = null;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' },
+      audio: false
+    });
+
+    const result = await Swal.fire({
+      title: 'Ambil Foto Santri',
+      html: `
+        <div class="d-flex flex-column align-items-center">
+          <video id="webcamVideoSantri" autoplay playsinline style="width: 100%; max-width: 360px; border-radius: 12px; background: #000;"></video>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: '<i class="bi bi-camera-fill me-1"></i> Ambil Foto',
+      cancelButtonText: 'Batal',
+      confirmButtonColor: '#0f766e',
+      didOpen: () => {
+        const videoEl = document.getElementById('webcamVideoSantri');
+        if (videoEl) videoEl.srcObject = stream;
+      },
+      preConfirm: () => {
+        const videoEl = document.getElementById('webcamVideoSantri');
+        if (!videoEl) return null;
+        const canvas = document.createElement('canvas');
+        const maxDim = 600;
+        let w = videoEl.videoWidth || 640;
+        let h = videoEl.videoHeight || 480;
+        if (w > h && w > maxDim) {
+          h = Math.round(h * (maxDim / w));
+          w = maxDim;
+        } else if (h >= w && h > maxDim) {
+          w = Math.round(w * (maxDim / h));
+          h = maxDim;
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(videoEl, 0, 0, w, h);
+        return canvas.toDataURL('image/jpeg', 0.75);
+      },
+      willClose: () => {
+        if (stream) stream.getTracks().forEach(track => track.stop());
+      }
+    });
+
+    if (result.isConfirmed && result.value) {
+      setPreviewFotoSantri(result.value);
+    }
+  } catch (err) {
+    if (stream) stream.getTracks().forEach(track => track.stop());
+    document.getElementById('inputCameraFotoSantri').click();
+  }
+};
+
 function lihatFotoSantri(url, namaSantri) {
   if (!url) return;
   Swal.fire({
