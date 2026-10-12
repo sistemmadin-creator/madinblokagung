@@ -684,9 +684,51 @@
                   <option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option>
                 </select>
               </div>
-              <div class="col-md-1">
+<div class="col-md-1">
                 <label class="form-label text-nowrap">Tahun</label>
                 <select class="form-select px-1 text-center" name="thn_lahir" id="thn_lahir" required></select>
+              </div>
+
+              <!-- Input Foto Profil Santri (Kamera & Galeri) -->
+              <div class="col-md-12 mt-3">
+                <label class="form-label fw-bold text-success">Foto Profil Santri <span class="text-muted fw-normal">(Opsional)</span></label>
+                <div class="d-flex align-items-center gap-3 bg-light border rounded p-3">
+                  <!-- Kotak Preview Foto -->
+                  <div class="flex-shrink-0 position-relative">
+                    <img id="preview_foto_santri" src=""
+                         style="width:85px;height:105px;object-fit:cover;border-radius:10px;display:none;"
+                         class="border shadow-sm">
+                    <div id="placeholder_foto_santri"
+                         class="d-flex flex-column align-items-center justify-content-center border rounded bg-white text-muted"
+                         style="width:85px;height:105px;">
+                      <i class="bi bi-person-bounding-box" style="font-size: 2rem;"></i>
+                      <span style="font-size: 10px;">Foto 3x4</span>
+                    </div>
+                  </div>
+                  <!-- Tombol Kamera, Galeri & Hapus -->
+                  <div class="flex-grow-1">
+                    <div class="d-flex gap-2 flex-wrap">
+                      <button type="button" class="btn btn-sm btn-outline-success fw-bold"
+                              onclick="document.getElementById('inputCameraFotoSantri').click()">
+                        <i class="bi bi-camera-fill me-1"></i> Kamera
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
+                              onclick="document.getElementById('inputGaleriFotoSantri').click()">
+                        <i class="bi bi-images me-1"></i> Pilih File / Galeri
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger fw-bold d-none"
+                              id="btnHapusFotoSantri" onclick="window.hapusFotoSantri()">
+                        <i class="bi bi-trash me-1"></i> Hapus Foto
+                      </button>
+                    </div>
+                    <input type="file" id="inputCameraFotoSantri" accept="image/*" capture="environment"
+                           style="display:none;" onchange="window.handleFotoSantriSelected(event)">
+                    <input type="file" id="inputGaleriFotoSantri" accept="image/*"
+                           style="display:none;" onchange="window.handleFotoSantriSelected(event)">
+                    <div id="statusFotoSantri" class="small text-muted mt-2">Belum ada foto dipilih (Otomatis dikompresi agar ringan).</div>
+                    <input type="hidden" name="foto" id="foto_santri">
+                  </div>
+                </div>
               </div>
             </div>
 
