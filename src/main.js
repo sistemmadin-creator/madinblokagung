@@ -85,14 +85,15 @@ const SANTRI_DB_FIELDS = [
   'orda',         // [27]
   'nik',          // [28]
   'no_kk',        // [29]
-  'nama_ayah',    // [30]
+'nama_ayah',    // [30]
   'nik_ayah',     // [31]
   'nama_ibu',     // [32]
   'nik_ibu',      // [33]
-  'telepon'       // [34]
+  'telepon',      // [34]
+  'foto'          // [35]
 ];
 
-// Konversi row object dari Supabase menjadi array 35 elemen (indeks 0 kosong, 1..34 data)
+// Konversi row object dari Supabase menjadi array 36 elemen (indeks 0 kosong, 1..35 data)
 function dbRowToArray(obj) {
   return [
     '',
@@ -129,7 +130,8 @@ function dbRowToArray(obj) {
     obj.nik_ayah || '',
     obj.nama_ibu || '',
     obj.nik_ibu || '',
-    obj.telepon || ''
+    obj.telepon || '',
+    obj.foto || ''
   ];
 }
 
@@ -672,14 +674,32 @@ $(document).off('click', '#dataTable tbody tr').on('click', '#dataTable tbody tr
     </div>`;
   }
 
+let fotoSantriUrl = santri[35] || '';
+  let fotoDetailHtml = fotoSantriUrl
+    ? `<img src="${fotoSantriUrl}" alt="Foto ${santri[5] || 'Santri'}"
+            style="width: 110px; height: 140px; object-fit: cover; border-radius: 12px; cursor: zoom-in;"
+            class="border shadow-sm"
+            title="Klik untuk memperbesar foto"
+            onclick="window.lihatFotoSantri('${fotoSantriUrl.replace(/'/g, "\\'")}', '${(santri[5] || '').replace(/'/g, "\\'")}')">`
+    : `<div class="d-flex flex-column align-items-center justify-content-center border rounded-3 bg-light text-muted shadow-sm"
+            style="width: 110px; height: 140px;">
+         <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
+         <span style="font-size: 11px;">Belum ada foto</span>
+       </div>`;
+
   let html = `
     <div class="bg-white p-3 rounded border shadow-sm mb-3">
       <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Identitas Santri</h6>
-      ${buildDetailRow('No. Induk / NISN', (santri[1] || '-') + ' / ' + (santri[3] || '-'))}
-      ${buildDetailRow('Nama Lengkap', santri[5])}
-      ${buildDetailRow('Jenis Kelamin', santri[4] === 'PA' ? 'PA (Putra)' : (santri[4] === 'PI' ? 'PI (Putri)' : '-'))}
-      ${buildDetailRow('Tempat, Tgl Lahir', ttl)}
-      ${buildDetailRow('NIK / No. KK', (santri[28] || '-') + ' / ' + (santri[29] || '-'))}
+      <div class="row align-items-center">
+        <div class="col-sm-3 text-center mb-3 mb-sm-0 d-flex justify-content-center">
+          ${fotoDetailHtml}
+        </div>
+        <div class="col-sm-9">
+          ${buildDetailRow('No. Induk / NISN', (santri[1] || '-') + ' / ' + (santri[3] || '-'))}
+          ${buildDetailRow('Nama Lengkap', santri[5])}${buildDetailRow('Jenis Kelamin', santri[4] === 'PA' ? 'PA (Putra)' : (santri[4] === 'PI' ? 'PI (Putri)' : '-'))}
+          ${buildDetailRow('Tempat, Tgl Lahir', ttl)}${buildDetailRow('NIK / No. KK', (santri[28] || '-') + ' / ' + (santri[29] || '-'))}
+        </div>
+      </div>
     </div>
     <div class="bg-white p-3 rounded border shadow-sm mb-3">
       <h6 class="text-success fw-bold border-bottom pb-2 mb-3 mt-2">Alamat & Penempatan</h6>
@@ -812,6 +832,9 @@ function setupDetailModalButtons() {
     form.nik_ibu.value = selectedRowData[33] || '';
     form.telepon.value = selectedRowData[34] || '';
 
+    // Tampilkan foto santri yang tersimpan saat mode Edit
+    setPreviewFotoSantri(selectedRowData[35] || '');
+
     $('#inputModal').modal('show');
   });
 }
@@ -823,6 +846,7 @@ function openAddModal() {
   isEditMode = false;
   document.getElementById('inputForm').reset();
   document.getElementById('no_induk_lama').value = '';
+  hapusFotoSantri();
   resetSelects(['kabupaten', 'kecamatan', 'desa', 'asrama', 'kode', 'kamar', 'jurusan', 'semester', 'bag', 'kelas', 'din_bag', 'din_kls']);
   document.querySelector('#inputModal .modal-title').innerHTML = "<i class='bi bi-person-plus-fill me-2'></i> Form Data Santri";
   document.getElementById('btnSubmit').innerText = 'Simpan Data';
@@ -1295,6 +1319,121 @@ async function loadAuditLogs() {
   }
 }
 
+// =========================================================
+// 12. MODUL INPUT, KOMPRESI & PREVIEW FOTO SANTRI
+// =========================================================
+function compressImageFileSantri(file, maxDim = 600, quality = 0.75) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const img = new Image();
+      img.onload = function () {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxDim) {
+            height = Math.round(height * (maxDim / width));
+            width = maxDim;
+          }
+        } else {
+          if (height > maxDim) {
+            width = Math.round(width * (maxDim / height));
+            height = maxDim;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function setPreviewFotoSantri(dataUrl) {
+  const inputHidden = document.getElementById('foto_santri');
+  const previewImg = document.getElementById('preview_foto_santri');
+  const placeholder = document.getElementById('placeholder_foto_santri');
+  const btnHapus = document.getElementById('btnHapusFotoSantri');
+  const statusEl = document.getElementById('statusFotoSantri');
+
+  if (!inputHidden || !previewImg || !placeholder) return;
+
+  if (dataUrl && dataUrl.trim() !== '') {
+    inputHidden.value = dataUrl;
+    previewImg.src = dataUrl;
+    previewImg.style.display = 'block';
+    placeholder.style.display = 'none';
+    if (btnHapus) btnHapus.classList.remove('d-none');
+    if (statusEl) statusEl.innerHTML = '<span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Foto siap disimpan.</span>';
+  } else {
+    hapusFotoSantri();
+  }
+}
+
+async function handleFotoSantriSelected(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    Swal.fire('Format Tidak Didukung', 'Pilih file berupa gambar (JPG/PNG/WEBP).', 'warning');
+    return;
+  }
+
+  const statusEl = document.getElementById('statusFotoSantri');
+  if (statusEl) {
+    statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-success me-1"></span> Mengompres & menyiapkan foto...';
+  }
+
+  try {
+    const compressedBase64 = await compressImageFileSantri(file, 600, 0.75);
+    setPreviewFotoSantri(compressedBase64);
+  } catch (err) {
+    console.error(err);
+    if (statusEl) statusEl.innerHTML = '<span class="text-danger">Gagal memproses foto.</span>';
+  }
+
+  event.target.value = '';
+}
+
+function hapusFotoSantri() {
+  const inputHidden = document.getElementById('foto_santri');
+  const previewImg = document.getElementById('preview_foto_santri');
+  const placeholder = document.getElementById('placeholder_foto_santri');
+  const btnHapus = document.getElementById('btnHapusFotoSantri');
+  const statusEl = document.getElementById('statusFotoSantri');
+
+  if (inputHidden) inputHidden.value = '';
+  if (previewImg) {
+    previewImg.src = '';
+    previewImg.style.display = 'none';
+  }
+  if (placeholder) placeholder.style.display = 'flex';
+  if (btnHapus) btnHapus.classList.add('d-none');
+  if (statusEl) statusEl.innerText = 'Belum ada foto dipilih (Otomatis dikompresi agar ringan).';
+}
+
+function lihatFotoSantri(url, namaSantri) {
+  if (!url) return;
+  Swal.fire({
+    title: namaSantri || 'Foto Santri',
+    imageUrl: url,
+    imageAlt: namaSantri || 'Foto Santri',
+    showConfirmButton: true,
+    confirmButtonText: 'Tutup',
+    confirmButtonColor: '#0f766e'
+  });
+}
+
 // Ekspos fungsi ke global `window` agar dapat dipanggil dari atribut onclick HTML
 Object.assign(window, {
   toggleSidebar,
@@ -1311,5 +1450,8 @@ Object.assign(window, {
   applyFilters,
   resetFilters,
   saveSettingsData,
-  loadAuditLogs
+  loadAuditLogs,
+  handleFotoSantriSelected,
+  hapusFotoSantri,
+  lihatFotoSantri
 });
