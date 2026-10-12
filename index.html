@@ -666,17 +666,17 @@
                 <label class="form-label">Nama Lengkap Santri</label>
                 <input type="text" class="form-control border-success" name="nama" oninput="this.value = this.value.toUpperCase();" required>
               </div>
-              <div class="col-md-2">
+<div class="col-md-2">
                 <label class="form-label">Tempat Lahir</label>
-                <input type="text" class="form-control" name="tempat_lahir" required>
+                <input type="text" class="form-control" name="tempat_lahir">
               </div>
               <div class="col-md-1">
                 <label class="form-label text-nowrap">Tanggal</label>
-                <select class="form-select px-1 text-center" name="tgl_lahir" id="tgl_lahir" required></select>
+                <select class="form-select px-1 text-center" name="tgl_lahir" id="tgl_lahir"></select>
               </div>
               <div class="col-md-2">
                 <label class="form-label text-nowrap">Bulan</label>
-                <select class="form-select px-2" name="bln_lahir" id="bln_lahir" required>
+                <select class="form-select px-2" name="bln_lahir" id="bln_lahir">
                   <option value="">Pilih</option>
                   <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
                   <option value="04">Apr</option><option value="05">Mei</option><option value="06">Jun</option>
@@ -684,9 +684,9 @@
                   <option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option>
                 </select>
               </div>
-<div class="col-md-1">
+              <div class="col-md-1">
                 <label class="form-label text-nowrap">Tahun</label>
-                <select class="form-select px-1 text-center" name="thn_lahir" id="thn_lahir" required></select>
+                <select class="form-select px-1 text-center" name="thn_lahir" id="thn_lahir"></select>
               </div>
 
               <!-- Input Foto Profil Santri (Kamera & Galeri) -->
@@ -709,7 +709,7 @@
                   <div class="flex-grow-1">
                     <div class="d-flex gap-2 flex-wrap">
                       <button type="button" class="btn btn-sm btn-outline-success fw-bold"
-                              onclick="document.getElementById('inputCameraFotoSantri').click()">
+                              onclick="window.bukaKameraSantri()">
                         <i class="bi bi-camera-fill me-1"></i> Kamera
                       </button>
                       <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
@@ -737,19 +737,19 @@
             <div class="row g-3 mb-4">
               <div class="col-md-3">
                 <label class="form-label">Provinsi</label>
-                <select class="form-select" name="provinsi" id="provinsi" required><option value="">Memuat...</option></select>
+                <select class="form-select" name="provinsi" id="provinsi"><option value="">Pilih Provinsi</option></select>
               </div>
               <div class="col-md-3">
                 <label class="form-label">Kabupaten / Kota</label>
-                <select class="form-select" name="kabupaten" id="kabupaten" required disabled><option value="">Pilih Provinsi Dahulu</option></select>
+                <select class="form-select" name="kabupaten" id="kabupaten" disabled><option value="">Pilih Provinsi Dahulu</option></select>
               </div>
               <div class="col-md-3">
                 <label class="form-label">Kecamatan</label>
-                <select class="form-select" name="kecamatan" id="kecamatan" required disabled><option value="">Pilih Kab Dahulu</option></select>
+                <select class="form-select" name="kecamatan" id="kecamatan" disabled><option value="">Pilih Kab Dahulu</option></select>
               </div>
               <div class="col-md-3">
                 <label class="form-label">Desa / Kelurahan</label>
-                <select class="form-select" name="desa" id="desa" required disabled><option value="">Pilih Kec Dahulu</option></select>
+                <select class="form-select" name="desa" id="desa" disabled><option value="">Pilih Kec Dahulu</option></select>
               </div>
               <div class="col-md-12">
                 <label class="form-label">Dusun / Jalan</label>
