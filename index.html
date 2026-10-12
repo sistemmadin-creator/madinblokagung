@@ -1,1 +1,856 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Database Santri - Madrasah Diniyyah Al Amiriyyah</title>
 
+  <!-- Favicon Tab Browser -->
+  <link rel="shortcut icon" href="https://drive.google.com/thumbnail?id=1Fkm2_aiu-me47Fm1weDrpHMCHZBThzrD&sz=w128" type="image/png">
+  <link rel="icon" href="https://drive.google.com/thumbnail?id=1Fkm2_aiu-me47Fm1weDrpHMCHZBThzrD&sz=w128" type="image/png">
+
+  <!-- Tipografi Modern Google Fonts 'Inter' -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3, DataTables 1.13.6 & Bootstrap Icons 1.10.5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <style>
+    /* ==========================================
+       TEMA UI/UX MODERN KUSTOM (DESIGN SYSTEM)
+    ========================================== */
+    :root {
+      --primary-color: #0f766e;
+      --primary-hover: #115e59;
+      --sidebar-bg: #0b5751;
+      --bg-body: #f8fafc;
+      --text-main: #334155;
+      --text-muted: #64748b;
+      --card-border: #e2e8f0;
+    }
+
+    body {
+      background-color: var(--bg-body);
+      font-family: 'Inter', sans-serif;
+      color: var(--text-main);
+      letter-spacing: -0.01em;
+      padding-top: 70px;
+    }
+
+    @media (max-width: 767px) {
+      body { padding-bottom: 95px; }
+    }
+
+    /* Kustomisasi Warna Utama Bootstrap */
+    .btn-success { background-color: var(--primary-color); border-color: var(--primary-color); }
+    .btn-success:hover { background-color: var(--primary-hover); border-color: var(--primary-hover); }
+    .btn-outline-success { color: var(--primary-color); border-color: var(--primary-color); }
+    .btn-outline-success:hover { background-color: var(--primary-color); border-color: var(--primary-color); color: #fff; }
+    .text-success { color: var(--primary-color) !important; }
+    .bg-success { background-color: var(--primary-color) !important; }
+
+    /* Elemen Form Modern */
+    .form-control, .form-select {
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      padding: 0.5rem 0.875rem;
+      font-size: 0.9rem;
+      box-shadow: none;
+      transition: all 0.2s ease-in-out;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.15);
+    }
+    .form-label { font-weight: 500; font-size: 0.85rem; color: var(--text-main); margin-bottom: 0.3rem; }
+
+    /* ==========================================
+       TOP NAVBAR MODERN (EFEK KACA)
+    ========================================== */
+    .top-navbar {
+      position: fixed; top: 0; left: 260px; right: 0;
+      height: 70px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 1030;
+      display: flex; align-items: center; padding: 0 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+      border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .header-profile-btn {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 50px;
+      padding: 6px 14px 6px 6px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    .header-profile-btn:hover, .header-profile-btn:focus {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .header-avatar {
+      width: 32px; height: 32px;
+      background: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-dropdown-menu {
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+      padding: 12px;
+      min-width: 240px;
+      margin-top: 10px !important;
+    }
+    .header-dropdown-menu .dropdown-item {
+      border-radius: 10px;
+      transition: all 0.2s;
+    }
+    .header-dropdown-menu .dropdown-item:hover {
+      background-color: #f1f5f9;
+    }
+    .role-badge-admin {
+      background-color: #fee2e2; color: #dc2626; border: 1px solid #fca5a5;
+    }
+
+    /* ==========================================
+       SIDEBAR COLLAPSIBLE DESKTOP
+    ========================================== */
+    .sidebar-overlay {
+      position: fixed; top: 0; left: 0;
+      width: 260px; height: 100vh;
+      background-color: var(--sidebar-bg);
+      z-index: 1050; padding: 20px 14px;
+      display: flex; flex-direction: column;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+    }
+    .sidebar-overlay.close { width: 88px; }
+    .sidebar-overlay .header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 40px; padding: 0 10px; position: relative; height: 40px;
+    }
+    .sidebar-overlay .brand {
+      font-size: 1.25rem; font-weight: 700; color: #fff;
+      display: flex; align-items: center; white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+    .sidebar-overlay.close .brand { opacity: 0; pointer-events: none; }
+
+    .toggle-btn {
+      position: absolute; right: -28px; top: 50%; transform: translateY(-50%);
+      width: 32px; height: 32px; background: #fff; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      color: #1e1e2f; transition: all 0.4s ease; z-index: 100;
+    }
+    .toggle-btn i { font-size: 1.2rem; transition: transform 0.4s ease; }
+    .sidebar-overlay.close .toggle-btn i { transform: rotate(180deg); }
+
+    .sidebar-overlay .nav-link {
+      color: #ffffff !important;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .sidebar-overlay .nav-link i {
+      color: #ffffff !important;
+      font-size: 1.3rem;
+      min-width: 32px;
+      text-align: center;
+      margin-right: 14px;
+    }
+    .sidebar-overlay.close .nav-link span {
+      opacity: 0; visibility: hidden; width: 0; transition: opacity 0.2s ease;
+    }
+    .sidebar-overlay .nav-link span {
+      opacity: 1; visibility: visible; transition: opacity 0.3s ease 0.1s;
+    }
+    .sidebar-overlay .nav-link:hover { background-color: rgba(255,255,255,0.1); color: #fff; }
+    .sidebar-overlay .nav-link.active { background-color: rgba(255,255,255,0.2); color: #fff; }
+
+    /* ==========================================
+       BOTTOM NAVIGATION (KHUSUS MOBILE < 768px)
+    ========================================== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 20px; left: 15px; right: 15px;
+      background-color: #ffffff;
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 10px 5px;
+      border-radius: 50px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.12);
+      z-index: 1030;
+    }
+    .bottom-nav .nav-link {
+      display: flex;
+      flex-direction: column; align-items: center; justify-content: center;
+      color: #94a3b8;
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-decoration: none;
+      width: 60px; height: 50px;
+      position: relative;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+    .bottom-nav .nav-link i {
+      font-size: 1.4rem;
+      margin-bottom: 2px;
+      transition: transform 0.3s ease;
+    }
+    .bottom-nav .nav-link:hover,
+    .bottom-nav .nav-link.active {
+      color: var(--primary-color);
+    }
+    .bottom-nav .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 2px;
+      left: 50%;
+      width: 0;
+      height: 3px;
+      background-color: var(--primary-color);
+      border-radius: 2px;
+      transition: all 0.3s ease-in-out;
+      transform: translateX(-50%);
+    }
+    .bottom-nav .nav-link:hover::after,
+    .bottom-nav .nav-link.active::after {
+      width: 75%;
+    }
+
+    /* Ruang Konten Utama Responsif */
+    @media (min-width: 768px) {
+      .top-navbar {
+        left: 260px;
+        width: calc(100% - 260px);
+      }
+      .main-content {
+        margin-left: 260px;
+        width: calc(100% - 260px);
+        padding: 32px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      body.sidebar-collapsed .top-navbar {
+        left: 88px;
+        width: calc(100% - 88px);
+      }
+      body.sidebar-collapsed .main-content {
+        margin-left: 88px;
+        width: calc(100% - 88px);
+      }
+    }
+    @media (max-width: 767px) {
+      .sidebar-overlay { display: none !important; }
+      .top-navbar { left: 0; width: 100%; }
+      .main-content { padding: 20px; width: 100%; margin-left: 0; }
+    }
+
+    /* Card Panel Clean SaaS Style */
+    .card-panel {
+      background: #fff;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn { border-radius: 8px; font-weight: 500; font-size: 0.85rem; padding: 0.5rem 1rem; transition: all 0.2s; }
+    .btn-sm { font-size: 0.8rem; padding: 0.4rem 0.8rem; }
+
+    /* Animasi Halus Container Tabel Data Santri */
+    #tableSantriWrapper {
+      animation: fadeInSantri 0.35s ease-in-out;
+    }
+    @keyframes fadeInSantri {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .btn-loading-state {
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    /* ==========================================
+       GAYA TOGGLE TOKENS (CHECKBOX MODERN)
+    ========================================== */
+    .token-wrapper {
+      display: block;
+      width: 100%;
+    }
+    .token-wrapper .btn-check + .btn {
+      width: 100%;
+      border-radius: 50px;
+      background-color: #f1f5f9;
+      color: #475569;
+      border: 2px solid transparent;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 8px 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .token-wrapper .btn-check:not(:checked):not(:disabled) + .btn:hover {
+      background-color: #e2e8f0;
+    }
+    .token-wrapper .btn-check:checked + .btn {
+      background-color: var(--primary-color);
+      color: #ffffff;
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(15, 118, 110, 0.25);
+    }
+    .token-wrapper .btn-check:disabled + .btn {
+      opacity: 0.5;
+      cursor: not-allowed;
+      background-color: #e2e8f0;
+    }
+
+    /* ========================================================
+       TABEL DATABASE SANTRI BERGAYA EXCEL SAAS (#dataTable)
+    ======================================================== */
+    .dataTables_scrollBody {
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .dataTables_scrollHeadInner {
+      box-sizing: content-box !important;
+      padding-right: 0px !important;
+    }
+    .dataTables_scrollHeadInner table.dataTable,
+    .dataTables_scrollBody table.dataTable {
+      margin-bottom: 0 !important;
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+    }
+    #dataTable th,
+    #dataTable td {
+      white-space: nowrap !important;
+      vertical-align: middle !important;
+      padding: 8px 14px !important;
+      font-size: 0.83rem !important;
+      box-sizing: border-box !important;
+    }
+    #dataTable {
+      border-collapse: separate !important;
+      border-spacing: 0 !important;
+      border: 1px solid #e2e8f0 !important;
+    }
+    #dataTable tbody tr:nth-of-type(odd) {
+      background-color: #ffffff;
+    }
+    #dataTable tbody tr:nth-of-type(even) {
+      background-color: #f8fafc;
+    }
+    #dataTable tbody tr:hover {
+      background-color: #f1f5f9 !important;
+      cursor: pointer;
+    }
+    #dataTable th {
+      background-color: #f1f5f9 !important;
+      color: #334155 !important;
+      font-weight: 700 !important;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #cbd5e1 !important;
+      border-right: 1px solid #e2e8f0 !important;
+    }
+    #dataTable td {
+      color: #334155;
+      border-bottom: 1px solid #e2e8f0 !important;
+      border-right: 1px solid #e2e8f0 !important;
+    }
+    #tableSantriWrapper .dataTables_scrollBody {
+      border: 1px solid #e2e8f0 !important;
+      border-top: none !important;
+      border-radius: 0 0 8px 8px;
+    }
+  </style>
+</head>
+<body class="sidebar-collapsed">
+
+  <!-- ============================================== -->
+  <!-- 1. TOP NAVBAR DENGAN JUDUL & MENU PROFIL       -->
+  <!-- ============================================== -->
+  <nav class="top-navbar d-flex justify-content-between align-items-center">
+    <div class="brand fw-bold text-dark fs-5 d-flex align-items-center">
+      <div class="bg-white p-1 rounded-circle shadow-sm border me-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+        <img id="nav_logo_img"
+             src="https://drive.google.com/thumbnail?id=1Fkm2_aiu-me47Fm1weDrpHMCHZBThzrD&sz=w200"
+             alt="Logo"
+             style="width: 28px; height: 28px; object-fit: contain;"
+             onerror="this.style.display='none';">
+      </div>
+      <span style="letter-spacing: -0.5px;">Madin Blokagung</span>
+    </div>
+
+    <!-- Tombol Dropdown Menu Profil Berbentuk Kapsul -->
+    <div class="dropdown">
+      <button class="header-profile-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <div class="header-avatar">
+          <i class="bi bi-person-fill d-none d-sm-block"></i>
+          <i class="bi bi-list d-block d-sm-none fs-5"></i>
+        </div>
+        <div class="text-start d-none d-sm-block me-1">
+          <div class="fw-bold text-dark lh-1" style="font-size: 0.8rem;">Menu Profil</div>
+          <div class="text-muted" style="font-size: 0.65rem;">Pengaturan & Keluar</div>
+        </div>
+        <i class="bi bi-chevron-down text-muted d-none d-sm-block" style="font-size: 0.7rem;"></i>
+      </button>
+
+      <ul class="dropdown-menu dropdown-menu-end header-dropdown-menu">
+        <li class="px-3 py-2 text-center border-bottom mb-2 bg-light rounded" style="margin-top: -4px;">
+          <div class="fw-bold text-dark fs-6" id="navUserNama">Master Administrator</div>
+          <span class="badge rounded-pill mt-1 role-badge-admin" id="navUserRoleBadge" style="font-size: 10px;">Master Admin</span>
+        </li>
+
+        <li class="rbac-master-only">
+          <a class="dropdown-item py-2 fw-semibold text-secondary d-flex align-items-center gap-2" href="#" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+            <i class="bi bi-gear-fill text-primary"></i> Pusat Kendali Admin
+          </a>
+        </li>
+
+        <li><hr class="dropdown-divider rbac-master-only"></li>
+
+        <li>
+          <a class="dropdown-item py-2 fw-bold text-danger d-flex align-items-center gap-2" href="#" onclick="window.actionLogout()">
+            <i class="bi bi-box-arrow-right fs-5"></i> Keluar / Logout
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ============================================== -->
+  <!-- 2. SIDEBAR DESKTOP (AUTO HOVER EXPAND/COLLAPSE)-->
+  <!-- ============================================== -->
+  <div class="sidebar-overlay close" id="desktopSidebar">
+    <div class="header">
+      <div class="brand">
+        <img src="https://drive.google.com/thumbnail?id=1Fkm2_aiu-me47Fm1weDrpHMCHZBThzrD&sz=w200" alt="Logo" style="width: 28px; height: 28px; object-fit: contain;" class="me-2" onerror="this.style.display='none';">
+        Madin Blokagung
+      </div>
+      <div class="toggle-btn" onclick="window.toggleSidebar()">
+        <i class="bi bi-chevron-left"></i>
+      </div>
+    </div>
+
+    <nav class="nav flex-column w-100 mt-2">
+      <a class="nav-link active" id="nav-desk-santri" onclick="window.showPage('santri')">
+        <i class="bi bi-person"></i> <span>Data Santri</span>
+      </a>
+      <a class="nav-link" onclick=" $('#settingsModal').modal('show')">
+        <i class="bi bi-diagram-3"></i> <span>Hierarki Dropdown</span>
+      </a>
+      <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+        <i class="bi bi-journal-text"></i> <span>Log Aktivitas</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- 3. BOTTOM NAVIGATION (KHUSUS MOBILE < 768px)   -->
+  <!-- ============================================== -->
+  <div class="bottom-nav d-md-none">
+    <a class="nav-link active" id="nav-mob-santri" onclick="window.showPage('santri')">
+      <i class="bi bi-person"></i><span>Santri</span>
+    </a>
+    <a class="nav-link" onclick="$('#settingsModal').modal('show')">
+      <i class="bi bi-diagram-3"></i><span>Hierarki</span>
+    </a>
+    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+      <i class="bi bi-journal-text"></i><span>Log</span>
+    </a>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- 4. KONTEN UTAMA: HALAMAN DATA SANTRI           -->
+  <!-- ============================================== -->
+  <div class="main-content">
+    <div id="page-santri">
+      <!-- A. Header Halaman -->
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
+        <div>
+          <h2 class="header-title fw-bold m-0">Database Santri</h2>
+          <p class="text-muted small m-0 mt-1">Manajemen data induk seluruh santri.</p>
+        </div>
+        <button class="btn btn-success px-4 shadow-sm fw-bold" onclick="window.openAddModal()">
+          <i class="bi bi-plus-lg me-2"></i> Tambah Santri
+        </button>
+      </div>
+
+      <!-- B. Lazy Loading Container & Area Tabel DataTables -->
+      <div class="card-panel border-0">
+        <!-- Kartu Placeholder Lazy Loading -->
+        <div id="btnLoadSantriContainer" class="text-center py-5">
+          <i class="bi bi-database-down text-success mb-3 d-block" style="font-size: 4rem;"></i>
+          <h5 class="fw-bold">Tabel Database Santri</h5>
+          <p class="text-muted small mb-4">
+            Untuk menjaga performa aplikasi, tabel (10.000+ data) tidak dimuat otomatis.<br>
+            Silakan klik tombol di bawah ini jika Anda perlu melihat atau mengelola tabel secara langsung.
+          </p>
+          <button class="btn btn-success px-4 py-2 fw-bold shadow-sm" id="btnLoadSantri" onclick="window.actionLoadSantri()">
+            <i class="bi bi-table me-2"></i> Memuat Halaman (Tabel Data)
+          </button>
+        </div>
+
+        <!-- C. Area Tabel DataTables (#dataTable) -->
+        <div id="tableSantriWrapper" style="display: none;">
+          <table id="dataTable" class="table w-100 table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAll" class="form-check-input"></th>
+                <th class="text-center">No</th>
+                <th>No. Induk</th>
+                <th>No. Biro</th>
+                <th>NISN</th>
+                <th class="text-center">Gender</th>
+                <th>Nama Lengkap</th>
+                <th>Tempat Lahir</th>
+                <th class="text-center">Tgl</th>
+                <th class="text-center">Bln</th>
+                <th class="text-center">Thn</th>
+                <th>Dusun</th>
+                <th>Desa</th>
+                <th>Kecamatan</th>
+                <th>Kabupaten</th>
+                <th>Provinsi</th>
+                <th>Blok</th>
+                <th>Asrama</th>
+                <th>Kode</th>
+                <th>Kamar</th>
+                <th>Kelas</th>
+                <th>Bag</th>
+                <th>Semester</th>
+                <th>Jurusan</th>
+                <th>Unit</th>
+                <th>Din. Kls</th>
+                <th>Din. Bag</th>
+                <th>Tingkat</th>
+                <th>ORDA</th>
+                <th>NIK Santri</th>
+                <th>No. KK</th>
+                <th>Nama Ayah</th>
+                <th>NIK Ayah</th>
+                <th>Nama Ibu</th>
+                <th>NIK Ibu</th>
+                <th>Telepon</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- KUMPULAN MODAL (FILTER, HIDE, INPUT, DETAIL, SETTINGS)  -->
+  <!-- ======================================================= -->
+
+  <!-- 1. Modal Filter Lanjutan Santri (#filterModal) -->
+  <div class="modal fade" id="filterModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-primary text-white border-0">
+          <h5 class="modal-title fw-bold"><i class="bi bi-funnel-fill me-2"></i> Filter Lanjutan Santri</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light">
+          <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 mb-4">
+            <small><i class="bi bi-info-circle me-1"></i> Centang kategori yang ingin digunakan untuk filter data di tabel.</small>
+          </div>
+          <div id="filterFormCategories"></div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-light border text-muted" onclick="window.resetFilters()">Reset</button>
+          <button type="button" class="btn btn-primary px-4" onclick="window.applyFilters()" data-bs-dismiss="modal">Terapkan Filter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Modal Sembunyikan Kolom Santri (#hideModal) -->
+  <div class="modal fade" id="hideModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-secondary text-white border-0">
+          <h5 class="modal-title fw-bold"><i class="bi bi-eye-slash-fill me-2"></i> Kelola Tampilan Kolom</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light">
+          <div class="mb-4 d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" onclick="window.checkAllHide(true)">Centang Semua (Sembunyikan)</button>
+            <button class="btn btn-sm btn-light border" onclick="window.checkAllHide(false)">Batal Centang (Tampilkan)</button>
+          </div>
+          <div class="row" id="hideCheckboxes"></div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary px-4" onclick="window.applyHideColumns()" data-bs-dismiss="modal">Simpan Tampilan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal Form Input / Edit Santri (#inputModal) -->
+  <div class="modal fade" id="inputModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-success text-white border-0 py-3">
+          <h5 class="modal-title fw-bold m-0"><i class="bi bi-person-plus-fill me-2"></i> Form Data Santri</h5>
+          <div class="ms-auto d-flex align-items-center gap-2">
+            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="window.handleExcelImport(event)">
+            <button type="button" class="btn btn-sm btn-light text-success fw-bold shadow-sm" id="btnImportExcelSantri" onclick="document.getElementById('excelFileInput').click()" title="Impor Data dari Excel">
+              <i class="bi bi-file-earmark-excel-fill"></i> Impor Excel
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-light border-0 shadow-none" onclick="$('#settingsModal').modal('show')" title="Pengaturan Hierarki">
+              <i class="bi bi-gear-fill fs-5"></i>
+            </button>
+            <button type="button" class="btn-close btn-close-white shadow-none ms-2" data-bs-dismiss="modal"></button>
+          </div>
+        </div>
+        <div class="modal-body bg-light p-4">
+          <form id="inputForm" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitData(event)">
+            <input type="hidden" name="no_induk_lama" id="no_induk_lama">
+
+            <!-- Bagian 1: Identitas Utama -->
+            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Identitas Utama</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-3">
+                <label class="form-label">No.Induk</label>
+                <input type="number" class="form-control bg-light" name="no_induk" oninput="if(this.value.length > 6) this.value = this.value.slice(0,6);" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">No.Biro <span class="text-muted fw-normal">(Opsional)</span></label>
+                <input type="text" class="form-control" name="no_biro">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">NISN</label>
+                <input type="number" class="form-control" name="nisn" oninput="if(this.value.length > 10) this.value = this.value.slice(0,10);">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Gender (PA/PI)</label>
+                <select class="form-select border-success" name="pa_pi" required>
+                  <option value="">Pilih</option>
+                  <option value="PA">PA</option>
+                  <option value="PI">PI</option>
+                </select>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">Nama Lengkap Santri</label>
+                <input type="text" class="form-control border-success" name="nama" oninput="this.value = this.value.toUpperCase();" required>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label">Tempat Lahir</label>
+                <input type="text" class="form-control" name="tempat_lahir" required>
+              </div>
+              <div class="col-md-1">
+                <label class="form-label text-nowrap">Tanggal</label>
+                <select class="form-select px-1 text-center" name="tgl_lahir" id="tgl_lahir" required></select>
+              </div>
+              <div class="col-md-2">
+                <label class="form-label text-nowrap">Bulan</label>
+                <select class="form-select px-2" name="bln_lahir" id="bln_lahir" required>
+                  <option value="">Pilih</option>
+                  <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
+                  <option value="04">Apr</option><option value="05">Mei</option><option value="06">Jun</option>
+                  <option value="07">Jul</option><option value="08">Agu</option><option value="09">Sep</option>
+                  <option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option>
+                </select>
+              </div>
+              <div class="col-md-1">
+                <label class="form-label text-nowrap">Tahun</label>
+                <select class="form-select px-1 text-center" name="thn_lahir" id="thn_lahir" required></select>
+              </div>
+            </div>
+
+            <!-- Bagian 2: Alamat Domisili Asal -->
+            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Alamat Domisili Asal</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-3">
+                <label class="form-label">Provinsi</label>
+                <select class="form-select" name="provinsi" id="provinsi" required><option value="">Memuat...</option></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Kabupaten / Kota</label>
+                <select class="form-select" name="kabupaten" id="kabupaten" required disabled><option value="">Pilih Provinsi Dahulu</option></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Kecamatan</label>
+                <select class="form-select" name="kecamatan" id="kecamatan" required disabled><option value="">Pilih Kab Dahulu</option></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Desa / Kelurahan</label>
+                <select class="form-select" name="desa" id="desa" required disabled><option value="">Pilih Kec Dahulu</option></select>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Dusun / Jalan</label>
+                <input type="text" class="form-control" name="dusun" placeholder="Nama Dusun / Jalan">
+              </div>
+            </div>
+
+            <!-- Bagian 3: Penempatan Kamar & Pendidikan -->
+            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Penempatan Kamar & Pendidikan</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-3"><label class="form-label text-primary">Blok</label><select class="form-select border-primary" name="blok" id="blok"><option value="">Pilih...</option></select></div>
+              <div class="col-md-3"><label class="form-label text-primary">Asrama</label><select class="form-select border-primary" name="asrama" id="asrama" disabled><option value="">Pilih...</option></select></div>
+              <div class="col-md-3"><label class="form-label text-primary">Kode</label><select class="form-select border-primary" name="kode" id="kode" disabled><option value="">Pilih...</option></select></div>
+              <div class="col-md-3"><label class="form-label text-primary">Kamar</label><select class="form-select border-primary" name="kamar" id="kamar" disabled><option value="">Pilih...</option></select></div>
+
+              <!-- Sekolah Formal -->
+              <div class="col-12 mt-3"><div class="badge bg-secondary mb-1">Sekolah Formal</div></div>
+              <div class="col-md-2"><label class="form-label">Unit</label><select class="form-select" name="unit" id="unit"><option value="">Pilih...</option></select></div>
+              <div class="col-md-3"><label class="form-label">Jurusan</label><select class="form-select" name="jurusan" id="jurusan" disabled><option value="">Pilih...</option></select></div>
+              <div class="col-md-3"><label class="form-label">Semester</label><select class="form-select" name="semester" id="semester" disabled><option value="">Pilih...</option></select></div>
+              <div class="col-md-2"><label class="form-label">Kelas</label><select class="form-select" name="kelas" id="kelas" disabled><option value="">Pilih...</option></select></div>
+              <div class="col-md-2"><label class="form-label">Bag</label><select class="form-select" name="bag" id="bag" disabled><option value="">Pilih...</option></select></div>
+
+              <!-- Madrasah Diniyyah -->
+              <div class="col-12 mt-3"><div class="badge bg-success mb-1">Madrasah Diniyyah</div></div>
+              <div class="col-md-3"><label class="form-label">Tingkat</label><select class="form-select" name="tingkat" id="tingkat"><option value="">Pilih...</option></select></div>
+              <div class="col-md-3"><label class="form-label">Din. Kls</label><select class="form-select" name="din_kls" id="din_kls" disabled><option value="">Pilih...</option></select></div>
+              <div class="col-md-3"><label class="form-label">Din. Bag</label><select class="form-select" name="din_bag" id="din_bag" disabled><option value="">Pilih...</option></select></div>
+              <div class="col-md-3"><label class="form-label">ORDA</label><input type="text" class="form-control" name="orda" placeholder="Organisasi Daerah"></div>
+            </div>
+
+            <!-- Bagian 4: Data Administrasi Keluarga -->
+            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Data Administrasi Keluarga</h6>
+            <div class="row g-3">
+              <div class="col-md-3"><label class="form-label">NIK Santri</label><input type="number" class="form-control" name="nik"></div>
+              <div class="col-md-3"><label class="form-label">NO. KK</label><input type="number" class="form-control" name="no_kk"></div>
+              <div class="col-md-6"><label class="form-label">No. Telepon / WA (Aktif)</label><input type="number" class="form-control" name="telepon"></div>
+
+              <div class="col-md-6"><label class="form-label">Nama Ayah (BIN)</label><input type="text" class="form-control" name="nama_ayah"></div>
+              <div class="col-md-6"><label class="form-label">NIK Ayah</label><input type="number" class="form-control" name="nik_ayah"></div>
+              <div class="col-md-6"><label class="form-label">Nama Ibu (BINTI)</label><input type="text" class="form-control" name="nama_ibu"></div>
+              <div class="col-md-6"><label class="form-label">NIK Ibu</label><input type="number" class="form-control" name="nik_ibu"></div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-5">
+              <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-success px-5 fw-bold" id="btnSubmit">Simpan Data</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Modal Detail Santri (#detailModal) -->
+  <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-success text-white border-0 py-3">
+          <h5 class="modal-title fw-bold"><i class="bi bi-person-vcard me-2"></i> Detail Data Santri</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4 bg-light" id="detailContent"></div>
+        <div class="modal-footer bg-white border-top-0 pt-0">
+          <button type="button" class="btn btn-outline-danger me-auto fw-bold" id="btnHapusDetail"><i class="bi bi-trash"></i> Hapus</button>
+          <button type="button" class="btn btn-success px-4 fw-bold" id="btnEditDetail"><i class="bi bi-pencil-square"></i> Edit Data</button>
+          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Modal Pengaturan Hierarki Dropdown (#settingsModal) -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" style="z-index: 1060;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-dark text-white border-0 py-3">
+          <h5 class="modal-title fw-bold"><i class="bi bi-diagram-3-fill me-2"></i> Pengaturan Hierarki Dropdown</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light p-4">
+          <div class="mb-4">
+            <label class="form-label fw-bold text-success">1. Blok &gt; Asrama &gt; Kode &gt; Kamar</label>
+            <textarea id="settingTree1" class="form-control font-monospace" rows="4" placeholder="Contoh: Putra > Darussalam > A > 01"></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-bold text-success">2. Unit &gt; Jurusan &gt; Semester &gt; Kelas &gt; Bag</label>
+            <textarea id="settingTree2" class="form-control font-monospace" rows="4" placeholder="Contoh: MA > IPA > Ganjil > X > A"></textarea>
+          </div>
+          <div class="mb-2">
+            <label class="form-label fw-bold text-success">3. Tingkat &gt; Din. Kls &gt; Din. Bag</label>
+            <textarea id="settingTree3" class="form-control font-monospace" rows="4" placeholder="Contoh: ULA > 1 > A"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-dark px-4 fw-bold" id="btnSaveSettings" onclick="window.saveSettingsData()">Simpan Pengaturan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Modal Pusat Kendali Admin / Riwayat Log Aktivitas (#modalAdminCenter) -->
+  <div class="modal fade" id="modalAdminCenter" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-dark text-white border-0 py-3">
+          <h5 class="modal-title fw-bold m-0"><i class="bi bi-shield-check me-2 text-warning"></i> Pusat Kendali Master Admin - Audit Log</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="fw-bold text-dark m-0"><i class="bi bi-journal-text me-1 text-success"></i> Catatan Aktivitas Terakhir (Tabel <code>activity_logs</code>)</h6>
+            <button class="btn btn-sm btn-outline-secondary" onclick="window.loadAuditLogs()"><i class="bi bi-arrow-clockwise me-1"></i> Segarkan Log</button>
+          </div>
+          <div class="table-responsive bg-white rounded border" style="max-height: 450px; overflow-y: auto;">
+            <table class="table table-hover align-middle mb-0 table-sm" style="font-size: 0.82rem;">
+              <thead class="table-light sticky-top">
+                <tr>
+                  <th>Waktu (WIB)</th>
+                  <th>Username</th>
+                  <th>Nama Pengguna</th>
+                  <th>Aktivitas</th>
+                  <th>Detail</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyAuditLogs">
+                <tr><td colspan="5" class="text-center py-3 text-muted">Memuat riwayat aktivitas...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Library Eksternal (jQuery, Bootstrap 5.3, DataTables 1.13.6, SheetJS 0.18.5) -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- Script Aplikasi Utama (Vite Module) -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
