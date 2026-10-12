@@ -638,7 +638,7 @@ $(document).on('change', '#checkAll', function () {
 });
 
 $(document).off('click', '#dataTable tbody tr').on('click', '#dataTable tbody tr', function (e) {
-  if ($(e.target).hasClass('row-check') || $(e.target).is(':checkbox') \vert{}\vert{}$(this).find('.dataTables_empty').length > 0) {
+  if ($(e.target).hasClass('row-check') || $(e.target).is(':checkbox') || $(this).find('.dataTables_empty').length > 0) {
     return;
   }
 
