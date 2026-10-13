@@ -13,10 +13,6 @@ export const supabase = (SUPABASE_URL && SUPABASE_ANON_KEY)
 // =========================================================
 // 2. STATE GLOBAL & KONFIGURASI KOLOM
 // =========================================================
-let dtAsatidz = null;
-let globalDataAsatidz = [];
-let isEditModeAsatidz = false;
-let selectedRowDataAsatidz = null;
 let dataTable = null;
 const API_WILAYAH = 'https://www.emsifa.com/api-wilayah-indonesia/api';
 
@@ -212,9 +208,6 @@ function selaraskanSemuaTabel() {
   if (typeof dtFormasi !== 'undefined' && dtFormasi && $('#page-formasi').is(':visible')) {
     dtFormasi.columns.adjust();
   }
-  if (typeof dtAsatidz !== 'undefined' && dtAsatidz && $('#page-asatidz').is(':visible')) {
-    dtAsatidz.columns.adjust();
-  }
 }
 
 // A. Auto-adjust saat jendela browser di-resize
@@ -247,10 +240,8 @@ function toggleSidebar() {
 function showPage(page) {
   const pageSantri = document.getElementById('page-santri');
   const pageFormasi = document.getElementById('page-formasi');
-  const pageAsatidz = document.getElementById('page-asatidz');
   if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
   if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
-  if (pageAsatidz) pageAsatidz.style.display = (page === 'asatidz') ? 'block' : 'none';
   
   // Update efek menu aktif
   document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-link').forEach(el => el.classList.remove('active'));
@@ -273,9 +264,6 @@ function showPage(page) {
       }
       if (page === 'formasi' && dtFormasi) {
          dtFormasi.columns.adjust().draw(false);
-      }
-      if (page === 'asatidz' && dtAsatidz) {
-         dtAsatidz.columns.adjust().draw(false);
       }
   }, 250);
 }
@@ -324,14 +312,6 @@ document.addEventListener('DOMContentLoaded', async function () {
       sidebarEl.classList.add('close');
     });
   }
-
-  const tglSelectAsatidz = document.getElementById('tgl_lahir_asatidz');
-  tglSelectAsatidz.options.add(new Option('Pilih', ''));
-  for (let i = 1; i <= 31; i++) tglSelectAsatidz.options.add(new Option(i < 10 ? '0'+i : i, i < 10 ? '0'+i : i));
-  
-  const thnSelectAsatidz = document.getElementById('thn_lahir_asatidz');
-  thnSelectAsatidz.options.add(new Option('Pilih', ''));
-  for (let i = new Date().getFullYear(); i >= 1950; i--) thnSelectAsatidz.options.add(new Option(i, i));
 
   // Render Kategori Filter Lanjutan (16 Kategori)
   let filterHtml = '<div class="row g-3">';
@@ -2039,446 +2019,6 @@ async function hapusFormasiTerpilih() {
 }
 
 // =========================================================
-// MODUL DATA ASATIDZ (CRUD, FETCH, RENDER)
-// =========================================================
-
-async function fetchAllAsatidzFromSupabase() {
-    if (!supabase) return [];
-    const { data, error } = await supabase.from('asatidz').select('*').order('nama_asatidz', { ascending: true });
-    if (error) throw error;
-    return data || [];
-}
-
-async function actionLoadAsatidz() {
-    const btn = document.getElementById('btnLoadAsatidz');
-    btn.classList.add('btn-loading-state');
-    btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Menyiapkan Database Asatidz...`;
-    
-    try {
-        globalDataAsatidz = await fetchAllAsatidzFromSupabase();
-        renderTableAsatidz(globalDataAsatidz);
-    } catch (err) {
-        Swal.fire('Gagal Memuat Asatidz', err.message, 'error');
-        btn.classList.remove('btn-loading-state');
-        btn.innerHTML = '<i class="bi bi-table me-2"></i> Memuat Halaman (Tabel Data)';
-    }
-}
-
-function renderTableAsatidz(data) {
-    let btnContainer = document.getElementById('btnLoadAsatidzContainer');
-    let tableWrapper = document.getElementById('tableAsatidzWrapper');
-    if (btnContainer) btnContainer.style.display = 'none';
-    if (tableWrapper) tableWrapper.style.display = 'block';
-
-    if (dtAsatidz) { dtAsatidz.destroy(); $('#dataTableAsatidz').empty(); }
-    
-    $('#dataTableAsatidz').html(`
-      <thead class="table-light">
-          <tr>
-              <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllAsatidz" class="form-check-input"></th>
-              <th class="text-center" style="width: 45px;">NO</th>
-              <th class="text-center" style="width: 60px;">FOTO</th>
-              <th class="text-center" style="width: 90px;">NIS</th>
-              <th class="text-center" style="width: 90px;">NIA</th>
-              <th class="text-center" style="width: 70px;">PA/PI</th>
-              <th>KELAS DINIYYAH</th>
-              <th>BLOK</th>
-              <th>ASATIDZ</th>
-              <th class="text-center">JAH</th>
-              <th>LOKASI DINIYYAH</th>
-              <th>LOKASI TAKROR</th>
-              <th>TTL</th>
-              <th>PENEMPATAN KAMAR</th>
-          </tr>
-      </thead><tbody id="tableBodyAsatidz"></tbody>
-    `);
-
-    const tableDataArray = [];
-    data.forEach(row => {
-        const kelasGabung = `${row.din_kls_asatidz || ''} ${row.din_bag_asatidz || ''} ${row.tingkat_asatidz || ''}`.trim();
-        const genderBadge = row.pa_pi === 'PA' 
-            ? '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2">PA</span>' 
-            : '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2">PI</span>';
-        const jahBadge = row.jah_asatidz ? `<span class="badge ${row.jah_asatidz.includes('Mustahiq') ? 'bg-success' : 'bg-secondary'} bg-opacity-10 text-${row.jah_asatidz.includes('Mustahiq') ? 'success' : 'dark'} border px-2 py-1">${row.jah_asatidz}</span>` : '-';
-        const ttlGabung = `${row.tempat_lahir||'-'}, ${row.tgl_lahir||''} ${row.bln_lahir||''} ${row.thn_lahir||''}`.trim();
-        const kamarGabung = `${row.blok||'-'} - ${row.asrama||'-'} - ${row.kode||'-'} - ${row.kamar||'-'}`;
-        const fotoHtml = row.foto_asatidz ? `<img src="${row.foto_asatidz}" style="width:34px;height:34px;object-fit:cover;border-radius:50%;" class="border shadow-sm">` : '<i class="bi bi-person-circle text-muted fs-4"></i>';
-
-        tableDataArray.push([
-            `<input type="checkbox" class="row-check-asatidz form-check-input" value="${row.id}">`,
-            "", fotoHtml,
-            `<span class="fw-bold text-secondary font-monospace">${row.nis || '-'}</span>`,
-            `<span class="fw-bold text-secondary font-monospace">${row.nia || '-'}</span>`,
-            genderBadge, `<span class="badge bg-success rounded-pill fw-normal px-2 py-1">${kelasGabung}</span>`,
-            row.blok || '-', `<span class="fw-bold text-dark">${row.nama_asatidz || ''}</span>`,
-            jahBadge, row.lokasi_diniyyah || '-', row.lokasi_takror || '-', ttlGabung, kamarGabung
-        ]);
-    });
-
-    dtAsatidz = $('#dataTableAsatidz').DataTable({
-        data: tableDataArray,
-        scrollX: true, scrollCollapse: true, autoWidth: true,
-        pageLength: 25, language: { search: "Pencarian:" },
-        columnDefs: [{ searchable: false, orderable: false, targets: [0, 1, 2], className: "text-center" }, { className: "text-center", targets: [3, 4, 5, 9] }],
-        order: [[8, 'asc']],
-        initComplete: function() {
-            if ($('#actionGroupAsatidz').length === 0) {
-                $('#dataTableAsatidz_filter').addClass('d-flex justify-content-end align-items-center gap-2 flex-wrap');
-                $('#dataTableAsatidz_filter label').addClass('mb-0 d-flex align-items-center gap-2');
-                let actionBtns = $(`
-                <div class="d-flex gap-2 flex-nowrap" id="actionGroupAsatidz">
-                    <button class="btn btn-outline-danger btn-sm text-nowrap border-0" onclick="window.hapusTerpilihAsatidz(); return false;"><i class="bi bi-trash"></i> Hapus Terpilih</button>
-                </div>`);
-                $('#dataTableAsatidz_filter').prepend(actionBtns);
-            }
-        }
-    });
-
-    dtAsatidz.on('order.dt search.dt', function () { let i = 1; dtAsatidz.cells(null, 1, { search: 'applied', order: 'applied' }).every(function () { this.data(i++); }); }).draw();
-    setTimeout(() => { if (dtAsatidz) dtAsatidz.columns.adjust().draw(false); }, 300);
-}
-
-// Logic Click Row to Detail Asatidz
-$(document).off('click', '#dataTableAsatidz tbody tr').on('click', '#dataTableAsatidz tbody tr', function (e) {
-    if ($(e.target).hasClass('row-check-asatidz') || $(e.target).is(':checkbox') \vert{}\vert{}$(this).find('.dataTables_empty').length > 0) return;
-    
-    let rowId = $(this).find('.row-check-asatidz').val();
-    if (!rowId) return;
-
-    let asatidz = globalDataAsatidz.find(r => r.id === rowId);
-    if (!asatidz) return;
-    selectedRowDataAsatidz = asatidz;
-
-    let ttlAsatidz = `${asatidz.tempat_lahir||'-'}, ${asatidz.tgl_lahir||''} ${asatidz.bln_lahir||''} ${asatidz.thn_lahir||''}`.trim();
-    let kelasDetail = `${asatidz.din_kls_asatidz||''} ${asatidz.din_bag_asatidz||''} ${asatidz.tingkat_asatidz||''}`.trim();
-    let alamat = `Ds. ${asatidz.desa||'-'}, Kec. ${asatidz.kecamatan||'-'}, Kab. ${asatidz.kabupaten||'-'}, Prov. ${asatidz.provinsi||'-'}`;
-    let kamar = `${asatidz.blok||'-'} - ${asatidz.asrama||'-'} - ${asatidz.kode||'-'} - ${asatidz.kamar||'-'}`;
-    
-    let html = `
-    <div class="bg-white p-3 rounded border shadow-sm mb-4">
-      <h6 class="text-success fw-bold border-bottom pb-2 mb-3"><i class="bi bi-person-badge me-2"></i> Profil Asatidz</h6>
-      <div class="row mb-2">
-         <div class="col-sm-3 text-muted small">Foto</div>
-         <div class="col-sm-9">${asatidz.foto_asatidz ? `<img src="${asatidz.foto_asatidz}" style="width:75px;height:75px;object-fit:cover;border-radius:12px;" class="border">` : '<span class="text-muted small fst-italic">Belum ada foto</span>'}</div>
-      </div>
-      <div class="row mb-1"><div class="col-sm-3 text-muted small">NIS / NIA</div><div class="col-sm-9 fw-bold font-monospace">${asatidz.nis||'-'} / ${asatidz.nia||'-'}</div></div>
-      <div class="row mb-1"><div class="col-sm-3 text-muted small">Nama Lengkap</div><div class="col-sm-9 fw-bold text-success">${asatidz.nama_asatidz||'-'}</div></div>
-      <div class="row mb-1"><div class="col-sm-3 text-muted small">Jah / Gender</div><div class="col-sm-9 fw-bold">${asatidz.jah_asatidz||'-'} / ${asatidz.pa_pi}</div></div>
-      <div class="row mb-1"><div class="col-sm-3 text-muted small">Kelas Madin</div><div class="col-sm-9 fw-bold">${kelasDetail}</div></div>
-      <div class="row mb-1"><div class="col-sm-3 text-muted small">Lokasi</div><div class="col-sm-9">${asatidz.lokasi_diniyyah||'-'} (Din) | ${asatidz.lokasi_takror||'-'} (Takror)</div></div>
-      <div class="row mb-1"><div class="col-sm-3 text-muted small">Kamar / Alamat</div><div class="col-sm-9">${kamar} | ${alamat}</div></div>
-    </div>`;
-
-    // Filter Santri Binaan
-    let santriBinaan = globalDataSantri.filter(s => s[26] === asatidz.tingkat_asatidz && s[25] === asatidz.din_bag_asatidz && s[24] === asatidz.din_kls_asatidz && s[4] === asatidz.pa_pi);
-    
-    html += `<h6 class="text-success fw-bold mb-3 mt-2"><i class="bi bi-people-fill me-1"></i> Santri Binaan (${santriBinaan.length})</h6>
-    <div class="table-responsive bg-white rounded border shadow-sm" style="max-height: 300px;">
-    <table class="table table-hover table-sm mb-0 align-middle"><thead class="table-light">
-      <tr><th style="width: 40px;" class="text-center">No</th><th>Kamar</th><th>Nama Santri</th></tr>
-    </thead><tbody>`;
-    if(santriBinaan.length > 0) {
-        santriBinaan.forEach((s, idx) => {
-            html += `<tr><td class="text-center">${idx+1}</td><td><span class="badge bg-secondary rounded-pill">${s[17]||''}-${s[18]||''}</span></td><td class="fw-bold" style="font-size:13px;">${s[5]||'-'}</td></tr>`;
-        });
-    } else {
-        html += `<tr><td colspan="3" class="text-center text-muted py-3">Tidak ada data santri binaan.</td></tr>`;
-    }
-    html += `</tbody></table></div>`;
-    
-    document.getElementById('detailContentAsatidz').innerHTML = html;
-    
-    // Wire up actions for Delete & Edit using the new ID logic
-    document.getElementById('btnHapusDetailAsatidz').onclick = () => window.hapusAsatidz(rowId);
-    document.getElementById('btnEditDetailAsatidz').onclick = () => window.editAsatidz(rowId);
-    
-    $('#detailModalAsatidz').modal('show');
-});
-
-function generateNIA() {
-    const prefix = document.getElementById('nia_prefix').value;
-    const niaInput = document.getElementById('nia_asatidz');
-    if (!prefix) { niaInput.value = ''; return; }
-    
-    let maxNum = 0;
-    globalDataAsatidz.forEach(a => {
-        let n = a.nia || '';
-        if(n.startsWith(prefix)) {
-            let num = parseInt(n.substring(prefix.length), 10);
-            if(!isNaN(num) && num > maxNum) maxNum = num;
-        }
-    });
-    niaInput.value = prefix + (maxNum + 1);
-}
-
-// Logic Cascading Khusus Asatidz (Setup in Global Scope to work right away)
-document.addEventListener('DOMContentLoaded', () => {
-    // PA/PI ke Jah dan Diniyyah
-    document.getElementById('pa_pi_asatidz').addEventListener('change', function() {
-        let jah = document.getElementById('jah_asatidz'); jah.innerHTML = '<option value="">Pilih Jah...</option>';
-        if (this.value === 'PA') {
-            ["Mustahiq", "Munawib", "TU", "TOP", "KS", "TOP & Koor", "MS & Koor", "MB & TOP", "TU & MB", "MB & Media", "KA.KES", "BT", "ISTI'DAD"].forEach(o => jah.add(new Option(o, o))); jah.disabled = false;
-        } else if (this.value === 'PI') {
-            ["Mustahiqoh", "Munawibah", "TU", "TOP", "KS", "TM & MB", "BT", "ISTI'DAD"].forEach(o => jah.add(new Option(o, o))); jah.disabled = false;
-        } else { jah.disabled = true; }
-        
-        let tk = document.getElementById('tingkat_asatidz'); resetSelects(['din_kls_asatidz', 'din_bag_asatidz']);
-        if(this.value) { populateSelect('tingkat_asatidz', [...new Set(globalDataFormasi.filter(f => f.pa_pi === this.value).map(f => f.tingkat))]); tk.disabled = false; } else { tk.disabled = true; }
-    });
-    
-    document.getElementById('tingkat_asatidz').addEventListener('change', function() {
-        let p = document.getElementById('pa_pi_asatidz').value; resetSelects(['din_bag_asatidz']);
-        if(this.value && p) populateSelect('din_kls_asatidz', [...new Set(globalDataFormasi.filter(f => f.tingkat === this.value && f.pa_pi === p).map(f => f.din_kls))]);
-    });
-    
-    document.getElementById('din_kls_asatidz').addEventListener('change', function() {
-        let p = document.getElementById('pa_pi_asatidz').value; let t = document.getElementById('tingkat_asatidz').value;
-        if(this.value && p && t) populateSelect('din_bag_asatidz', [...new Set(globalDataFormasi.filter(f => f.tingkat === t && f.pa_pi === p && f.din_kls === this.value).map(f => f.din_bag))]);
-    });
-    
-    // Wilayah (Menggunakan API yang sama)
-    document.getElementById('provinsi_asatidz').addEventListener('change', function() {
-        let id = this.options[this.selectedIndex]?.dataset?.id; let k = document.getElementById('kabupaten_asatidz'); resetSelects(['kecamatan_asatidz', 'desa_asatidz']); k.innerHTML='<option value="">Memuat...</option>'; k.disabled=true;
-        if(!id) return; fetch(`${API_WILAYAH}/regencies/${id}.json`).then(r=>r.json()).then(d=>{ k.innerHTML='<option value="">Pilih</option>'; k.disabled=false; d.forEach(x=>{let o=document.createElement('option');o.value=x.name;o.dataset.id=x.id;o.textContent=x.name;k.appendChild(o);}); });
-    });
-    document.getElementById('kabupaten_asatidz').addEventListener('change', function() {
-        let id = this.options[this.selectedIndex]?.dataset?.id; let k = document.getElementById('kecamatan_asatidz'); resetSelects(['desa_asatidz']); k.innerHTML='<option value="">Memuat...</option>';
-        if(!id) return; fetch(`${API_WILAYAH}/districts/${id}.json`).then(r=>r.json()).then(d=>{ k.innerHTML='<option value="">Pilih</option>'; k.disabled=false; d.forEach(x=>{let o=document.createElement('option');o.value=x.name;o.dataset.id=x.id;o.textContent=x.name;k.appendChild(o);}); });
-    });
-    document.getElementById('kecamatan_asatidz').addEventListener('change', function() {
-        let id = this.options[this.selectedIndex]?.dataset?.id; let k = document.getElementById('desa_asatidz'); k.innerHTML='<option value="">Memuat...</option>';
-        if(!id) return; fetch(`${API_WILAYAH}/villages/${id}.json`).then(r=>r.json()).then(d=>{ k.innerHTML='<option value="">Pilih</option>'; k.disabled=false; d.forEach(x=>{let o=document.createElement('option');o.value=x.name;o.dataset.id=x.id;o.textContent=x.name;k.appendChild(o);}); });
-    });
-    
-    // Penempatan (Dari tree1Data)
-    document.getElementById('blok_asatidz').addEventListener('change', function() { resetSelects(['asrama_asatidz','kode_asatidz','kamar_asatidz']); if(this.value && tree1Data[this.value]) populateSelect('asrama_asatidz', Object.keys(tree1Data[this.value])); });
-    document.getElementById('asrama_asatidz').addEventListener('change', function() { let v1 = document.getElementById('blok_asatidz').value; resetSelects(['kode_asatidz','kamar_asatidz']); if(this.value && tree1Data[v1]?.[this.value]) populateSelect('kode_asatidz', Object.keys(tree1Data[v1][this.value])); });
-    document.getElementById('kode_asatidz').addEventListener('change', function() { let v1 = document.getElementById('blok_asatidz').value, v2 = document.getElementById('asrama_asatidz').value; resetSelects(['kamar_asatidz']); if(this.value && tree1Data[v1]?.[v2]?.[this.value]) populateSelect('kamar_asatidz', Object.keys(tree1Data[v1][v2][this.value])); });
-});
-
-function openAddModalAsatidz() {
-    isEditModeAsatidz = false;
-    document.getElementById('inputFormAsatidz').reset();
-    document.getElementById('id_asatidz').value = '';
-    hapusFotoAsatidz();
-    resetSelects(['din_kls_asatidz','din_bag_asatidz','kabupaten_asatidz','kecamatan_asatidz','desa_asatidz','asrama_asatidz','kode_asatidz','kamar_asatidz']);
-    document.getElementById('jah_asatidz').innerHTML = '<option value="">Pilih PA/PI Dahulu</option>'; document.getElementById('jah_asatidz').disabled = true;
-    document.querySelector('#inputModalAsatidz .modal-title').innerHTML = "<i class='bi bi-person-plus-fill me-2'></i> Form Data Asatidz";
-    document.getElementById('btnSubmitAsatidz').innerText = 'Simpan Data';
-    $('#inputModalAsatidz').modal('show');
-}
-
-function editAsatidz(id) {
-    let asatidz = globalDataAsatidz.find(a => a.id === id);
-    if (!asatidz) return;
-    isEditModeAsatidz = true;
-    $('#detailModalAsatidz').modal('hide');
-    
-    document.querySelector('#inputModalAsatidz .modal-title').innerHTML = "<i class='bi bi-pencil-square me-2'></i> Edit Data Asatidz";
-    document.getElementById('btnSubmitAsatidz').innerText = 'Update Data';
-    
-    let form = document.getElementById('inputFormAsatidz');
-    form.reset();
-    
-    form.id.value = asatidz.id;
-    form.nis_asatidz.value = asatidz.nis || '';
-    
-    let niaPrefix = asatidz.nia ? asatidz.nia.match(/^[A-E]/) : null;
-    document.getElementById('nia_prefix').value = niaPrefix ? niaPrefix[0] : '';
-    form.nia_asatidz.value = asatidz.nia || '';
-    form.nama_asatidz.value = asatidz.nama_asatidz || '';
-    form.pa_pi_asatidz.value = asatidz.pa_pi || '';
-    
-    let jahSelect = document.getElementById('jah_asatidz');
-    jahSelect.innerHTML = '<option value="">Pilih Jah...</option>';
-    if (asatidz.pa_pi === 'PA') { ["Mustahiq", "Munawib", "TU", "TOP", "KS", "TOP & Koor", "MS & Koor", "MB & TOP", "TU & MB", "MB & Media", "KA.KES", "BT", "ISTI\'DAD"].forEach(o => jahSelect.add(new Option(o, o))); jahSelect.disabled = false; }
-    else if (asatidz.pa_pi === 'PI') { ["Mustahiqoh", "Munawibah", "TU", "TOP", "KS", "TM & MB", "BT", "ISTI\'DAD"].forEach(o => jahSelect.add(new Option(o, o))); jahSelect.disabled = false; }
-    forceSetSelect(jahSelect, asatidz.jah_asatidz);
-
-    form.tempat_lahir_asatidz.value = asatidz.tempat_lahir || '';
-    forceSetSelect(form.tgl_lahir_asatidz, asatidz.tgl_lahir);
-    forceSetSelect(form.bln_lahir_asatidz, asatidz.bln_lahir);
-    forceSetSelect(form.thn_lahir_asatidz, asatidz.thn_lahir);
-    
-    form.dusun_asatidz.value = asatidz.dusun || '';
-    forceSetSelect(form.provinsi_asatidz, asatidz.provinsi);
-    forceSetSelect(form.kabupaten_asatidz, asatidz.kabupaten);
-    forceSetSelect(form.kecamatan_asatidz, asatidz.kecamatan);
-    forceSetSelect(form.desa_asatidz, asatidz.desa);
-    
-    forceSetSelect(form.blok_asatidz, asatidz.blok);
-    if (asatidz.blok && tree1Data[asatidz.blok]) populateSelect('asrama_asatidz', Object.keys(tree1Data[asatidz.blok]));
-    forceSetSelect(form.asrama_asatidz, asatidz.asrama);
-    if (asatidz.blok && asatidz.asrama && tree1Data[asatidz.blok]?.[asatidz.asrama]) populateSelect('kode_asatidz', Object.keys(tree1Data[asatidz.blok][asatidz.asrama]));
-    forceSetSelect(form.kode_asatidz, asatidz.kode);
-    if (asatidz.blok && asatidz.asrama && asatidz.kode && tree1Data[asatidz.blok]?.[asatidz.asrama]?.[asatidz.kode]) populateSelect('kamar_asatidz', Object.keys(tree1Data[asatidz.blok][asatidz.asrama][asatidz.kode]));
-    forceSetSelect(form.kamar_asatidz, asatidz.kamar);
-    
-    let tOpts = [...new Set(globalDataFormasi.filter(f => f.pa_pi === asatidz.pa_pi).map(f => f.tingkat))]; populateSelect('tingkat_asatidz', tOpts); forceSetSelect(form.tingkat_asatidz, asatidz.tingkat_asatidz);
-    let dkOpts = [...new Set(globalDataFormasi.filter(f => f.tingkat === asatidz.tingkat_asatidz && f.pa_pi === asatidz.pa_pi).map(f => f.din_kls))]; populateSelect('din_kls_asatidz', dkOpts); forceSetSelect(form.din_kls_asatidz, asatidz.din_kls_asatidz);
-    let dbOpts = [...new Set(globalDataFormasi.filter(f => f.tingkat === asatidz.tingkat_asatidz && f.pa_pi === asatidz.pa_pi && f.din_kls === asatidz.din_kls_asatidz).map(f => f.din_bag))]; populateSelect('din_bag_asatidz', dbOpts); forceSetSelect(form.din_bag_asatidz, asatidz.din_bag_asatidz);
-
-    form.lokasi_diniyyah.value = asatidz.lokasi_diniyyah || '';
-    form.lokasi_takror.value = asatidz.lokasi_takror || '';
-    
-    if (asatidz.foto_asatidz) {
-        document.getElementById('foto_asatidz').value = asatidz.foto_asatidz;
-        document.getElementById('preview_foto_asatidz').src = asatidz.foto_asatidz;
-        document.getElementById('preview_foto_asatidz').style.display = 'block';
-        document.getElementById('placeholder_foto_asatidz').style.display = 'none';
-        document.getElementById('btnHapusFotoAsatidz').classList.remove('d-none');
-        document.getElementById('statusFotoAsatidz').innerHTML = '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Foto Tersimpan</span>';
-    } else {
-        hapusFotoAsatidz();
-    }
-
-    $('#inputModalAsatidz').modal('show');
-}
-
-async function submitAsatidzData(e) {
-    e.preventDefault();
-    const btnSubmit = document.getElementById('btnSubmitAsatidz');
-    const prevText = btnSubmit.innerText;
-    btnSubmit.innerHTML = 'Menyimpan...'; btnSubmit.disabled = true;
-
-    const form = document.getElementById('inputFormAsatidz');
-    const payload = {
-        nis: form.nis_asatidz.value,
-        nia: form.nia_asatidz.value,
-        nama_asatidz: form.nama_asatidz.value.toUpperCase(),
-        pa_pi: form.pa_pi_asatidz.value,
-        tempat_lahir: form.tempat_lahir_asatidz.value,
-        tgl_lahir: form.tgl_lahir_asatidz.value,
-        bln_lahir: form.bln_lahir_asatidz.value,
-        thn_lahir: form.thn_lahir_asatidz.value,
-        dusun: form.dusun_asatidz.value,
-        desa: form.desa_asatidz.value,
-        kecamatan: form.kecamatan_asatidz.value,
-        kabupaten: form.kabupaten_asatidz.value,
-        provinsi: form.provinsi_asatidz.value,
-        blok: form.blok_asatidz.value,
-        asrama: form.asrama_asatidz.value,
-        kode: form.kode_asatidz.value,
-        kamar: form.kamar_asatidz.value,
-        tingkat_asatidz: form.tingkat_asatidz.value,
-        din_kls_asatidz: form.din_kls_asatidz.value,
-        din_bag_asatidz: form.din_bag_asatidz.value,
-        jah_asatidz: form.jah_asatidz.value,
-        lokasi_diniyyah: form.lokasi_diniyyah.value,
-        lokasi_takror: form.lokasi_takror.value,
-        foto_asatidz: form.foto_asatidz.value
-    };
-
-    try {
-        if (isEditModeAsatidz) {
-            const { error } = await supabase.from('asatidz').update(payload).eq('id', form.id.value);
-            if (error) throw error;
-            await logActivity('UPDATE ASATIDZ', `Memperbarui data asatidz: ${payload.nama_asatidz}`);
-        } else {
-            const { error } = await supabase.from('asatidz').insert([payload]);
-            if (error) throw error;
-            await logActivity('TAMBAH ASATIDZ', `Menambahkan asatidz: ${payload.nama_asatidz}`);
-        }
-        
-        globalDataAsatidz = await fetchAllAsatidzFromSupabase();
-        renderTableAsatidz(globalDataAsatidz);
-        $('#inputModalAsatidz').modal('hide');
-        Swal.fire({ title: isEditModeAsatidz ? 'Diperbarui!' : 'Tersimpan!', icon: 'success', timer: 1400, showConfirmButton: false });
-    } catch (err) {
-        Swal.fire('Gagal', err.message, 'error');
-    } finally {
-        btnSubmit.innerHTML = prevText; btnSubmit.disabled = false;
-    }
-}
-
-async function hapusAsatidz(id) {
-    const res = await Swal.fire({ title: 'Hapus Asatidz?', text: `Yakin ingin menghapus data ini secara permanen?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Ya, Hapus' });
-    if (!res.isConfirmed) return;
-    
-    $('#detailModalAsatidz').modal('hide');
-    try {
-        const { error } = await supabase.from('asatidz').delete().eq('id', id);
-        if (error) throw error;
-        await logActivity('HAPUS ASATIDZ', `Menghapus asatidz (ID: ${id})`);
-        
-        globalDataAsatidz = await fetchAllAsatidzFromSupabase();
-        renderTableAsatidz(globalDataAsatidz);
-        Swal.fire('Terhapus', 'Data Asatidz berhasil dihapus.', 'success');
-    } catch (err) {
-        Swal.fire('Gagal Menghapus', err.message, 'error');
-    }
-}
-
-async function hapusTerpilihAsatidz() {
-    let selected = []; $('.row-check-asatidz:checked').each(function () { selected.push($(this).val()); });
-    if (selected.length === 0) return Swal.fire('Perhatian', 'Centang minimal satu asatidz!', 'info');
-
-    const res = await Swal.fire({ title: `Hapus ${selected.length} Asatidz?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Ya, Hapus Terpilih' });
-    if (!res.isConfirmed) return;
-
-    try {
-        const { error } = await supabase.from('asatidz').delete().in('id', selected);
-        if (error) throw error;
-        await logActivity('HAPUS BANYAK ASATIDZ', `Menghapus ${selected.length} asatidz terpilih`);
-        
-        globalDataAsatidz = await fetchAllAsatidzFromSupabase();
-        renderTableAsatidz(globalDataAsatidz);
-        $('#checkAllAsatidz').prop('checked', false);
-        Swal.fire('Berhasil!', `${selected.length} data asatidz berhasil dihapus.`, 'success');
-    } catch (err) {
-        Swal.fire('Error', err.message, 'error');
-    }
-}
-
-// Upload Foto Supabase Storage Asatidz
-$(document).on('change', '#checkAllAsatidz', function() { $('.row-check-asatidz').prop('checked', this.checked); });
-
-async function handleFotoAsatidzSelected(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) return Swal.fire('Peringatan', 'Harap pilih file gambar (JPG/PNG).', 'warning');
-
-    const statusEl = document.getElementById('statusFotoAsatidz');
-    statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-success me-1"></span> Mengompres dan Mengunggah...';
-
-    try {
-        const compressedBase64 = await compressImageFileSantri(file, 1000, 0.70); // Menggunakan fungsi kompres santri yg sudah ada
-        const fileName = `asatidz_${Date.now()}.jpg`;
-        
-        const base64Data = compressedBase64.split(',')[1];
-        const byteCharacters = atob(base64Data);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) byteNumbers[i] = byteCharacters.charCodeAt(i);
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], {type: 'image/jpeg'});
-
-        const { data, error } = await supabase.storage.from('foto_asatidz').upload(fileName, blob, { contentType: 'image/jpeg' });
-        if (error) throw error;
-
-        const { data: urlData } = supabase.storage.from('foto_asatidz').getPublicUrl(fileName);
-        
-        document.getElementById('foto_asatidz').value = urlData.publicUrl;
-        document.getElementById('preview_foto_asatidz').src = urlData.publicUrl;
-        document.getElementById('preview_foto_asatidz').style.display = 'block';
-        document.getElementById('placeholder_foto_asatidz').style.display = 'none';
-        document.getElementById('btnHapusFotoAsatidz').classList.remove('d-none');
-        statusEl.innerHTML = '<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Foto Tersimpan</span>';
-    } catch (err) {
-        statusEl.innerHTML = `<span class="text-danger">Gagal: ${err.message}</span>`;
-    }
-    event.target.value = '';
-}
-
-function hapusFotoAsatidz() {
-    document.getElementById('foto_asatidz').value = '';
-    document.getElementById('preview_foto_asatidz').src = '';
-    document.getElementById('preview_foto_asatidz').style.display = 'none';
-    document.getElementById('placeholder_foto_asatidz').style.display = 'flex';
-    document.getElementById('btnHapusFotoAsatidz').classList.add('d-none');
-    document.getElementById('statusFotoAsatidz').innerText = 'Belum ada foto dipilih.';
-}
-
-// =========================================================
 // EKSPOR SEMUA FUNGSI KE GLOBAL WINDOW
 // =========================================================
 Object.assign(window, {
@@ -2507,13 +2047,8 @@ Object.assign(window, {
   showDetailFormasi,
   editFormasi,
   hapusFormasiTerpilih,
-  actionLoadAsatidz,
-  openAddModalAsatidz,
-  submitAsatidzData,
-  editAsatidz,
-  hapusAsatidz,
-  hapusTerpilihAsatidz,
-  handleFotoAsatidzSelected,
-  hapusFotoAsatidz,
-  generateNIA
+  checkAllHideFormasi,
+  applyHideColumnsFormasi,
+  applyFiltersFormasi,
+  resetFiltersFormasi
 });
