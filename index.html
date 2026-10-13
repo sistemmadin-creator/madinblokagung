@@ -335,18 +335,26 @@
 /* ========================================================
        TABEL DATABASE SANTRI BERGAYA EXCEL SAAS (#dataTable)
     ======================================================== */
-    /* PERBAIKAN: Menghapus seluruh paksaan width: 100% !important agar DataTables bebas mengatur kelebaran elastis */
-    .dataTables_scrollHeadInner, 
-    .dataTables_scrollHeadInner table.dataTable,
-    .dataTables_scrollBody table.dataTable {
-      margin-bottom: 0 !important;
+    .dataTables_wrapper {
+      width: 100% !important;
     }
+    .dataTables_wrapper .dataTable th,
+    .dataTables_wrapper .dataTable td,
     #dataTable th, #dataTable td,
     #dataTableFormasi th, #dataTableFormasi td {
       white-space: nowrap !important;
       vertical-align: middle !important;
-      padding: 10px 16px !important;
+      padding: 10px 14px !important;
       font-size: 0.83rem !important;
+      box-sizing: border-box !important;
+    }
+    /* Jangan paksa width 100% agar DataTables bebas menyamakan piksel header & body */
+    .dataTables_scrollHeadInner {
+      box-sizing: content-box !important;
+    }
+    .dataTables_scrollHeadInner table,
+    .dataTables_scrollBody table {
+      margin-bottom: 0 !important;
     }
     #dataTable, #dataTableFormasi {
       border-collapse: separate !important;
