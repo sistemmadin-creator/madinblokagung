@@ -947,13 +947,30 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
           <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body bg-light p-4">
-          <div class="mb-4">
-            <label class="form-label fw-bold text-success">1. Blok &gt; Asrama &gt; Kode &gt; Kamar</label>
-            <textarea id="settingTree1" class="form-control font-monospace" rows="4" placeholder="Contoh: Putra > Darussalam > A > 01"></textarea>
+          <!-- 1. Builder Tree 1 (Blok -> Kamar) -->
+          <div class="mb-4 bg-white p-3 rounded border shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <label class="form-label fw-bold text-success mb-0">1. Blok &gt; Asrama &gt; Kode &gt; Kamar</label>
+              <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3" onclick="window.addRuleRow('tree1')">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Aturan
+              </button>
+            </div>
+            <div id="builder-tree1" class="d-flex flex-column gap-2 bg-light p-2 rounded border" style="min-height: 80px;">
+              <!-- Baris aturan dinamis akan di-generate oleh JS di sini -->
+            </div>
           </div>
-          <div class="mb-4">
-            <label class="form-label fw-bold text-success">2. Unit &gt; Jurusan &gt; Semester &gt; Kelas &gt; Bag</label>
-            <textarea id="settingTree2" class="form-control font-monospace" rows="4" placeholder="Contoh: MA > IPA > Ganjil > X > A"></textarea>
+          
+          <!-- 2. Builder Tree 2 (Unit -> Bagian) -->
+          <div class="mb-4 bg-white p-3 rounded border shadow-sm">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <label class="form-label fw-bold text-success mb-0">2. Unit &gt; Jurusan &gt; Semester &gt; Kelas &gt; Bag</label>
+              <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3" onclick="window.addRuleRow('tree2')">
+                <i class="bi bi-plus-lg me-1"></i> Tambah Aturan
+              </button>
+            </div>
+            <div id="builder-tree2" class="d-flex flex-column gap-2 bg-light p-2 rounded border" style="min-height: 80px;">
+              <!-- Baris aturan dinamis akan di-generate oleh JS di sini -->
+            </div>
           </div>
         </div>
         <div class="modal-footer border-0">
