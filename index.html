@@ -618,13 +618,13 @@
                 <th class="text-center">Aksi</th>
               </tr>
             </thead>
-            <tbody id="tableBodyFormasi"></tbody>
+<tbody id="tableBodyFormasi"></tbody>
           </table>
         </div>
       </div>
-    </div>
+    </div> <!-- Batas akhir halaman Formasi Kelas -->
 
-  <!-- ============================================== -->
+    <!-- ============================================== -->
     <!-- HALAMAN DATA ASATIDZ                           -->
     <!-- ============================================== -->
     <div id="page-asatidz" style="display: none;">
@@ -637,6 +637,47 @@
             <i class="bi bi-plus-lg me-2"></i> Tambah Asatidz
           </button>
         </div>
+
+        <div class="card-panel border-0">
+          <!-- Tombol Pemuat Halaman -->
+          <div id="btnLoadAsatidzContainer" class="text-center py-5">
+             <i class="bi bi-person-vcard text-success mb-3" style="font-size: 4rem;"></i>
+             <h5 class="fw-bold">Tabel Database Asatidz</h5>
+             <p class="text-muted small mb-4">Untuk menjaga performa aplikasi, data tabel tidak dimuat otomatis.<br>Silakan klik tombol di bawah ini jika Anda perlu mengelola tabel Asatidz.</p>
+             <button class="btn btn-success px-4 py-2 fw-bold shadow-sm" id="btnLoadAsatidz" onclick="window.actionLoadAsatidz()">
+                 <i class="bi bi-table me-2"></i> Memuat Halaman (Tabel Data)
+             </button>
+          </div>
+          
+          <div id="tableAsatidzWrapper" style="display: none;">
+             <table id="dataTableAsatidz" class="table table-hover align-middle nowrap" style="width: 100%;">
+                 <thead class="table-light">
+                     <tr>
+                         <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllAsatidz" class="form-check-input"></th>
+                         <th class="text-center" style="width: 45px;">NO</th>
+                         <th class="text-center" style="width: 60px;">FOTO</th>
+                         <th class="text-center" style="width: 90px;">NIS</th>
+                         <th class="text-center" style="width: 90px;">NIA</th>
+                         <th class="text-center" style="width: 70px;">PA/PI</th>
+                         <th>KELAS DINIYYAH</th>
+                         <th>BLOK</th>
+                         <th>ASATIDZ</th>
+                         <th class="text-center">JAH</th>
+                         <th>LOKASI DINIYYAH</th>
+                         <th>LOKASI TAKROR</th>
+                         <th>TTL</th>
+                         <th>PENEMPATAN KAMAR</th>
+                     </tr>
+                 </thead>
+                 <tbody id="tableBodyAsatidz"></tbody>
+             </table>
+          </div>
+        </div>
+    </div> <!-- Batas akhir halaman Asatidz -->
+  </div> <!-- PENUTUP BARU UNTUK: div class="main-content" -->
+
+  <!-- ======================================================= -->
+  <!-- KUMPULAN MODAL (FILTER, HIDE, INPUT, DETAIL, SETTINGS)  -->
 
         <div class="card-panel border-0">
           <!-- Tombol Pemuat Halaman -->
