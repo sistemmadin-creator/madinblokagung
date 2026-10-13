@@ -396,6 +396,29 @@
       border-top: none !important;
       border-radius: 0 0 8px 8px;
     }
+
+    /* ==========================================
+       GAYA UI BUILDER ACCORDION (COLLAPSIBLE)
+    ========================================== */
+    .rule-header-cursor {
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      user-select: none;
+    }
+    .rule-header-cursor:hover {
+      background-color: #f8fafc;
+    }
+    .rule-chevron {
+      transition: transform 0.3s ease-in-out;
+      font-size: 1rem;
+    }
+    /* Memutar panah otomatis saat accordion dalam status terbuka */
+    .rule-header-cursor[aria-expanded="true"] .rule-chevron {
+      transform: rotate(180deg);
+    }
+    .rule-preview-text {
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body class="sidebar-collapsed">
