@@ -214,7 +214,14 @@ function showPage(page) {
   if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
   if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
   
-  if (page === 'formasi') window.loadFormasiData(); // Panggil data jika membuka formasi
+  // Update warna highlight/aktif pada menu di Sidebar
+  document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-link').forEach(el => el.classList.remove('active'));
+  const deskActive = document.getElementById('nav-desk-' + page);
+  const mobActive = document.getElementById('nav-mob-' + page);
+  if (deskActive) deskActive.classList.add('active');
+  if (mobActive) mobActive.classList.add('active');
+
+  if (page === 'formasi') loadFormasiData(); // Hapus awalan window. agar lebih aman
 
   if (window.innerWidth >= 768) {
     document.body.classList.add('sidebar-collapsed');
@@ -346,7 +353,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   try {
     globalDataSantri = await fetchAllSantriFromSupabase();
     populateFilterDatalists();
-    await window.loadFormasiData(); // Tarik data formasi untuk modal santri
+    await loadFormasiData(); // Awalan window dihapus
   } catch (err) {
     console.error('Background fetch santri gagal:', err.message);
   }
@@ -1630,7 +1637,7 @@ Object.assign(window, {
 // =========================================================
 let dtFormasi = null;
 
-window.loadFormasiData = async function() {
+async function loadFormasiData() {
     if (!supabase) return;
     try {
         const { data, error } = await supabase
@@ -1697,13 +1704,13 @@ function renderTableFormasi(data) {
     });
 }
 
-window.openAddFormasiModal = function() {
+function openAddFormasiModal() {
     document.getElementById('formasiForm').reset();
     document.getElementById('f_id').value = '';
     $('#formasiModal').modal('show');
 }
 
-window.submitFormasiData = async function(e) {
+async function submitFormasiData(e) {
     e.preventDefault();
     const btn = document.getElementById('btnSubmitFormasi');
     btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
@@ -1730,7 +1737,7 @@ window.submitFormasiData = async function(e) {
         await logActivity('TAMBAH FORMASI', `Membuat kelas baru: ${payload.tingkat} ${payload.din_kls} - ${payload.din_bag} (${payload.pa_pi})`);
         $('#formasiModal').modal('hide');
         Swal.fire('Berhasil!', 'Formasi Blueprint Kelas Berhasil Dibuat', 'success');
-        await window.loadFormasiData();
+        await loadFormasiData();
     } catch (err) {
         Swal.fire('Gagal Menyimpan', err.message, 'error');
     } finally {
@@ -1738,7 +1745,7 @@ window.submitFormasiData = async function(e) {
     }
 }
 
-window.hapusFormasi = async function(id) {
+async function hapusFormasi(id) {
      const res = await Swal.fire({
         title: 'Hapus Blueprint Kelas?',
         text: 'Ini akan menghapus formasi, namun tidak menghapus data santri di dalamnya.',
@@ -1754,7 +1761,7 @@ window.hapusFormasi = async function(id) {
           if (error) throw error;
           await logActivity('HAPUS FORMASI', `Menghapus blueprint kelas (ID: ${id})`);
           Swal.fire('Terhapus', 'Formasi kelas telah dihapus.', 'success');
-          await window.loadFormasiData();
+          await loadFormasiData();
       } catch (err) {
           Swal.fire('Error', err.message, 'error');
       }
