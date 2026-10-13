@@ -205,6 +205,7 @@ function toggleSidebar() {
   document.getElementById('desktopSidebar').classList.toggle('close');
   setTimeout(() => {
     if (dataTable) dataTable.columns.adjust().draw(false);
+    if (typeof dtFormasi !== 'undefined' && dtFormasi) dtFormasi.columns.adjust().draw(false);
   }, 400);
 }
 
