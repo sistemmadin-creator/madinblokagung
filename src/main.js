@@ -517,11 +517,11 @@ function renderTable(data) {
     ]);
   }
 
-  dataTable = $('#dataTable').DataTable({
+dataTable = $('#dataTable').DataTable({
     data: tableDataArray,
     scrollX: true,
     scrollCollapse: true,
-    autoWidth: false,
+    autoWidth: true, /* PERBAIKAN: Harus true agar DataTable menghitung colgroup presisi */
     processing: true,
     deferRender: true,
     pageLength: 25,
@@ -1789,10 +1789,11 @@ function renderTableFormasi(data) {
     
     $('#tableBodyFormasi').html(html);
 
-    // Inisialisasi DataTables dengan Toolbar (Filter, Sembunyikan, Hapus)
+// Inisialisasi DataTables dengan Toolbar (Filter, Sembunyikan, Hapus)
     dtFormasi = $('#dataTableFormasi').DataTable({
          scrollX: true,
          pageLength: 25,
+         autoWidth: true, /* PERBAIKAN: Harus ditambahkan agar lurus dengan Header */
          language: { search: 'Cari Kelas:' },
          columnDefs: [
              { searchable: false, orderable: false, targets: [0, 10] }
