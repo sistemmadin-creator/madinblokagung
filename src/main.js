@@ -1879,6 +1879,11 @@ function applyTreeData(settings) {
   tree1Data = parseHierarchy(settings.tree1);
   tree2Data = parseHierarchy(settings.tree2);
 
+  // --- PERBAIKAN: Populate dropdown root untuk Tree 1 (Form Santri & Form Asatidz) ---
+  populateSelect('blok', Object.keys(tree1Data));
+  populateSelect('blok_asatidz', Object.keys(tree1Data));
+
+  // Populate dropdown root untuk Tree 2 (Form Santri)
   populateSelect('unit', Object.keys(tree2Data));
 }
 
