@@ -2291,8 +2291,8 @@ function editAsatidz(id) {
     
     let jahSelect = document.getElementById('jah_asatidz');
     jahSelect.innerHTML = '<option value="">Pilih Jah...</option>';
-    if (asatidz.pa_pi === 'PA') { ["Mustahiq", "Munawib", "TU", "TOP", "KS", "TOP & Koor", "MS & Koor", "MB & TOP", "TU & MB", "MB & Media", "KA.KES", "BT", "ISTI'DAD"].forEach(o => jahSelect.add(new Option(o, o))); jahSelect.disabled = false; }
-    else if (asatidz.pa_pi === 'PI') { ["Mustahiqoh", "Munawibah", "TU", "TOP", "KS", "TM & MB", "BT", "ISTI'DAD"].forEach(o => jahSelect.add(new Option(o, o))); jahSelect.disabled = false; }
+    if (asatidz.pa_pi === 'PA') { ["Mustahiq", "Munawib", "TU", "TOP", "KS", "TOP & Koor", "MS & Koor", "MB & TOP", "TU & MB", "MB & Media", "KA.KES", "BT", "ISTI\'DAD"].forEach(o => jahSelect.add(new Option(o, o))); jahSelect.disabled = false; }
+    else if (asatidz.pa_pi === 'PI') { ["Mustahiqoh", "Munawibah", "TU", "TOP", "KS", "TM & MB", "BT", "ISTI\'DAD"].forEach(o => jahSelect.add(new Option(o, o))); jahSelect.disabled = false; }
     forceSetSelect(jahSelect, asatidz.jah_asatidz);
 
     form.tempat_lahir_asatidz.value = asatidz.tempat_lahir || '';
