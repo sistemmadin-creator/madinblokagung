@@ -22,10 +22,10 @@ let selectedRowData = []; // Menyimpan 35 elemen baris santri yang sedang dibuka
 let globalDataSantri = []; // Menyimpan array 2D [35 kolom] seluruh santri di memori
 let hiddenColumnsGlobal = [];
 
+let globalDataFormasi = []; // Menyimpan state master Formasi Kelas
 let appSettingsGlobal = {
   tree1: '',
-  tree2: '',
-  tree3: ''
+  tree2: ''
 };
 
 let currentUser = {
@@ -189,10 +189,9 @@ async function fetchSettingsFromSupabase() {
     .maybeSingle();
 
   if (!error && data && data.value) {
-    return {
+return {
       tree1: data.value.tree1 || '',
-      tree2: data.value.tree2 || '',
-      tree3: data.value.tree3 || ''
+      tree2: data.value.tree2 || ''
     };
   }
   return appSettingsGlobal;
@@ -211,7 +210,11 @@ function toggleSidebar() {
 
 function showPage(page) {
   const pageSantri = document.getElementById('page-santri');
+  const pageFormasi = document.getElementById('page-formasi');
   if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
+  if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
+  
+  if (page === 'formasi') window.loadFormasiData(); // Panggil data jika membuka formasi
 
   if (window.innerWidth >= 768) {
     document.body.classList.add('sidebar-collapsed');
@@ -339,10 +342,11 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.error('Gagal memuat app_settings:', err.message);
   }
 
-  // Background Fetch Data Santri ke memori (`globalDataSantri`) TANPA merender tabel langsung
+// Background Fetch Data Santri & Formasi
   try {
     globalDataSantri = await fetchAllSantriFromSupabase();
     populateFilterDatalists();
+    await window.loadFormasiData(); // Tarik data formasi untuk modal santri
   } catch (err) {
     console.error('Background fetch santri gagal:', err.message);
   }
@@ -816,11 +820,24 @@ function setupDetailModalButtons() {
     if (uVal && jVal && sVal && klVal && tree2Data[uVal]?.[jVal]?.[sVal]?.[klVal]) populateSelect('bag', Object.keys(tree2Data[uVal][jVal][sVal][klVal]));
     forceSetSelect(form.bag, bgVal);
 
-    const tkVal = selectedRowData[26], dkVal = selectedRowData[24], dbVal = selectedRowData[25];
+const tkVal = selectedRowData[26], dkVal = selectedRowData[24], dbVal = selectedRowData[25];
+    let gender = form.pa_pi.value;
+    if(gender) {
+        let tOpts = [...new Set(globalDataFormasi.filter(f => f.pa_pi === gender).map(f => f.tingkat))];
+        populateSelect('tingkat', tOpts);
+    }
     forceSetSelect(form.tingkat, tkVal);
-    if (tkVal && tree3Data[tkVal]) populateSelect('din_kls', Object.keys(tree3Data[tkVal]));
+
+    if (tkVal && gender) {
+        let dkOpts = [...new Set(globalDataFormasi.filter(f => f.tingkat === tkVal && f.pa_pi === gender).map(f => f.din_kls))];
+        populateSelect('din_kls', dkOpts);
+    }
     forceSetSelect(form.din_kls, dkVal);
-    if (tkVal && dkVal && tree3Data[tkVal]?.[dkVal]) populateSelect('din_bag', Object.keys(tree3Data[tkVal][dkVal]));
+
+    if (tkVal && dkVal && gender) {
+        let dbOpts = [...new Set(globalDataFormasi.filter(f => f.tingkat === tkVal && f.pa_pi === gender && f.din_kls === dkVal).map(f => f.din_bag))];
+        populateSelect('din_bag', dbOpts);
+    }
     forceSetSelect(form.din_bag, dbVal);
 
     form.orda.value = selectedRowData[27] || '';
@@ -1189,9 +1206,7 @@ function parseHierarchy(text) {
 function applyTreeData(settings) {
   tree1Data = parseHierarchy(settings.tree1);
   tree2Data = parseHierarchy(settings.tree2);
-  tree3Data = parseHierarchy(settings.tree3);
 
-  populateSelect('blok', Object.keys(tree1Data));
   populateSelect('unit', Object.keys(tree2Data));
   populateSelect('tingkat', Object.keys(tree3Data));
 }
@@ -1234,15 +1249,37 @@ function setupHierarchyListeners() {
     if (this.value && tree2Data[v1]?.[v2]?.[v3]?.[this.value]) populateSelect('bag', Object.keys(tree2Data[v1][v2][v3][this.value]));
   });
 
-  // Tree 3: Tingkat > Din. Kls > Din. Bag
-  document.getElementById('tingkat').addEventListener('change', function () {
-    resetSelects(['din_kls', 'din_bag']);
-    if (this.value && tree3Data[this.value]) populateSelect('din_kls', Object.keys(tree3Data[this.value]));
+// Tree 3: Formasi Kelas dari Database Supabase & Filter PA/PI
+  const ppiSelect = document.querySelector('select[name="pa_pi"]');
+  const tktSelect = document.getElementById('tingkat');
+  const dkSelect = document.getElementById('din_kls');
+  
+  ppiSelect.addEventListener('change', function () {
+    let gender = this.value;
+    resetSelects(['tingkat', 'din_kls', 'din_bag']);
+    if (gender) {
+        let tOpts = [...new Set(globalDataFormasi.filter(f => f.pa_pi === gender).map(f => f.tingkat))];
+        populateSelect('tingkat', tOpts);
+    }
   });
-  document.getElementById('din_kls').addEventListener('change', function () {
-    let v1 = document.getElementById('tingkat').value;
+
+  tktSelect.addEventListener('change', function () {
+    let gender = ppiSelect.value;
+    resetSelects(['din_kls', 'din_bag']);
+    if (this.value && gender) {
+        let dkOpts = [...new Set(globalDataFormasi.filter(f => f.tingkat === this.value && f.pa_pi === gender).map(f => f.din_kls))];
+        populateSelect('din_kls', dkOpts);
+    }
+  });
+
+  dkSelect.addEventListener('change', function () {
+    let gender = ppiSelect.value;
+    let tk = tktSelect.value;
     resetSelects(['din_bag']);
-    if (this.value && tree3Data[v1]?.[this.value]) populateSelect('din_bag', Object.keys(tree3Data[v1][this.value]));
+    if (this.value && tk && gender) {
+        let dbOpts = [...new Set(globalDataFormasi.filter(f => f.tingkat === tk && f.pa_pi === gender && f.din_kls === this.value).map(f => f.din_bag))];
+        populateSelect('din_bag', dbOpts);
+    }
   });
 }
 
@@ -1253,7 +1290,6 @@ async function saveSettingsData() {
 
   appSettingsGlobal.tree1 = document.getElementById('settingTree1').value;
   appSettingsGlobal.tree2 = document.getElementById('settingTree2').value;
-  appSettingsGlobal.tree3 = document.getElementById('settingTree3').value;
 
   try {
     const { error } = await supabase
@@ -1582,5 +1618,144 @@ Object.assign(window, {
   loadAuditLogs,
   handleFotoSantriSelected,
   hapusFotoSantri,
-  lihatFotoSantri
+  lihatFotoSantri,
+  loadFormasiData,
+  openAddFormasiModal,
+  submitFormasiData,
+  hapusFormasi
 });
+
+// =========================================================
+// 13. CRUD FORMASI KELAS (DINAMIS DARI DATABASE)
+// =========================================================
+let dtFormasi = null;
+
+window.loadFormasiData = async function() {
+    if (!supabase) return;
+    try {
+        const { data, error } = await supabase
+          .from('formasi_kelas')
+          .select('*')
+          .order('tingkat').order('din_kls').order('din_bag');
+        if (error) throw error;
+        globalDataFormasi = data || [];
+        
+        if(document.getElementById('tableBodyFormasi')){
+            renderTableFormasi(globalDataFormasi);
+        }
+    } catch (err) {
+        console.error("Gagal memuat Formasi Kelas:", err.message);
+    }
+}
+
+function renderTableFormasi(data) {
+    if (dtFormasi) {
+        dtFormasi.destroy();
+        $('#dataTableFormasi').empty();
+    }
+
+    $('#dataTableFormasi').html(`
+        <thead class="table-light">
+          <tr>
+            <th>Tingkat</th>
+            <th>Kelas</th>
+            <th>Bagian</th>
+            <th>Gender</th>
+            <th>Kapasitas</th>
+            <th>Wali Kelas</th>
+            <th>Lokasi Diniyyah</th>
+            <th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyFormasi"></tbody>
+    `);
+
+    let html = '';
+    data.forEach(f => {
+        let badgeUg = f.is_unggulan ? '<span class="badge bg-warning text-dark border ms-2 shadow-sm"><i class="bi bi-star-fill"></i> Unggulan</span>' : '';
+        let genderB = f.pa_pi === 'PA' ? '<span class="text-primary fw-bold">PA</span>' : '<span class="text-danger fw-bold">PI</span>';
+        
+        html += `
+        <tr>
+            <td class="fw-bold">${f.tingkat}</td>
+            <td>${f.din_kls}</td>
+            <td class="fw-bold">${f.din_bag} ${badgeUg}</td>
+            <td>${genderB}</td>
+            <td>${f.kapasitas_maksimal}</td>
+            <td>${f.id_mustahiq || '-'}</td>
+            <td>${f.lokasi_diniyyah || '-'}</td>
+            <td class="text-center">
+                <button class="btn btn-sm btn-outline-danger border-0" onclick="window.hapusFormasi('${f.id}')" title="Hapus"><i class="bi bi-trash"></i></button>
+            </td>
+        </tr>`;
+    });
+    
+    $('#tableBodyFormasi').html(html);
+    dtFormasi = $('#dataTableFormasi').DataTable({
+         pageLength: 25,
+         language: { search: 'Cari Kelas:' }
+    });
+}
+
+window.openAddFormasiModal = function() {
+    document.getElementById('formasiForm').reset();
+    document.getElementById('f_id').value = '';
+    $('#formasiModal').modal('show');
+}
+
+window.submitFormasiData = async function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmitFormasi');
+    btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
+    
+    const form = e.target;
+    const payload = {
+        tingkat: form.f_tingkat.value,
+        din_kls: form.f_din_kls.value,
+        din_bag: form.f_din_bag.value,
+        pa_pi: form.f_pa_pi.value,
+        is_unggulan: form.f_is_unggulan.checked,
+        kapasitas_maksimal: parseInt(form.f_kapasitas_maksimal.value) || 40,
+        id_mustahiq: form.f_id_mustahiq.value,
+        lokasi_diniyyah: form.f_lokasi_diniyyah.value
+    };
+    
+    try {
+        const { error } = await supabase.from('formasi_kelas').insert([payload]);
+        if (error) {
+           if(error.code === '23505') throw new Error("Kombinasi Tingkat, Kelas, Bagian, dan Gender tersebut sudah ada! Tidak boleh duplikat.");
+           throw error;
+        }
+        
+        await logActivity('TAMBAH FORMASI', `Membuat kelas baru: ${payload.tingkat} ${payload.din_kls} - ${payload.din_bag} (${payload.pa_pi})`);
+        $('#formasiModal').modal('hide');
+        Swal.fire('Berhasil!', 'Formasi Blueprint Kelas Berhasil Dibuat', 'success');
+        await window.loadFormasiData();
+    } catch (err) {
+        Swal.fire('Gagal Menyimpan', err.message, 'error');
+    } finally {
+        btn.disabled = false; btn.innerText = "Simpan Formasi";
+    }
+}
+
+window.hapusFormasi = async function(id) {
+     const res = await Swal.fire({
+        title: 'Hapus Blueprint Kelas?',
+        text: 'Ini akan menghapus formasi, namun tidak menghapus data santri di dalamnya.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        confirmButtonText: 'Ya, Hapus Kelas!'
+      });
+      if (!res.isConfirmed) return;
+
+      try {
+          const { error } = await supabase.from('formasi_kelas').delete().eq('id', id);
+          if (error) throw error;
+          await logActivity('HAPUS FORMASI', `Menghapus blueprint kelas (ID: ${id})`);
+          Swal.fire('Terhapus', 'Formasi kelas telah dihapus.', 'success');
+          await window.loadFormasiData();
+      } catch (err) {
+          Swal.fire('Error', err.message, 'error');
+      }
+}
