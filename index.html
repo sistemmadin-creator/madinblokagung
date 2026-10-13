@@ -338,15 +338,12 @@
     .dataTables_scrollBody {
       border-bottom: 1px solid #e2e8f0;
     }
-    .dataTables_scrollHeadInner {
-      box-sizing: content-box !important;
-      padding-right: 0px !important;
+    .dataTables_scrollHeadInner, .dataTables_scrollHeadInner table.dataTable {
+      width: 100% !important;
+      margin-bottom: 0 !important;
     }
-    .dataTables_scrollHeadInner table.dataTable,
     .dataTables_scrollBody table.dataTable {
       margin-bottom: 0 !important;
-      border-collapse: separate !important;
-      border-spacing: 0 !important;
     }
 #dataTable th, #dataTable td,
     #dataTableFormasi th, #dataTableFormasi td {
@@ -1007,6 +1004,47 @@
               <button type="submit" class="btn btn-warning px-4 fw-bold" id="btnSubmitFormasi">Simpan Formasi</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Filter Formasi (#filterFormasiModal) -->
+  <div class="modal fade" id="filterFormasiModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-primary text-white border-0">
+          <h5 class="modal-title fw-bold"><i class="bi bi-funnel-fill me-2"></i> Filter Formasi Kelas</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light">
+          <div class="row g-3" id="filterFormCategoriesFormasi"></div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-light border text-muted" onclick="window.resetFiltersFormasi()">Reset</button>
+          <button type="button" class="btn btn-primary px-4" onclick="window.applyFiltersFormasi()" data-bs-dismiss="modal">Terapkan Filter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Sembunyikan Kolom Formasi (#hideFormasiModal) -->
+  <div class="modal fade" id="hideFormasiModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-secondary text-white border-0">
+          <h5 class="modal-title fw-bold"><i class="bi bi-eye-slash-fill me-2"></i> Tampilan Kolom Formasi</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light">
+          <div class="mb-4 d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" onclick="window.checkAllHideFormasi(true)">Centang Semua</button>
+            <button class="btn btn-sm btn-light border" onclick="window.checkAllHideFormasi(false)">Batal Centang</button>
+          </div>
+          <div class="row" id="hideCheckboxesFormasi"></div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary px-4" onclick="window.applyHideColumnsFormasi()" data-bs-dismiss="modal">Simpan Tampilan</button>
         </div>
       </div>
     </div>
