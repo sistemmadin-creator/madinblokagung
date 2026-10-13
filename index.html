@@ -450,10 +450,9 @@
   <!-- 2. SIDEBAR DESKTOP (AUTO HOVER EXPAND/COLLAPSE)-->
   <!-- ============================================== -->
   <div class="sidebar-overlay close" id="desktopSidebar">
-    <div class="header">
+  <div class="header">
       <div class="brand">
-        <img src="https://drive.google.com/thumbnail?id=1Fkm2_aiu-me47Fm1weDrpHMCHZBThzrD&sz=w200" alt="Logo" style="width: 28px; height: 28px; object-fit: contain;" class="me-2" onerror="this.style.display='none';">
-        Madin Blokagung
+        <!-- Logo dan teks dihapus -->
       </div>
       <div class="toggle-btn" onclick="window.toggleSidebar()">
         <i class="bi bi-chevron-left"></i>
@@ -590,14 +589,17 @@
       <div class="card-panel border-0">
         <div class="table-responsive">
           <table id="dataTableFormasi" class="table w-100 table-hover align-middle">
-            <thead class="table-light">
+          <thead class="table-light">
               <tr>
+                <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllFormasi" class="form-check-input"></th>
                 <th>Tingkat</th>
                 <th>Kelas</th>
                 <th>Bagian</th>
                 <th>Gender</th>
                 <th>Kapasitas</th>
                 <th>Wali Kelas</th>
+                <th>Domisili</th>
+                <th>Lokal Takror</th>
                 <th>Lokasi Diniyyah</th>
                 <th class="text-center">Aksi</th>
               </tr>
@@ -985,6 +987,14 @@
                 <input type="text" class="form-control" name="f_id_mustahiq">
               </div>
               <div class="col-md-12">
+                <label class="form-label">Domisili <span class="text-muted">(Opsional)</span></label>
+                <input type="text" class="form-control" name="f_domisili">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Lokal Takror <span class="text-muted">(Opsional)</span></label>
+                <input type="text" class="form-control" name="f_lokasi_takror">
+              </div>
+              <div class="col-md-12">
                 <label class="form-label">Lokasi Diniyyah <span class="text-muted">(Opsional)</span></label>
                 <input type="text" class="form-control" name="f_lokasi_diniyyah">
               </div>
@@ -994,6 +1004,23 @@
               <button type="submit" class="btn btn-warning px-4 fw-bold" id="btnSubmitFormasi">Simpan Formasi</button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 8. Modal Detail Formasi (#detailFormasiModal) -->
+  <div class="modal fade" id="detailFormasiModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content shadow-lg border-0">
+        <div class="modal-header bg-info text-white border-0 py-3">
+          <h5 class="modal-title fw-bold"><i class="bi bi-building me-2"></i> Detail Formasi Kelas</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4 bg-light" id="detailFormasiContent"></div>
+        <div class="modal-footer bg-white border-top-0 pt-0">
+          <button type="button" class="btn btn-outline-danger me-auto fw-bold" id="btnHapusDetailFormasi"><i class="bi bi-trash"></i> Hapus</button>
+          <button type="button" class="btn btn-warning px-4 fw-bold text-dark" id="btnEditDetailFormasi"><i class="bi bi-pencil-square"></i> Edit Data</button>
+          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
         </div>
       </div>
     </div>
