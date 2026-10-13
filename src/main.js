@@ -200,13 +200,41 @@ return {
 // =========================================================
 // 4. NAVIGASI, SIDEBAR HOVER & LOGOUT
 // =========================================================
+// Fungsi terpusat untuk meluruskan SEMUA tabel di aplikasi
+function selaraskanSemuaTabel() {
+  if (dataTable && $('#page-santri').is(':visible')) {
+    dataTable.columns.adjust();
+  }
+  if (typeof dtFormasi !== 'undefined' && dtFormasi && $('#page-formasi').is(':visible')) {
+    dtFormasi.columns.adjust();
+  }
+}
+
+// A. Auto-adjust saat jendela browser di-resize
+$(window).on('resize', function () {
+  selaraskanSemuaTabel();
+});
+
+// B. Auto-adjust mendeteksi perubahan lebar layar (buka/tutup/hover sidebar)
+if (window.ResizeObserver) {
+  const observerKonten = new ResizeObserver(() => {
+    selaraskanSemuaTabel();
+  });
+  const mainEl = document.querySelector('.main-content');
+  if (mainEl) observerKonten.observe(mainEl);
+}
+
+// C. Pastikan penyesuaian sempurna setelah animasi transisi sidebar selesai
+document.addEventListener('transitionend', function (e) {
+  if (e.target && (e.target.classList.contains('main-content') || e.target.classList.contains('sidebar-overlay'))) {
+    selaraskanSemuaTabel();
+  }
+});
+
+// D. Sidebar Toggle Tanpa setTimeout karena sudah dihandle Observer
 function toggleSidebar() {
   document.body.classList.toggle('sidebar-collapsed');
   document.getElementById('desktopSidebar').classList.toggle('close');
-  setTimeout(() => {
-    if (dataTable) dataTable.columns.adjust().draw(false);
-    if (typeof dtFormasi !== 'undefined' && dtFormasi) dtFormasi.columns.adjust().draw(false);
-  }, 400);
 }
 
 function showPage(page) {
