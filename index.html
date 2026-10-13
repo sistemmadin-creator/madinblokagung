@@ -464,6 +464,9 @@
       <a class="nav-link active" id="nav-desk-santri" onclick="window.showPage('santri')">
         <i class="bi bi-person"></i> <span>Data Santri</span>
       </a>
+      <a class="nav-link" id="nav-desk-formasi" onclick="window.showPage('formasi')">
+        <i class="bi bi-building"></i> <span>Formasi Kelas</span>
+      </a>
       <a class="nav-link" onclick=" $('#settingsModal').modal('show')">
         <i class="bi bi-diagram-3"></i> <span>Hierarki Dropdown</span>
       </a>
@@ -479,6 +482,9 @@
   <div class="bottom-nav d-md-none">
     <a class="nav-link active" id="nav-mob-santri" onclick="window.showPage('santri')">
       <i class="bi bi-person"></i><span>Santri</span>
+    </a>
+    <a class="nav-link" id="nav-mob-formasi" onclick="window.showPage('formasi')">
+      <i class="bi bi-building"></i><span>Formasi</span>
     </a>
     <a class="nav-link" onclick="$('#settingsModal').modal('show')">
       <i class="bi bi-diagram-3"></i><span>Hierarki</span>
@@ -563,6 +569,40 @@
               </tr>
             </thead>
             <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- ============================================== -->
+    <!-- HALAMAN FORMASI KELAS MADIN                    -->
+    <!-- ============================================== -->
+    <div id="page-formasi" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
+        <div>
+          <h2 class="header-title fw-bold m-0">Formasi Kelas Madin</h2>
+          <p class="text-muted small m-0 mt-1">Manajemen ruang kelas, wali kelas, dan kapasitas santri berdasarkan database ter-normalisasi.</p>
+        </div>
+        <button class="btn btn-warning px-4 shadow-sm fw-bold text-dark" onclick="window.openAddFormasiModal()">
+          <i class="bi bi-building-add me-2"></i> Tambah Formasi Blueprint
+        </button>
+      </div>
+
+      <div class="card-panel border-0">
+        <div class="table-responsive">
+          <table id="dataTableFormasi" class="table w-100 table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Tingkat</th>
+                <th>Kelas</th>
+                <th>Bagian</th>
+                <th>Gender</th>
+                <th>Kapasitas</th>
+                <th>Wali Kelas</th>
+                <th>Lokasi Diniyyah</th>
+                <th class="text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tableBodyFormasi"></tbody>
           </table>
         </div>
       </div>
@@ -839,10 +879,6 @@
             <label class="form-label fw-bold text-success">2. Unit &gt; Jurusan &gt; Semester &gt; Kelas &gt; Bag</label>
             <textarea id="settingTree2" class="form-control font-monospace" rows="4" placeholder="Contoh: MA > IPA > Ganjil > X > A"></textarea>
           </div>
-          <div class="mb-2">
-            <label class="form-label fw-bold text-success">3. Tingkat &gt; Din. Kls &gt; Din. Bag</label>
-            <textarea id="settingTree3" class="form-control font-monospace" rows="4" placeholder="Contoh: ULA > 1 > A"></textarea>
-          </div>
         </div>
         <div class="modal-footer border-0">
           <button type="button" class="btn btn-dark px-4 fw-bold" id="btnSaveSettings" onclick="window.saveSettingsData()">Simpan Pengaturan</button>
@@ -894,5 +930,73 @@
 
   <!-- Script Aplikasi Utama (Vite Module) -->
   <script type="module" src="/src/main.js"></script>
+  <!-- 7. Modal Form Formasi Kelas (#formasiModal) -->
+  <div class="modal fade" id="formasiModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-warning text-dark border-0 py-3">
+          <h5 class="modal-title fw-bold m-0"><i class="bi bi-building-add me-2"></i> Formasi Kelas Baru</h5>
+          <button type="button" class="btn-close shadow-none ms-2" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light p-4">
+          <form id="formasiForm" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitFormasiData(event)">
+            <input type="hidden" name="f_id" id="f_id">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label">Tingkat</label>
+                <select class="form-select" name="f_tingkat" required>
+                  <option value="">Pilih...</option>
+                  <option value="ULA">ULA</option>
+                  <option value="WUSTHO">WUSTHO</option>
+                  <option value="ULYA">ULYA</option>
+                  <option value="ISTI'DAD">ISTI'DAD</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Gender (PA/PI)</label>
+                <select class="form-select" name="f_pa_pi" required>
+                  <option value="">Pilih...</option>
+                  <option value="PA">PA</option>
+                  <option value="PI">PI</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Din. Kelas</label>
+                <input type="text" class="form-control" name="f_din_kls" required placeholder="Contoh: 1">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Din. Bagian</label>
+                <input type="text" class="form-control" name="f_din_bag" required placeholder="Contoh: A">
+              </div>
+              <div class="col-md-12 my-3">
+                <div class="form-check form-switch p-3 bg-light border rounded">
+                  <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="f_is_unggulan" name="f_is_unggulan" style="width: 2.5em; height: 1.2em;">
+                  <label class="form-check-label fw-bold text-warning-emphasis pt-1" for="f_is_unggulan">
+                    <i class="bi bi-star-fill text-warning me-1"></i> Jadikan Kelas Unggulan
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Kapasitas Maksimal</label>
+                <input type="number" class="form-control" name="f_kapasitas_maksimal" value="40" required>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Mustahiq (Wali Kelas) <span class="text-muted">(Opsional)</span></label>
+                <input type="text" class="form-control" name="f_id_mustahiq">
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Lokasi Diniyyah <span class="text-muted">(Opsional)</span></label>
+                <input type="text" class="form-control" name="f_lokasi_diniyyah">
+              </div>
+            </div>
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-warning px-4 fw-bold" id="btnSubmitFormasi">Simpan Formasi</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
