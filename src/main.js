@@ -19,11 +19,9 @@ const API_WILAYAH = 'https://www.emsifa.com/api-wilayah-indonesia/api';
 let tree1Data = {}, tree2Data = {}, tree3Data = {};
 let isEditMode = false;
 let isEditModeAsatidz = false; // >>> BARU
-let selectedRowData = []; // Menyimpan 35 elemen baris santri yang sedang dibuka
-di #detailModal
+let selectedRowData = []; // Menyimpan 35 elemen baris santri yang sedang dibuka di #detailModal
 let selectedRowDataAsatidz = null; // >>> BARU: object row asatidz terpilih
-let globalDataSantri = []; // Menyimpan array 2D [35 kolom] seluruh santri di 
-memori
+let globalDataSantri = []; // Menyimpan array 2D [35 kolom] seluruh santri di memori
 let globalDataAsatidz = []; // >>> BARU: array object row Asatidz dari Supabase
 let hiddenColumnsGlobal = [];
 let hiddenColumnsGlobalAsatidz = []; // >>> BARU
@@ -299,9 +297,8 @@ function showPage(page) {
   if (pageAsatidz) pageAsatidz.style.display = (page === 'asatidz') ? 'block' : 
 'none'; // >>> BARU
   
-  // Update efek menu aktif
-  document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-
-link').forEach(el => el.classList.remove('active'));
+// Update efek menu aktif
+  document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-link').forEach(el => el.classList.remove('active'));
   const deskActive = document.getElementById('nav-desk-' + page);
   const mobActive = document.getElementById('nav-mob-' + page);
   if (deskActive) deskActive.classList.add('active');
@@ -314,9 +311,8 @@ link').forEach(el => el.classList.remove('active'));
     document.getElementById('desktopSidebar').classList.add('close');
   }
 
-  // Sinkronisasi ukuran tabel (Beri jeda agar DOM ter-render sempurna & 
-menyelaraskan kolom)
-  setTimeout(() => {
+// Sinkronisasi ukuran tabel (Beri jeda agar DOM ter-render sempurna & menyelaraskan kolom)
+  setTimeout(() => {  
     if (page === 'santri' && dataTable) {
       dataTable.columns.adjust().draw(false);
     }
