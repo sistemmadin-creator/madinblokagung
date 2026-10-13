@@ -157,6 +157,116 @@ function dbRowToArray(obj) {
 }
 
 // =========================================================
+// FITUR BARU: STRUCTURED UI BUILDER HIERARKI DROPDOWN
+// =========================================================
+window.addRuleRow = function(treeId, data = null) {
+  const container = document.getElementById(`builder-${treeId}`);
+  if (!container) return;
+
+  const row = document.createElement('div');
+  row.className = 'card border border-secondary border-opacity-25 shadow-sm p-3 rule-row bg-white';
+  
+  // Menetapkan nilai bawaan (default)
+  let parentPath = data ? data.parentPath : '';
+  let type = data ? data.type : 'numeric';
+  let numStart = data ? data.numStart : 1;
+  let numEnd = data ? data.numEnd : 10;
+  let alphaStart = data ? data.alphaStart : 'A';
+  let alphaEnd = data ? data.alphaEnd : 'E';
+  let manualList = data ? data.manualList : '';
+
+  row.innerHTML = `
+     <div class="row g-2 align-items-center">
+        <div class="col-md-12 mb-1">
+           <label class="form-label small fw-bold text-primary mb-1">Rute Induk Pengelompokan (Gunakan tanda '&gt;' sbg pemisah)</label>
+           <input type="text" class="form-control form-control-sm rule-parent font-monospace" placeholder="Contoh: Putra > Darussalam > A" value="${parentPath}">
+        </div>
+        <div class="col-md-4">
+           <label class="form-label small text-muted mb-1">Tipe Hasil (Ujung)</label>
+           <select class="form-select form-select-sm rule-type" onchange="window.toggleRuleType(this)">
+              <option value="numeric" ${type === 'numeric' ? 'selected' : ''}>Rentang Angka (01, 02..)</option>
+              <option value="alpha" ${type === 'alpha' ? 'selected' : ''}>Rentang Abjad (A, B..)</option>
+              <option value="manual" ${type === 'manual' ? 'selected' : ''}>Daftar Teks Manual</option>
+           </select>
+        </div>
+        <div class="col-md-7 rule-inputs-container">
+           <!-- Diisi dinamis oleh JS berdasarkan Tipe -->
+        </div>
+        <div class="col-md-1 text-end">
+           <label class="form-label small mb-1 d-block">&nbsp;</label>
+           <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest('.rule-row').remove()" title="Hapus Baris"><i class="bi bi-trash"></i></button>
+        </div>
+     </div>
+  `;
+  container.appendChild(row);
+  window.toggleRuleType(row.querySelector('.rule-type'), data); // Render awal input
+};
+
+window.toggleRuleType = function(selectEl, data = null) {
+  const container = selectEl.closest('.rule-row').querySelector('.rule-inputs-container');
+  const type = selectEl.value;
+  
+  let numStart = data ? data.numStart : 1; let numEnd = data ? data.numEnd : 10;
+  let alphaStart = data ? data.alphaStart : 'A'; let alphaEnd = data ? data.alphaEnd : 'E';
+  let manualList = data ? data.manualList : '';
+
+  if (type === 'numeric') {
+      container.innerHTML = `
+          <div class="row g-2">
+              <div class="col-6"><label class="form-label small text-muted mb-1">Angka Awal</label><input type="number" class="form-control form-control-sm rule-num-start" value="${numStart}"></div>
+              <div class="col-6"><label class="form-label small text-muted mb-1">Angka Akhir</label><input type="number" class="form-control form-control-sm rule-num-end" value="${numEnd}"></div>
+          </div>`;
+  } else if (type === 'alpha') {
+      container.innerHTML = `
+          <div class="row g-2">
+              <div class="col-6"><label class="form-label small text-muted mb-1">Abjad Awal</label><input type="text" maxlength="1" class="form-control form-control-sm rule-alpha-start text-uppercase" value="${alphaStart}"></div>
+              <div class="col-6"><label class="form-label small text-muted mb-1">Abjad Akhir</label><input type="text" maxlength="1" class="form-control form-control-sm rule-alpha-end text-uppercase" value="${alphaEnd}"></div>
+          </div>`;
+  } else {
+      container.innerHTML = `
+          <div>
+              <label class="form-label small text-muted mb-1">Ketik Daftar (Pisahkan dengan koma)</label>
+              <input type="text" class="form-control form-control-sm rule-manual font-monospace" placeholder="Contoh: Kamar Mandi, Gudang, Khusus" value="${manualList}">
+          </div>`;
+  }
+};
+
+window.extractRulesFromUI = function(treeId) {
+  let rules = [];
+  $(`#builder-${treeId} .rule-row`).each(function() {
+      rules.push({
+          parentPath: $(this).find('.rule-parent').val() || '',
+          type: $(this).find('.rule-type').val() || 'numeric',
+          numStart: $(this).find('.rule-num-start').val() || 1,
+          numEnd: $(this).find('.rule-num-end').val() || 10,
+          alphaStart: $(this).find('.rule-alpha-start').val() || 'A',
+          alphaEnd: $(this).find('.rule-alpha-end').val() || 'E',
+          manualList: $(this).find('.rule-manual').val() || ''
+      });
+  });
+  return JSON.stringify(rules); // Diubah menjadi string untuk disimpan di database
+};
+
+window.renderBuilderUI = function(treeId, jsonString) {
+  const container = document.getElementById(`builder-${treeId}`);
+  if (!container) return;
+  container.innerHTML = ''; 
+
+  try {
+      let rules = JSON.parse(jsonString);
+      if (!Array.isArray(rules)) throw new Error();
+      rules.forEach(rule => window.addRuleRow(treeId, rule));
+  } catch(e) {
+      // Menangani data string manual lama (Legacy Support)
+      if (jsonString && jsonString.trim() !== '') {
+          window.addRuleRow(treeId, { parentPath: '', type: 'manual', manualList: jsonString.split('\\n').join(', ') });
+      } else {
+          window.addRuleRow(treeId); // Buat 1 baris kosong jika database kosong
+      }
+  }
+};
+
+// =========================================================
 // 3. FUNGSI BACKEND SUPABASE (DATA, SETTINGS & AUDIT LOG)
 // =========================================================
 async function logActivity(aktivitas, detail) {
@@ -436,9 +546,9 @@ document.addEventListener('DOMContentLoaded', async function () {
   try {
     const settings = await fetchSettingsFromSupabase();
     appSettingsGlobal = settings;
-    document.getElementById('settingTree1').value = appSettingsGlobal.tree1 || '';
-    document.getElementById('settingTree2').value = appSettingsGlobal.tree2 || '';
-    document.getElementById('settingTree3').value = appSettingsGlobal.tree3 || '';
+// Render JSON rules dari database ke Visual UI Builder
+    window.renderBuilderUI('tree1', appSettingsGlobal.tree1);
+    window.renderBuilderUI('tree2', appSettingsGlobal.tree2);
     applyTreeData(appSettingsGlobal);
   } catch (err) {
     console.error('Gagal memuat app_settings:', err.message);
@@ -1859,31 +1969,66 @@ function setupWilayahListeners() {
   });
 }
 
-function parseHierarchy(text) {
-  if (!text) return {};
+function parseHierarchyFromRules(rulesString) {
   let tree = {};
-  text.split('\n').forEach(line => {
-    let parts = line.split('>').map(s => s.trim()).filter(s => s);
-    if (parts.length === 0) return;
-    let current = tree;
-    for (let i = 0; i < parts.length; i++) {
-      let part = parts[i];
-      if (!current[part]) current[part] = {};
-      current = current[part];
-    }
-  });
+  try {
+      let rules = JSON.parse(rulesString);
+      if (!Array.isArray(rules)) throw new Error();
+
+      rules.forEach(rule => {
+          let parentParts = rule.parentPath.split('>').map(s => s.trim()).filter(s => s);
+          let children = [];
+
+          if (rule.type === 'numeric') {
+              let start = parseInt(rule.numStart) || 1; let end = parseInt(rule.numEnd) || 1;
+              for (let i = start; i <= end; i++) children.push(i < 10 ? '0' + i : String(i));
+          } else if (rule.type === 'alpha') {
+              let start = String(rule.alphaStart || 'A').toUpperCase().charCodeAt(0);
+              let end = String(rule.alphaEnd || 'E').toUpperCase().charCodeAt(0);
+              if(start > end) { let temp = start; start = end; end = temp; } // Mencegah terbalik
+              for (let i = start; i <= end; i++) children.push(String.fromCharCode(i));
+          } else {
+              children = rule.manualList.split(',').map(s => s.trim()).filter(s => s);
+          }
+
+          if (parentParts.length === 0) {
+              children.forEach(c => { if (!tree[c]) tree[c] = {}; });
+              return;
+          }
+
+          let current = tree;
+          for (let i = 0; i < parentParts.length; i++) {
+              let part = parentParts[i];
+              if (!current[part]) current[part] = {};
+              current = current[part];
+          }
+
+          children.forEach(c => { if (!current[c]) current[c] = {}; });
+      });
+  } catch (e) {
+      // Legacy support (jika format data di database masih bentuk teks lama)
+      if (rulesString) {
+          rulesString.split('\n').forEach(line => {
+              let parts = line.split('>').map(s => s.trim()).filter(s => s);
+              if (parts.length === 0) return;
+              let current = tree;
+              for (let i = 0; i < parts.length; i++) {
+                  let part = parts[i];
+                  if (!current[part]) current[part] = {};
+                  current = current[part];
+              }
+          });
+      }
+  }
   return tree;
 }
 
 function applyTreeData(settings) {
-  tree1Data = parseHierarchy(settings.tree1);
-  tree2Data = parseHierarchy(settings.tree2);
+  tree1Data = parseHierarchyFromRules(settings.tree1);
+  tree2Data = parseHierarchyFromRules(settings.tree2);
 
-  // --- PERBAIKAN: Populate dropdown root untuk Tree 1 (Form Santri & Form Asatidz) ---
   populateSelect('blok', Object.keys(tree1Data));
   populateSelect('blok_asatidz', Object.keys(tree1Data));
-
-  // Populate dropdown root untuk Tree 2 (Form Santri)
   populateSelect('unit', Object.keys(tree2Data));
 }
 
@@ -2121,8 +2266,9 @@ async function saveSettingsData() {
   btn.innerHTML = 'Menyimpan...';
   btn.disabled = true;
 
-  appSettingsGlobal.tree1 = document.getElementById('settingTree1').value;
-  appSettingsGlobal.tree2 = document.getElementById('settingTree2').value;
+// Membaca array rules dan menyimpannya dalam string JSON
+  appSettingsGlobal.tree1 = window.extractRulesFromUI('tree1');
+  appSettingsGlobal.tree2 = window.extractRulesFromUI('tree2');
 
   try {
     const { error } = await supabase
