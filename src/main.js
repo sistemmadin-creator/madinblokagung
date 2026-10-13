@@ -157,100 +157,125 @@ function dbRowToArray(obj) {
 }
 
 // =========================================================
-// FITUR BARU: STRUCTURED UI BUILDER HIERARKI DROPDOWN (V3 - DYNAMIC MULTI-LEVEL)
+// FITUR BARU: STRUCTURED UI BUILDER ACCORDION (V4 - COLLAPSIBLE)
 // =========================================================
+
+// 1. Fungsi Utama Penambah Baris (Accordion)
 window.addRuleRow = function(treeId, data = null) {
   const container = document.getElementById(`builder-${treeId}`);
   if (!container) return;
 
   const row = document.createElement('div');
-  row.className = 'card border border-secondary border-opacity-25 shadow-sm p-3 rule-row bg-white mb-3';
+  row.className = 'card border border-secondary border-opacity-25 shadow-sm rule-row bg-white mb-3 overflow-hidden';
+  
+  // ID unik untuk menghubungkan Header dan Body Collapse
+  const rowId = 'collapse_' + Date.now() + Math.floor(Math.random() * 1000);
   
   if (treeId === 'tree1') {
-      // TAMPILAN KHUSUS TREE 1 (Sederhana: Rute > Ujung)
       let parentPath = (data && data.parentPath) ? data.parentPath : '';
       let type = (data && data.type) ? data.type : 'numeric';
 
       row.innerHTML = `
-         <div class="row g-2 align-items-center">
-            <div class="col-md-12 mb-1">
-               <label class="form-label small fw-bold text-primary mb-1">Rute Induk Pengelompokan (Gunakan tanda '&gt;' sbg pemisah)</label>
-               <input type="text" class="form-control form-control-sm rule-parent font-monospace" placeholder="Contoh: Putra > Darussalam > A" value="${parentPath}">
+         <!-- Header / Preview Card -->
+         <div class="card-header bg-white p-3 rule-header-cursor d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#${rowId}" aria-expanded="true">
+            <div class="text-truncate pe-3 fw-medium text-secondary rule-preview-text">
+                <i class="bi bi-folder2-open me-2 text-success"></i> <span class="preview-content">Memuat aturan...</span>
             </div>
-            <div class="col-md-4">
-               <label class="form-label small text-muted mb-1">Tipe Hasil (Ujung Kamar)</label>
-               <select class="form-select form-select-sm rule-type" onchange="window.toggleRuleType(this)">
-                  <option value="numeric" ${type === 'numeric' ? 'selected' : ''}>Rentang Angka (01, 02..)</option>
-                  <option value="alpha" ${type === 'alpha' ? 'selected' : ''}>Rentang Abjad (A, B..)</option>
-                  <option value="manual" ${type === 'manual' ? 'selected' : ''}>Daftar Teks Manual</option>
-               </select>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-outline-danger border-0" onclick="event.stopPropagation(); this.closest('.rule-row').remove()" title="Hapus Aturan"><i class="bi bi-trash"></i></button>
+                <i class="bi bi-chevron-down rule-chevron text-muted ms-1"></i>
             </div>
-            <div class="col-md-7 rule-inputs-container"></div>
-            <div class="col-md-1 text-end mt-auto">
-               <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest('.rule-row').remove()" title="Hapus Baris"><i class="bi bi-trash"></i></button>
-            </div>
+         </div>
+         
+         <!-- Body / Form Input (Collapsible) -->
+         <div id="${rowId}" class="collapse show">
+             <div class="card-body bg-light border-top p-3">
+                 <div class="row g-2 align-items-center">
+                    <div class="col-md-12 mb-2">
+                       <label class="form-label small fw-bold text-primary mb-1">Rute Induk Pengelompokan (Gunakan tanda '&gt;' sbg pemisah)</label>
+                       <input type="text" class="form-control form-control-sm rule-parent font-monospace" placeholder="Contoh: Putra > Darussalam > A" value="${parentPath}" oninput="window.updateRulePreview(this)">
+                    </div>
+                    <div class="col-md-4">
+                       <label class="form-label small text-muted mb-1">Tipe Hasil (Ujung Kamar)</label>
+                       <select class="form-select form-select-sm rule-type border-secondary" onchange="window.toggleRuleType(this)">
+                          <option value="numeric" ${type === 'numeric' ? 'selected' : ''}>Rentang Angka (01, 02..)</option>
+                          <option value="alpha" ${type === 'alpha' ? 'selected' : ''}>Rentang Abjad (A, B..)</option>
+                          <option value="manual" ${type === 'manual' ? 'selected' : ''}>Daftar Teks Manual</option>
+                       </select>
+                    </div>
+                    <div class="col-md-8 rule-inputs-container"></div>
+                 </div>
+             </div>
          </div>
       `;
       container.appendChild(row);
       window.toggleRuleType(row.querySelector('.rule-type'), data);
 
   } else if (treeId === 'tree2') {
-      // TAMPILAN KHUSUS TREE 2 (Multi-Level Generator: Unit>Jurusan>Sem>Kls>Bag)
       let unit = data?.unit || ''; let jurusan = data?.jurusan || '';
       let semType = data?.semesterType || 'numeric'; let kelType = data?.kelasType || 'roman'; let bagType = data?.bagType || 'alpha';
 
       row.innerHTML = `
-         <div class="row g-2">
-            <div class="col-md-11">
-                <!-- Unit & Jurusan -->
-                <div class="row g-2 mb-2">
-                    <div class="col-6">
-                        <label class="form-label small fw-bold text-primary mb-1">Unit</label>
-                        <input type="text" class="form-control form-control-sm t2-unit font-monospace fw-bold" placeholder="Contoh: SMP" value="${unit}">
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label small fw-bold text-primary mb-1">Jurusan (Pisahkan dgn koma jika banyak)</label>
-                        <input type="text" class="form-control form-control-sm t2-jurusan font-monospace" placeholder="Contoh: MIPA, IPS (atau isi - jika tak ada)" value="${jurusan}">
-                    </div>
-                </div>
-                <!-- Semester -->
-                <div class="row g-2 mb-2 align-items-center bg-light p-2 rounded border border-light">
-                    <div class="col-4">
-                        <label class="form-label small text-muted mb-1">Pola Semester</label>
-                        <select class="form-select form-select-sm t2-sem-type border-secondary" onchange="window.toggleT2(this, 'sem')">
-                            <option value="numeric" ${semType === 'numeric' ? 'selected' : ''}>Rentang Angka (1-4)</option>
-                            <option value="manual" ${semType === 'manual' ? 'selected' : ''}>Teks Manual</option>
-                        </select>
-                    </div>
-                    <div class="col-8 t2-sem-container"></div>
-                </div>
-                <!-- Kelas -->
-                <div class="row g-2 mb-2 align-items-center bg-light p-2 rounded border border-light">
-                    <div class="col-4">
-                        <label class="form-label small text-muted mb-1">Pola Kelas</label>
-                        <select class="form-select form-select-sm t2-kel-type border-secondary" onchange="window.toggleT2(this, 'kel')">
-                            <option value="roman" ${kelType === 'roman' ? 'selected' : ''}>Rentang Romawi (VII-XII)</option>
-                            <option value="manual" ${kelType === 'manual' ? 'selected' : ''}>Teks Manual</option>
-                        </select>
-                    </div>
-                    <div class="col-8 t2-kel-container"></div>
-                </div>
-                <!-- Bagian -->
-                <div class="row g-2 align-items-center bg-light p-2 rounded border border-light">
-                    <div class="col-4">
-                        <label class="form-label small text-muted mb-1">Pola Bagian (Ujung)</label>
-                        <select class="form-select form-select-sm t2-bag-type border-secondary" onchange="window.toggleT2(this, 'bag')">
-                            <option value="numeric" ${bagType === 'numeric' ? 'selected' : ''}>Rentang Angka</option>
-                            <option value="alpha" ${bagType === 'alpha' ? 'selected' : ''}>Rentang Abjad</option>
-                            <option value="manual" ${bagType === 'manual' ? 'selected' : ''}>Teks Manual</option>
-                        </select>
-                    </div>
-                    <div class="col-8 t2-bag-container"></div>
-                </div>
+         <!-- Header / Preview Card -->
+         <div class="card-header bg-white p-3 rule-header-cursor d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#${rowId}" aria-expanded="true">
+            <div class="text-truncate pe-3 fw-medium text-secondary rule-preview-text">
+                <i class="bi bi-diagram-3 me-2 text-success"></i> <span class="preview-content">Memuat aturan...</span>
             </div>
-            <div class="col-md-1 d-flex flex-column justify-content-center border-start ps-2">
-               <button type="button" class="btn btn-sm btn-outline-danger h-100" onclick="this.closest('.rule-row').remove()" title="Hapus Aturan"><i class="bi bi-trash"></i><br><small>Hapus</small></button>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-sm btn-outline-danger border-0" onclick="event.stopPropagation(); this.closest('.rule-row').remove()" title="Hapus Aturan"><i class="bi bi-trash"></i></button>
+                <i class="bi bi-chevron-down rule-chevron text-muted ms-1"></i>
             </div>
+         </div>
+
+         <!-- Body / Form Input (Collapsible) -->
+         <div id="${rowId}" class="collapse show">
+             <div class="card-body bg-light border-top p-3">
+                 <!-- Unit & Jurusan -->
+                 <div class="row g-2 mb-3">
+                     <div class="col-sm-5">
+                         <label class="form-label small fw-bold text-primary mb-1">Unit</label>
+                         <input type="text" class="form-control form-control-sm t2-unit font-monospace fw-bold" placeholder="Contoh: SMP" value="${unit}" oninput="window.updateRulePreview(this)">
+                     </div>
+                     <div class="col-sm-7">
+                         <label class="form-label small fw-bold text-primary mb-1">Jurusan (Pisahkan dgn koma)</label>
+                         <input type="text" class="form-control form-control-sm t2-jurusan font-monospace" placeholder="Contoh: MIPA, IPS (atau isi -)" value="${jurusan}" oninput="window.updateRulePreview(this)">
+                     </div>
+                 </div>
+                 <!-- Semester -->
+                 <div class="row g-2 mb-2 align-items-center bg-white p-2 rounded border shadow-sm">
+                     <div class="col-sm-4"><label class="form-label small text-muted mb-0">Semester</label></div>
+                     <div class="col-sm-4">
+                         <select class="form-select form-select-sm t2-sem-type" onchange="window.toggleT2(this, 'sem')">
+                             <option value="numeric" ${semType === 'numeric' ? 'selected' : ''}>Rentang Angka (1-4)</option>
+                             <option value="manual" ${semType === 'manual' ? 'selected' : ''}>Teks Manual</option>
+                         </select>
+                     </div>
+                     <div class="col-sm-4 t2-sem-container"></div>
+                 </div>
+                 <!-- Kelas -->
+                 <div class="row g-2 mb-2 align-items-center bg-white p-2 rounded border shadow-sm">
+                     <div class="col-sm-4"><label class="form-label small text-muted mb-0">Kelas</label></div>
+                     <div class="col-sm-4">
+                         <select class="form-select form-select-sm t2-kel-type" onchange="window.toggleT2(this, 'kel')">
+                             <option value="roman" ${kelType === 'roman' ? 'selected' : ''}>Rentang Romawi (VII-XII)</option>
+                             <option value="manual" ${kelType === 'manual' ? 'selected' : ''}>Teks Manual</option>
+                         </select>
+                     </div>
+                     <div class="col-sm-4 t2-kel-container"></div>
+                 </div>
+                 <!-- Bagian -->
+                 <div class="row g-2 align-items-center bg-white p-2 rounded border shadow-sm">
+                     <div class="col-sm-4"><label class="form-label small text-muted mb-0">Bagian (Ujung)</label></div>
+                     <div class="col-sm-4">
+                         <select class="form-select form-select-sm t2-bag-type" onchange="window.toggleT2(this, 'bag')">
+                             <option value="numeric" ${bagType === 'numeric' ? 'selected' : ''}>Rentang Angka</option>
+                             <option value="alpha" ${bagType === 'alpha' ? 'selected' : ''}>Rentang Abjad</option>
+                             <option value="manual" ${bagType === 'manual' ? 'selected' : ''}>Teks Manual</option>
+                         </select>
+                     </div>
+                     <div class="col-sm-4 t2-bag-container"></div>
+                 </div>
+             </div>
          </div>
       `;
       container.appendChild(row);
@@ -260,6 +285,7 @@ window.addRuleRow = function(treeId, data = null) {
   }
 };
 
+// 2. Toggler Tree 1 (dengan penambahan oninput untuk Preview)
 window.toggleRuleType = function(selectEl, data = null) {
   const container = selectEl.closest('.rule-row').querySelector('.rule-inputs-container');
   const type = selectEl.value;
@@ -268,15 +294,17 @@ window.toggleRuleType = function(selectEl, data = null) {
   let manualList = (data && data.manualList) ? data.manualList : '';
 
   if (type === 'numeric') {
-      container.innerHTML = `<div class="row g-2"><div class="col-6"><label class="form-label small text-muted mb-1">Angka Awal</label><input type="number" class="form-control form-control-sm rule-num-start" value="${numStart}"></div><div class="col-6"><label class="form-label small text-muted mb-1">Angka Akhir</label><input type="number" class="form-control form-control-sm rule-num-end" value="${numEnd}"></div></div>`;
+      container.innerHTML = `<div class="row g-2"><div class="col-6"><label class="form-label small text-muted mb-1">Awal</label><input type="number" class="form-control form-control-sm rule-num-start" value="${numStart}" oninput="window.updateRulePreview(this)"></div><div class="col-6"><label class="form-label small text-muted mb-1">Akhir</label><input type="number" class="form-control form-control-sm rule-num-end" value="${numEnd}" oninput="window.updateRulePreview(this)"></div></div>`;
   } else if (type === 'alpha') {
-      container.innerHTML = `<div class="row g-2"><div class="col-6"><label class="form-label small text-muted mb-1">Abjad Awal</label><input type="text" maxlength="1" class="form-control form-control-sm rule-alpha-start text-uppercase" value="${alphaStart}"></div><div class="col-6"><label class="form-label small text-muted mb-1">Abjad Akhir</label><input type="text" maxlength="1" class="form-control form-control-sm rule-alpha-end text-uppercase" value="${alphaEnd}"></div></div>`;
+      container.innerHTML = `<div class="row g-2"><div class="col-6"><label class="form-label small text-muted mb-1">Awal</label><input type="text" maxlength="1" class="form-control form-control-sm rule-alpha-start text-uppercase" value="${alphaStart}" oninput="window.updateRulePreview(this)"></div><div class="col-6"><label class="form-label small text-muted mb-1">Akhir</label><input type="text" maxlength="1" class="form-control form-control-sm rule-alpha-end text-uppercase" value="${alphaEnd}" oninput="window.updateRulePreview(this)"></div></div>`;
   } else {
       let safeManualList = String(manualList).replace(/"/g, '&quot;');
-      container.innerHTML = `<div><label class="form-label small text-muted mb-1">Ketik Daftar (Pisahkan dengan koma)</label><input type="text" class="form-control form-control-sm rule-manual font-monospace" placeholder="Contoh: Kamar Mandi, Gudang" value="${safeManualList}"></div>`;
+      container.innerHTML = `<div><label class="form-label small text-muted mb-1">Ketik Daftar Teks</label><input type="text" class="form-control form-control-sm rule-manual font-monospace" placeholder="Kamar Mandi, Gudang" value="${safeManualList}" oninput="window.updateRulePreview(this)"></div>`;
   }
+  window.updateRulePreview(selectEl);
 };
 
+// 3. Toggler Tree 2 (dengan penambahan oninput untuk Preview)
 window.toggleT2 = function(selectEl, level, data = null) {
   const container = selectEl.closest('.row').querySelector(`.t2-${level}-container`);
   const type = selectEl.value;
@@ -284,9 +312,9 @@ window.toggleT2 = function(selectEl, level, data = null) {
   if (level === 'sem') {
       let sStart = data?.semesterNumStart ?? 1; let sEnd = data?.semesterNumEnd ?? 2; let sMan = data?.semesterManual ?? '';
       if (type === 'numeric') {
-          container.innerHTML = `<div class="row g-2"><div class="col-6"><label class="form-label small text-muted mb-1">Awal</label><input type="number" class="form-control form-control-sm t2-sem-start" value="${sStart}"></div><div class="col-6"><label class="form-label small text-muted mb-1">Akhir</label><input type="number" class="form-control form-control-sm t2-sem-end" value="${sEnd}"></div></div>`;
+          container.innerHTML = `<div class="row g-1"><div class="col-6"><input type="number" class="form-control form-control-sm t2-sem-start" value="${sStart}" oninput="window.updateRulePreview(this)"></div><div class="col-6"><input type="number" class="form-control form-control-sm t2-sem-end" value="${sEnd}" oninput="window.updateRulePreview(this)"></div></div>`;
       } else {
-          container.innerHTML = `<div><label class="form-label small text-muted mb-1">Ketik Manual</label><input type="text" class="form-control form-control-sm t2-sem-manual" placeholder="Contoh: Ganjil, Genap" value="${sMan}"></div>`;
+          container.innerHTML = `<input type="text" class="form-control form-control-sm t2-sem-manual" placeholder="Ganjil, Genap" value="${sMan}" oninput="window.updateRulePreview(this)">`;
       }
   } else if (level === 'kel') {
       let kStart = data?.kelasRomanStart ?? 'VII'; let kEnd = data?.kelasRomanEnd ?? 'IX'; let kMan = data?.kelasManual ?? '';
@@ -294,20 +322,58 @@ window.toggleT2 = function(selectEl, level, data = null) {
       if (type === 'roman') {
           let optStart = roms.map(r => `<option value="${r}" ${r===kStart?'selected':''}>${r}</option>`).join('');
           let optEnd = roms.map(r => `<option value="${r}" ${r===kEnd?'selected':''}>${r}</option>`).join('');
-          container.innerHTML = `<div class="row g-2"><div class="col-6"><label class="form-label small text-muted mb-1">Romawi Awal</label><select class="form-select form-select-sm t2-kel-start">${optStart}</select></div><div class="col-6"><label class="form-label small text-muted mb-1">Romawi Akhir</label><select class="form-select form-select-sm t2-kel-end">${optEnd}</select></div></div>`;
+          container.innerHTML = `<div class="row g-1"><div class="col-6"><select class="form-select form-select-sm t2-kel-start" onchange="window.updateRulePreview(this)">${optStart}</select></div><div class="col-6"><select class="form-select form-select-sm t2-kel-end" onchange="window.updateRulePreview(this)">${optEnd}</select></div></div>`;
       } else {
-          container.innerHTML = `<div><label class="form-label small text-muted mb-1">Ketik Manual (Pisahkan koma)</label><input type="text" class="form-control form-control-sm t2-kel-manual" placeholder="Contoh: Amtsilati, Takhasus" value="${kMan}"></div>`;
+          container.innerHTML = `<input type="text" class="form-control form-control-sm t2-kel-manual" placeholder="Amtsilati, Takhasus" value="${kMan}" oninput="window.updateRulePreview(this)">`;
       }
   } else if (level === 'bag') {
       let bNumStart = data?.bagNumStart ?? 1; let bNumEnd = data?.bagNumEnd ?? 10;
       let bAlphaStart = data?.bagAlphaStart ?? 'A'; let bAlphaEnd = data?.bagAlphaEnd ?? 'E'; let bMan = data?.bagManual ?? '';
       if (type === 'numeric') {
-          container.innerHTML = `<div class="row g-2"><div class="col-6"><label class="form-label small text-muted mb-1">Angka Awal</label><input type="number" class="form-control form-control-sm t2-bag-num-start" value="${bNumStart}"></div><div class="col-6"><label class="form-label small text-muted mb-1">Angka Akhir</label><input type="number" class="form-control form-control-sm t2-bag-num-end" value="${bNumEnd}"></div></div>`;
+          container.innerHTML = `<div class="row g-1"><div class="col-6"><input type="number" class="form-control form-control-sm t2-bag-num-start" value="${bNumStart}" oninput="window.updateRulePreview(this)"></div><div class="col-6"><input type="number" class="form-control form-control-sm t2-bag-num-end" value="${bNumEnd}" oninput="window.updateRulePreview(this)"></div></div>`;
       } else if (type === 'alpha') {
-          container.innerHTML = `<div class="row g-2"><div class="col-6"><label class="form-label small text-muted mb-1">Abjad Awal</label><input type="text" maxlength="1" class="form-control form-control-sm t2-bag-alpha-start text-uppercase" value="${bAlphaStart}"></div><div class="col-6"><label class="form-label small text-muted mb-1">Abjad Akhir</label><input type="text" maxlength="1" class="form-control form-control-sm t2-bag-alpha-end text-uppercase" value="${bAlphaEnd}"></div></div>`;
+          container.innerHTML = `<div class="row g-1"><div class="col-6"><input type="text" maxlength="1" class="form-control form-control-sm t2-bag-alpha-start text-uppercase" value="${bAlphaStart}" oninput="window.updateRulePreview(this)"></div><div class="col-6"><input type="text" maxlength="1" class="form-control form-control-sm t2-bag-alpha-end text-uppercase" value="${bAlphaEnd}" oninput="window.updateRulePreview(this)"></div></div>`;
       } else {
-          container.innerHTML = `<div><label class="form-label small text-muted mb-1">Ketik Manual (Pisahkan koma)</label><input type="text" class="form-control form-control-sm t2-bag-manual" placeholder="Contoh: Khusus, Pagi" value="${bMan}"></div>`;
+          container.innerHTML = `<input type="text" class="form-control form-control-sm t2-bag-manual" placeholder="Khusus, Pagi" value="${bMan}" oninput="window.updateRulePreview(this)">`;
       }
+  }
+  window.updateRulePreview(selectEl);
+};
+
+// 4. Real-time Preview Updater
+window.updateRulePreview = function(element) {
+  const row = element.closest('.rule-row');
+  if (!row) return;
+
+  const previewEl = row.querySelector('.preview-content');
+  const isTree2 = row.querySelector('.t2-unit') !== null;
+
+  if (!isTree2) {
+      // Logic Ekstrak Ringkasan Tree 1
+      let parent = row.querySelector('.rule-parent')?.value || '<em class="text-danger">Rute Kosong</em>';
+      let type = row.querySelector('.rule-type')?.value;
+      let rangeTxt = '';
+
+      if (type === 'numeric') {
+          rangeTxt = `${row.querySelector('.rule-num-start')?.value || '?'} - ${row.querySelector('.rule-num-end')?.value || '?'}`;
+      } else if (type === 'alpha') {
+          rangeTxt = `${(row.querySelector('.rule-alpha-start')?.value || '?').toUpperCase()} - ${(row.querySelector('.rule-alpha-end')?.value || '?').toUpperCase()}`;
+      } else {
+          rangeTxt = 'Manual';
+      }
+      previewEl.innerHTML = `<span class="fw-bold text-dark">${parent}</span> <span class="badge bg-light text-dark border ms-1">[ ${rangeTxt} ]</span>`;
+      
+  } else {
+      // Logic Ekstrak Ringkasan Tree 2
+      let unit = row.querySelector('.t2-unit')?.value || '<em class="text-danger">Unit?</em>';
+      
+      let sType = row.querySelector('.t2-sem-type')?.value;
+      let sTxt = sType === 'numeric' ? `${row.querySelector('.t2-sem-start')?.value || '?'} s/d ${row.querySelector('.t2-sem-end')?.value || '?'}` : 'Manual';
+      
+      let kType = row.querySelector('.t2-kel-type')?.value;
+      let kTxt = kType === 'roman' ? `${row.querySelector('.t2-kel-start')?.value || '?'} s/d ${row.querySelector('.t2-kel-end')?.value || '?'}` : 'Manual';
+      
+      previewEl.innerHTML = `<span class="fw-bold text-dark">${unit}</span> <span class="badge bg-light text-dark border ms-1">Sem: ${sTxt}</span> <span class="badge bg-light text-dark border ms-1">Kls: ${kTxt}</span>`;
   }
 };
 
