@@ -299,8 +299,9 @@ document.addEventListener('DOMContentLoaded', async function () {
   });
   document.getElementById('filterFormCategories').innerHTML = filterHtml + '</div>';
 
-  // Render Modal Sembunyikan Kolom (34 Kolom, "Nama" dikunci)
+// Render Modal Sembunyikan Kolom (34 Kolom, "Nama" dikunci)
   initHideModal();
+  initHideFilterFormasi(); // Inisialisasi fitur Formasi
 
   // Toggle aktif/nonaktif input filter saat kapsul kategori dicentang
   $(document).on('change', '.filter-cb', function () {
@@ -648,6 +649,78 @@ function applyFilters() {
 function resetFilters() {
   $('.filter-cb').prop('checked', false);$('.filter-input').val('').prop('disabled', true);
   if (dataTable) dataTable.columns().search('').draw();
+}
+
+// =========================================================
+// FITUR SEMBUNYIKAN KOLOM & FILTER FORMASI
+// =========================================================
+function initHideFilterFormasi() {
+    const formasiColNames = [
+        { name: 'Tingkat', col: 1 }, { name: 'Kelas', col: 2 }, { name: 'Bagian', col: 3 },
+        { name: 'Gender', col: 4 }, { name: 'Kapasitas', col: 5 }, { name: 'Wali Kelas', col: 6 },
+        { name: 'Domisili', col: 7 }, { name: 'Lokal Takror', col: 8 }, { name: 'Lokasi Diniyyah', col: 9 }
+    ];
+    let hideHtml = '';
+    formasiColNames.forEach(c => {
+        hideHtml += `
+          <div class="col-md-4 col-sm-6 col-6 mb-2">
+            <div class="token-wrapper">
+              <input type="checkbox" class="btn-check hide-cb-formasi" id="hide_f_${c.col}" value="${c.col}">
+              <label class="btn text-truncate w-100" for="hide_f_${c.col}" title="${c.name}">${c.name}</label>
+            </div>
+          </div>`;
+    });
+    const hideContainer = document.getElementById('hideCheckboxesFormasi');
+    if (hideContainer) hideContainer.innerHTML = hideHtml;
+
+    let filterHtml = '';
+    const filterCats = [
+        { name: 'Tingkat', col: 1 }, { name: 'Gender', col: 4 },
+        { name: 'Wali Kelas', col: 6 }, { name: 'Domisili', col: 7 }
+    ];
+    filterCats.forEach(cat => {
+        filterHtml += `
+          <div class="col-md-6">
+            <div class="token-wrapper">
+              <input class="btn-check filter-cb-formasi" type="checkbox" id="cb_f_${cat.col}" value="${cat.col}">
+              <label class="btn text-truncate w-100" for="cb_f_${cat.col}">${cat.name}</label>
+            </div>
+            <input type="text" class="form-control form-control-sm mt-2 filter-input-formasi" id="in_f_${cat.col}" disabled placeholder="Ketik pencarian...">
+          </div>`;
+    });
+    const filterContainer = document.getElementById('filterFormCategoriesFormasi');
+    if (filterContainer) filterContainer.innerHTML = filterHtml;
+
+    $(document).on('change', '.filter-cb-formasi', function () {
+        $('#in_f_' + $(this).val()).prop('disabled', !this.checked).val('');
+    });
+}
+
+function checkAllHideFormasi(status) { $('.hide-cb-formasi').prop('checked', status); }
+
+function applyHideColumnsFormasi() {
+    if (!dtFormasi) return;
+    for (let i = 1; i <= 9; i++) dtFormasi.column(i).visible(true, false);
+    $('.hide-cb-formasi:checked').each(function () {
+        dtFormasi.column(parseInt($(this).val(), 10)).visible(false, false);
+    });
+    dtFormasi.columns.adjust().draw(false);
+}
+
+function applyFiltersFormasi() {
+    if (!dtFormasi) return;
+    dtFormasi.columns().search('');
+    $('.filter-cb-formasi:checked').each(function () {
+        let colIdx = $(this).val();
+        let val = $('#in_f_' + colIdx).val();
+        dtFormasi.column(colIdx).search(val);
+    });
+    dtFormasi.draw();
+}
+
+function resetFiltersFormasi() {
+    $('.filter-cb-formasi').prop('checked', false);$('.filter-input-formasi').val('').prop('disabled', true);
+    if (dtFormasi) dtFormasi.columns().search('').draw();
 }
 
 // =========================================================
@@ -1739,8 +1812,8 @@ initComplete: function () {
                         <li><a class="dropdown-item" href="#" onclick="window.hapusFormasiTerpilih(); return false;"><i class="bi bi-check2-square text-danger me-2"></i> Hapus Terpilih</a></li>
                     </ul>
                     </div>
-                    <button type="button" class="btn btn-outline-secondary btn-sm text-nowrap border-0" onclick="alert('Fitur Sembunyikan untuk Formasi akan dikembangkan lebih lanjut.')"><i class="bi bi-eye-slash"></i> Sembunyikan</button>
-                    <button type="button" class="btn btn-outline-primary btn-sm text-nowrap border-0" onclick="alert('Fitur Filter untuk Formasi akan dikembangkan lebih lanjut.')"><i class="bi bi-funnel"></i> Filter</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm text-nowrap border-0" data-bs-toggle="modal" data-bs-target="#hideFormasiModal"><i class="bi bi-eye-slash"></i> Sembunyikan</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm text-nowrap border-0" data-bs-toggle="modal" data-bs-target="#filterFormasiModal"><i class="bi bi-funnel"></i> Filter</button>
                 </div>
                 `);
                 $('#dataTableFormasi_filter').prepend(actionBtns);
@@ -1943,5 +2016,9 @@ Object.assign(window, {
   hapusFormasi,
   showDetailFormasi,
   editFormasi,
-  hapusFormasiTerpilih
+  hapusFormasiTerpilih,
+  checkAllHideFormasi,
+  applyHideColumnsFormasi,
+  applyFiltersFormasi,
+  resetFiltersFormasi
 });
