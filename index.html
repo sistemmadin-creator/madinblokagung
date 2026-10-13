@@ -466,18 +466,25 @@
     </div>
 
     <nav class="nav flex-column w-100 mt-2">
-      <a class="nav-link active" id="nav-desk-santri" onclick="window.showPage('santri')">
+        <a class="nav-link active" id="nav-desk-santri" 
+onclick="window.showPage('santri')">
         <i class="bi bi-person"></i> <span>Data Santri</span>
-      </a>
-      <a class="nav-link" id="nav-desk-formasi" onclick="window.showPage('formasi')">
+        </a>
+        <a class="nav-link" id="nav-desk-asatidz" 
+onclick="window.showPage('asatidz')">
+        <i class="bi bi-people"></i> <span>Data Asatidz</span>
+        </a>
+        <a class="nav-link" id="nav-desk-formasi" 
+onclick="window.showPage('formasi')">
         <i class="bi bi-building"></i> <span>Formasi Kelas</span>
-      </a>
-      <a class="nav-link" onclick=" $('#settingsModal').modal('show')">
+        </a>
+        <a class="nav-link" onclick=" $('#settingsModal').modal('show')">
         <i class="bi bi-diagram-3"></i> <span>Hierarki Dropdown</span>
-      </a>
-      <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+        </a>
+        <a class="nav-link" data-bs-toggle="modal" data-bs-
+target="#modalAdminCenter" onclick="window.loadAuditLogs()">
         <i class="bi bi-journal-text"></i> <span>Log Aktivitas</span>
-      </a>
+        </a>
     </nav>
   </div>
 
@@ -485,16 +492,23 @@
   <!-- 3. BOTTOM NAVIGATION (KHUSUS MOBILE < 768px)   -->
   <!-- ============================================== -->
   <div class="bottom-nav d-md-none">
-    <a class="nav-link active" id="nav-mob-santri" onclick="window.showPage('santri')">
+    <a class="nav-link active" id="nav-mob-santri" 
+onclick="window.showPage('santri')">
       <i class="bi bi-person"></i><span>Santri</span>
     </a>
-    <a class="nav-link" id="nav-mob-formasi" onclick="window.showPage('formasi')">
+    <a class="nav-link" id="nav-mob-asatidz" 
+onclick="window.showPage('asatidz')">
+      <i class="bi bi-people"></i><span>Asatidz</span>
+    </a>
+    <a class="nav-link" id="nav-mob-formasi" 
+onclick="window.showPage('formasi')">
       <i class="bi bi-building"></i><span>Formasi</span>
     </a>
     <a class="nav-link" onclick="$('#settingsModal').modal('show')">
       <i class="bi bi-diagram-3"></i><span>Hierarki</span>
     </a>
-    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+    <a class="nav-link" data-bs-toggle="modal" data-bs-
+target="#modalAdminCenter" onclick="window.loadAuditLogs()">
       <i class="bi bi-journal-text"></i><span>Log</span>
     </a>
   </div>
@@ -616,6 +630,61 @@
       </div>
     </div>
   </div>
+
+      <!-- ============================================== -->
+    <!-- HALAMAN DATA ASATIDZ                             -->
+    <!-- ============================================== -->
+    <div id="page-asatidz" style="display: none;">
+      <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
+        <div>
+          <h2 class="header-title fw-bold m-0">Database Asatidz</h2>
+          <p class="text-muted small m-0 mt-1">Manajemen data tenaga pengajar (Asatidz) Madrasah Diniyyah.</p>
+        </div>
+        <button class="btn btn-success px-4 shadow-sm fw-bold" onclick="window.openAddModalAsatidz()">
+          <i class="bi bi-plus-lg me-2"></i> Tambah Asatidz
+        </button>
+      </div>
+
+      <div class="card-panel border-0">
+        <!-- Lazy Load Container -->
+        <div id="btnLoadAsatidzContainer" class="text-center py-5">
+          <i class="bi bi-person-vcard text-success mb-3 d-block" style="font-size: 4rem;"></i>
+          <h5 class="fw-bold">Tabel Database Asatidz</h5>
+          <p class="text-muted small mb-4">
+            Untuk menjaga performa aplikasi, tabel Asatidz tidak dimuat otomatis.<br>
+            Silakan klik tombol di bawah ini jika Anda perlu melihat atau mengelola tabel secara langsung.
+          </p>
+          <button class="btn btn-success px-4 py-2 fw-bold shadow-sm" id="btnLoadAsatidz" onclick="window.actionLoadAsatidz()">
+            <i class="bi bi-table me-2"></i> Memuat Halaman (Tabel Data)
+          </button>
+        </div>
+
+        <!-- Area Tabel DataTables -->
+        <div id="tableAsatidzWrapper" style="display: none;">
+          <table id="dataTableAsatidz" class="table table-hover align-middle nowrap" style="width: 100%;">
+            <thead class="table-light">
+              <tr>
+                <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllAsatidz" class="form-check-input"></th>
+                <th class="text-center" style="width: 45px;">NO</th>
+                <th class="text-center" style="width: 60px;">FOTO</th>
+                <th class="text-center" style="width: 90px;">NIS</th>
+                <th class="text-center" style="width: 90px;">NIA</th>
+                <th class="text-center" style="width: 70px;">PA/PI</th>
+                <th>KELAS DINIYYAH</th>
+                <th>BLOK</th>
+                <th>NAMA ASATIDZ</th>
+                <th class="text-center">JAH</th>
+                <th>LOKASI DINIYYAH</th>
+                <th>LOKASI TAKROR</th>
+                <th>TTL</th>
+                <th>PENEMPATAN KAMAR</th>
+              </tr>
+            </thead>
+            <tbody id="tableBodyAsatidz"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
   <!-- ======================================================= -->
   <!-- KUMPULAN MODAL (FILTER, HIDE, INPUT, DETAIL, SETTINGS)  -->
@@ -1068,6 +1137,267 @@
           <button type="button" class="btn btn-outline-danger me-auto fw-bold" id="btnHapusDetailFormasi"><i class="bi bi-trash"></i> Hapus</button>
           <button type="button" class="btn btn-success px-4 fw-bold" id="btnEditDetailFormasi"><i class="bi bi-pencil-square"></i> Edit Data</button>
           <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <!-- 9. Modal Form Input / Edit Asatidz (#inputModalAsatidz) -->
+  <div class="modal fade" id="inputModalAsatidz" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-success text-white border-0 py-3">
+          <h5 class="modal-title fw-bold m-0"><i class="bi bi-person-plus-fill me-2"></i> Form Data Asatidz</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none ms-2" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light p-4">
+          <form id="inputFormAsatidz" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitAsatidzData(event)">
+            <input type="hidden" name="id_asatidz_lama" id="id_asatidz_lama">
+
+            <!-- Identitas Utama -->
+            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Identitas Utama</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-2">
+                <label class="form-label">NIS <span class="text-muted small">(eks-santri)</span></label>
+                <input type="text" class="form-control" name="nis" id="nis_asatidz">
+              </div>
+              <div class="col-md-2">
+                <label class="form-label text-success fw-bold">NIA</label>
+                <div class="input-group">
+                  <select class="form-select border-success px-1" id="nia_prefix" style="max-width: 62px; flex: 0 0 62px;" onchange="window.generateNIA()" title="Pilih Prefix Huruf">
+                    <option value="">-</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                  </select>
+                  <input type="text" class="form-control border-success bg-light fw-bold text-secondary" name="nia" id="nia_asatidz" placeholder="Otomatis" readonly>
+                </div>
+              </div>
+              <div class="col-md-5">
+                <label class="form-label text-success fw-bold">Nama Lengkap Asatidz</label>
+                <input type="text" class="form-control border-success" name="nama_asatidz" id="nama_asatidz" oninput="this.value=this.value.toUpperCase();" required>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">PA/PI</label>
+                <select class="form-select" name="pa_pi" id="pa_pi_asatidz" required>
+                  <option value="">Pilih</option>
+                  <option value="PA">PA</option>
+                  <option value="PI">PI</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Tempat Lahir</label>
+                <input type="text" class="form-control" name="tempat_lahir" id="tempat_lahir_asatidz">
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-nowrap">Tanggal</label>
+                <select class="form-select px-1 text-center" name="tgl_lahir" id="tgl_lahir_asatidz"></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-nowrap">Bulan</label>
+                <select class="form-select px-2" name="bln_lahir" id="bln_lahir_asatidz">
+                  <option value="">Pilih</option>
+                  <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
+                  <option value="04">Apr</option><option value="05">Mei</option><option value="06">Jun</option>
+                  <option value="07">Jul</option><option value="08">Agu</option><option value="09">Sep</option>
+                  <option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-nowrap">Tahun</label>
+                <select class="form-select px-1 text-center" name="thn_lahir" id="thn_lahir_asatidz"></select>
+              </div>
+            </div>
+
+            <!-- Kelas Diniyyah -->
+            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Kelas Madin (Diniyyah)</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-3">
+                <label class="form-label">Tingkat</label>
+                <select class="form-select" name="tingkat_asatidz" id="tingkat_asatidz" required>
+                  <option value="">Pilih PA/PI Dahulu...</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Din. Kls</label>
+                <select class="form-select" name="din_kls_asatidz" id="din_kls_asatidz" disabled required>
+                  <option value="">Pilih...</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Din. Bag</label>
+                <select class="form-select" name="din_bag_asatidz" id="din_bag_asatidz" disabled required>
+                  <option value="">Pilih...</option>
+                </select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Jah</label>
+                <select class="form-select" name="jah_asatidz" id="jah_asatidz" disabled required>
+                  <option value="">Pilih PA/PI Dahulu...</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Lokasi Diniyyah</label>
+                <input type="text" class="form-control" name="lokasi_diniyyah" id="lokasi_diniyyah" placeholder="Gedung / Ruang">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Lokasi Takror</label>
+                <input type="text" class="form-control" name="lokasi_takror" id="lokasi_takror" placeholder="Gedung / Ruang">
+              </div>
+            </div>
+
+            <!-- Alamat Domisili Asal -->
+            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Alamat Domisili Asal</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-3">
+                <label class="form-label">Provinsi</label>
+                <select class="form-select" name="provinsi" id="provinsi_asatidz"><option value="">Pilih Provinsi</option></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Kabupaten / Kota</label>
+                <select class="form-select" name="kabupaten" id="kabupaten_asatidz" disabled><option value="">Pilih Provinsi Dahulu</option></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Kecamatan</label>
+                <select class="form-select" name="kecamatan" id="kecamatan_asatidz" disabled><option value="">Pilih Kab Dahulu</option></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label">Desa / Kelurahan</label>
+                <select class="form-select" name="desa" id="desa_asatidz" disabled><option value="">Pilih Kec Dahulu</option></select>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label">Dusun / Jalan</label>
+                <input type="text" class="form-control" name="dusun" id="dusun_asatidz" placeholder="Nama Dusun / Jalan">
+              </div>
+            </div>
+
+            <!-- Penempatan Kamar -->
+            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Penempatan Kamar (Blok &gt; Asrama &gt; Kode &gt; Kamar)</h6>
+            <div class="row g-3 mb-4">
+              <div class="col-md-3">
+                <label class="form-label text-primary">Blok</label>
+                <select class="form-select border-primary" name="blok" id="blok_asatidz"><option value="">Pilih...</option></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-primary">Asrama</label>
+                <select class="form-select border-primary" name="asrama" id="asrama_asatidz" disabled><option value="">Pilih...</option></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-primary">Kode</label>
+                <select class="form-select border-primary" name="kode" id="kode_asatidz" disabled><option value="">Pilih...</option></select>
+              </div>
+              <div class="col-md-3">
+                <label class="form-label text-primary">Kamar</label>
+                <select class="form-select border-primary" name="kamar" id="kamar_asatidz" disabled><option value="">Pilih...</option></select>
+              </div>
+            </div>
+
+            <!-- Foto Profil -->
+            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Foto Profil Asatidz</h6>
+            <div class="row g-3">
+              <div class="col-md-12">
+                <div class="d-flex align-items-center gap-3 bg-light border rounded p-3">
+                  <div class="flex-shrink-0 position-relative">
+                    <img id="preview_foto_asatidz" src=""
+                      style="width:85px;height:105px;object-fit:cover;border-radius:10px;display:none;"
+                      class="border shadow-sm">
+                    <div id="placeholder_foto_asatidz"
+                      class="d-flex flex-column align-items-center justify-content-center border rounded bg-white text-muted"
+                      style="width:85px;height:105px;">
+                      <i class="bi bi-person-bounding-box" style="font-size: 2rem;"></i>
+                      <span style="font-size: 10px;">Foto</span>
+                    </div>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div class="d-flex gap-2 flex-wrap">
+                      <button type="button" class="btn btn-sm btn-outline-success fw-bold" onclick="window.bukaKameraAsatidz()">
+                        <i class="bi bi-camera-fill me-1"></i> Kamera
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-primary fw-bold" onclick="document.getElementById('inputGaleriFotoAsatidz').click()">
+                        <i class="bi bi-images me-1"></i> Pilih File / Galeri
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger fw-bold d-none" id="btnHapusFotoAsatidz" onclick="window.hapusFotoAsatidz()">
+                        <i class="bi bi-trash me-1"></i> Hapus Foto
+                      </button>
+                    </div>
+                    <input type="file" id="inputCameraFotoAsatidz" accept="image/*" capture="environment" style="display:none;" onchange="window.handleFotoAsatidzSelected(event)">
+                    <input type="file" id="inputGaleriFotoAsatidz" accept="image/*" style="display:none;" onchange="window.handleFotoAsatidzSelected(event)">
+                    <div id="statusFotoAsatidz" class="small text-muted mt-2">Belum ada foto dipilih (Otomatis dikompresi agar ringan).</div>
+                    <input type="hidden" name="foto_asatidz" id="foto_asatidz">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-5">
+              <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+              <button type="submit" class="btn btn-success px-5 fw-bold" id="btnSubmitAsatidz">Simpan Data</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Modal Detail Asatidz (#detailModalAsatidz) -->
+  <div class="modal fade" id="detailModalAsatidz" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-success text-white border-0 py-3">
+          <h5 class="modal-title fw-bold"><i class="bi bi-person-badge me-2"></i> Detail Asatidz & Santri Binaan</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-4 bg-light" id="detailContentAsatidz"></div>
+        <div class="modal-footer bg-white border-top-0 pt-0">
+          <button type="button" class="btn btn-outline-danger me-auto fw-bold" id="btnHapusDetailAsatidz"><i class="bi bi-trash"></i> Hapus</button>
+          <button type="button" class="btn btn-success px-4 fw-bold" id="btnEditDetailAsatidz"><i class="bi bi-pencil-square"></i> Edit Data</button>
+          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. Modal Filter Lanjutan Asatidz (#filterModalAsatidz) -->
+  <div class="modal fade" id="filterModalAsatidz" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-primary text-white border-0">
+          <h5 class="modal-title fw-bold"><i class="bi bi-funnel-fill me-2"></i> Filter Lanjutan Asatidz</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light">
+          <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 mb-4">
+            <small><i class="bi bi-info-circle me-1"></i> Centang kategori yang ingin digunakan untuk filter data di tabel.</small>
+          </div>
+          <div id="filterFormCategoriesAsatidz"></div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-light border text-muted" onclick="window.resetFiltersAsatidz()">Reset</button>
+          <button type="button" class="btn btn-primary px-4" onclick="window.applyFiltersAsatidz()" data-bs-dismiss="modal">Terapkan Filter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. Modal Sembunyikan Kolom Asatidz (#hideModalAsatidz) -->
+  <div class="modal fade" id="hideModalAsatidz" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header bg-secondary text-white border-0">
+          <h5 class="modal-title fw-bold"><i class="bi bi-eye-slash-fill me-2"></i> Kelola Tampilan Kolom Asatidz</h5>
+          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body bg-light">
+          <div class="mb-4 d-flex gap-2">
+            <button class="btn btn-sm btn-outline-secondary" onclick="window.checkAllHideAsatidz(true)">Centang Semua (Sembunyikan)</button>
+            <button class="btn btn-sm btn-light border" onclick="window.checkAllHideAsatidz(false)">Batal Centang (Tampilkan)</button>
+          </div>
+          <div class="row" id="hideCheckboxesAsatidz"></div>
+        </div>
+        <div class="modal-footer border-0">
+          <button type="button" class="btn btn-secondary px-4" onclick="window.applyHideColumnsAsatidz()" data-bs-dismiss="modal">Simpan Tampilan</button>
         </div>
       </div>
     </div>
