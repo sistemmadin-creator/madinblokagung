@@ -214,14 +214,14 @@ function showPage(page) {
   if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
   if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
   
-  // Update warna highlight/aktif pada menu di Sidebar
+  // Update efek menu aktif
   document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-link').forEach(el => el.classList.remove('active'));
   const deskActive = document.getElementById('nav-desk-' + page);
   const mobActive = document.getElementById('nav-mob-' + page);
   if (deskActive) deskActive.classList.add('active');
   if (mobActive) mobActive.classList.add('active');
 
-  if (page === 'formasi') loadFormasiData(); // Hapus awalan window. agar lebih aman
+  if (page === 'formasi') loadFormasiData();
 
   if (window.innerWidth >= 768) {
     document.body.classList.add('sidebar-collapsed');
@@ -1215,7 +1215,6 @@ function applyTreeData(settings) {
   tree2Data = parseHierarchy(settings.tree2);
 
   populateSelect('unit', Object.keys(tree2Data));
-  populateSelect('tingkat', Object.keys(tree3Data));
 }
 
 function setupHierarchyListeners() {
@@ -1766,3 +1765,29 @@ async function hapusFormasi(id) {
           Swal.fire('Error', err.message, 'error');
       }
 }
+
+// EKSPOS KE GLOBAL WINDOW HARUS DI PALING BAWAH
+Object.assign(window, {
+  toggleSidebar,
+  showPage,
+  actionLogout,
+  actionLoadSantri,
+  openAddModal,
+  submitData,
+  hapusTerpilih,
+  hapusSemuaData,
+  handleExcelImport,
+  checkAllHide,
+  applyHideColumns,
+  applyFilters,
+  resetFilters,
+  saveSettingsData,
+  loadAuditLogs,
+  handleFotoSantriSelected,
+  hapusFotoSantri,
+  lihatFotoSantri,
+  loadFormasiData,
+  openAddFormasiModal,
+  submitFormasiData,
+  hapusFormasi
+});
