@@ -157,23 +157,17 @@ function dbRowToArray(obj) {
 }
 
 // =========================================================
-// FITUR BARU: STRUCTURED UI BUILDER HIERARKI DROPDOWN
+// FITUR BARU: STRUCTURED UI BUILDER HIERARKI DROPDOWN (DIPERBARUI)
 // =========================================================
 window.addRuleRow = function(treeId, data = null) {
   const container = document.getElementById(`builder-${treeId}`);
   if (!container) return;
 
   const row = document.createElement('div');
-  row.className = 'card border border-secondary border-opacity-25 shadow-sm p-3 rule-row bg-white';
+  row.className = 'card border border-secondary border-opacity-25 shadow-sm p-3 rule-row bg-white mb-2';
   
-  // Menetapkan nilai bawaan (default)
-  let parentPath = data ? data.parentPath : '';
-  let type = data ? data.type : 'numeric';
-  let numStart = data ? data.numStart : 1;
-  let numEnd = data ? data.numEnd : 10;
-  let alphaStart = data ? data.alphaStart : 'A';
-  let alphaEnd = data ? data.alphaEnd : 'E';
-  let manualList = data ? data.manualList : '';
+  let parentPath = (data && data.parentPath) ? data.parentPath : '';
+  let type = (data && data.type) ? data.type : 'numeric';
 
   row.innerHTML = `
      <div class="row g-2 align-items-center">
@@ -190,25 +184,26 @@ window.addRuleRow = function(treeId, data = null) {
            </select>
         </div>
         <div class="col-md-7 rule-inputs-container">
-           <!-- Diisi dinamis oleh JS berdasarkan Tipe -->
+           <!-- Diisi dinamis -->
         </div>
-        <div class="col-md-1 text-end">
-           <label class="form-label small mb-1 d-block">&nbsp;</label>
+        <div class="col-md-1 text-end mt-auto">
            <button type="button" class="btn btn-sm btn-outline-danger w-100" onclick="this.closest('.rule-row').remove()" title="Hapus Baris"><i class="bi bi-trash"></i></button>
         </div>
      </div>
   `;
   container.appendChild(row);
-  window.toggleRuleType(row.querySelector('.rule-type'), data); // Render awal input
+  window.toggleRuleType(row.querySelector('.rule-type'), data);
 };
 
 window.toggleRuleType = function(selectEl, data = null) {
   const container = selectEl.closest('.rule-row').querySelector('.rule-inputs-container');
   const type = selectEl.value;
   
-  let numStart = data ? data.numStart : 1; let numEnd = data ? data.numEnd : 10;
-  let alphaStart = data ? data.alphaStart : 'A'; let alphaEnd = data ? data.alphaEnd : 'E';
-  let manualList = data ? data.manualList : '';
+  let numStart = (data && data.numStart !== undefined) ? data.numStart : 1;
+  let numEnd = (data && data.numEnd !== undefined) ? data.numEnd : 10;
+  let alphaStart = (data && data.alphaStart) ? data.alphaStart : 'A';
+  let alphaEnd = (data && data.alphaEnd) ? data.alphaEnd : 'E';
+  let manualList = (data && data.manualList) ? data.manualList : '';
 
   if (type === 'numeric') {
       container.innerHTML = `
@@ -223,28 +218,42 @@ window.toggleRuleType = function(selectEl, data = null) {
               <div class="col-6"><label class="form-label small text-muted mb-1">Abjad Akhir</label><input type="text" maxlength="1" class="form-control form-control-sm rule-alpha-end text-uppercase" value="${alphaEnd}"></div>
           </div>`;
   } else {
+      let safeManualList = String(manualList).replace(/"/g, '&quot;');
       container.innerHTML = `
           <div>
               <label class="form-label small text-muted mb-1">Ketik Daftar (Pisahkan dengan koma)</label>
-              <input type="text" class="form-control form-control-sm rule-manual font-monospace" placeholder="Contoh: Kamar Mandi, Gudang, Khusus" value="${manualList}">
+              <input type="text" class="form-control form-control-sm rule-manual font-monospace" placeholder="Contoh: Kamar Mandi, Gudang, Khusus" value="${safeManualList}">
           </div>`;
   }
 };
 
 window.extractRulesFromUI = function(treeId) {
   let rules = [];
-  $(`#builder-${treeId} .rule-row`).each(function() {
+  const container = document.getElementById(`builder-${treeId}`);
+  if (!container) return JSON.stringify(rules);
+
+  // Murni menggunakan Vanilla JS untuk menghindari kegagalan map jquery
+  const rows = container.querySelectorAll('.rule-row');
+  rows.forEach(row => {
+      let parentEl = row.querySelector('.rule-parent');
+      let typeEl = row.querySelector('.rule-type');
+      let numStartEl = row.querySelector('.rule-num-start');
+      let numEndEl = row.querySelector('.rule-num-end');
+      let alphaStartEl = row.querySelector('.rule-alpha-start');
+      let alphaEndEl = row.querySelector('.rule-alpha-end');
+      let manualEl = row.querySelector('.rule-manual');
+
       rules.push({
-          parentPath: $(this).find('.rule-parent').val() || '',
-          type: $(this).find('.rule-type').val() || 'numeric',
-          numStart: $(this).find('.rule-num-start').val() || 1,
-          numEnd: $(this).find('.rule-num-end').val() || 10,
-          alphaStart: $(this).find('.rule-alpha-start').val() || 'A',
-          alphaEnd: $(this).find('.rule-alpha-end').val() || 'E',
-          manualList: $(this).find('.rule-manual').val() || ''
+          parentPath: parentEl ? parentEl.value : '',
+          type: typeEl ? typeEl.value : 'numeric',
+          numStart: numStartEl ? numStartEl.value : 1,
+          numEnd: numEndEl ? numEndEl.value : 10,
+          alphaStart: alphaStartEl ? alphaStartEl.value : 'A',
+          alphaEnd: alphaEndEl ? alphaEndEl.value : 'E',
+          manualList: manualEl ? manualEl.value : ''
       });
   });
-  return JSON.stringify(rules); // Diubah menjadi string untuk disimpan di database
+  return JSON.stringify(rules);
 };
 
 window.renderBuilderUI = function(treeId, jsonString) {
@@ -253,15 +262,24 @@ window.renderBuilderUI = function(treeId, jsonString) {
   container.innerHTML = ''; 
 
   try {
+      if (!jsonString) {
+          window.addRuleRow(treeId); // Paksa buat 1 baris kosong jika data null
+          return;
+      }
       let rules = JSON.parse(jsonString);
       if (!Array.isArray(rules)) throw new Error();
-      rules.forEach(rule => window.addRuleRow(treeId, rule));
-  } catch(e) {
-      // Menangani data string manual lama (Legacy Support)
-      if (jsonString && jsonString.trim() !== '') {
-          window.addRuleRow(treeId, { parentPath: '', type: 'manual', manualList: jsonString.split('\\n').join(', ') });
+      
+      if (rules.length === 0) {
+          window.addRuleRow(treeId);
       } else {
-          window.addRuleRow(treeId); // Buat 1 baris kosong jika database kosong
+          rules.forEach(rule => window.addRuleRow(treeId, rule));
+      }
+  } catch(e) {
+      // Fallback legacy support
+      if (jsonString && String(jsonString).trim() !== '') {
+          window.addRuleRow(treeId, { parentPath: '', type: 'manual', manualList: String(jsonString).split('\n').join(', ') });
+      } else {
+          window.addRuleRow(treeId);
       }
   }
 };
@@ -1972,23 +1990,26 @@ function setupWilayahListeners() {
 function parseHierarchyFromRules(rulesString) {
   let tree = {};
   try {
+      if (!rulesString) return tree;
       let rules = JSON.parse(rulesString);
       if (!Array.isArray(rules)) throw new Error();
 
       rules.forEach(rule => {
-          let parentParts = rule.parentPath.split('>').map(s => s.trim()).filter(s => s);
+          let parentParts = (rule.parentPath || '').split('>').map(s => s.trim()).filter(s => s);
           let children = [];
 
           if (rule.type === 'numeric') {
-              let start = parseInt(rule.numStart) || 1; let end = parseInt(rule.numEnd) || 1;
+              let start = parseInt(rule.numStart); if(isNaN(start)) start = 1;
+              let end = parseInt(rule.numEnd); if(isNaN(end)) end = 1;
+              if(start > end) { let temp = start; start = end; end = temp; }
               for (let i = start; i <= end; i++) children.push(i < 10 ? '0' + i : String(i));
           } else if (rule.type === 'alpha') {
               let start = String(rule.alphaStart || 'A').toUpperCase().charCodeAt(0);
               let end = String(rule.alphaEnd || 'E').toUpperCase().charCodeAt(0);
-              if(start > end) { let temp = start; start = end; end = temp; } // Mencegah terbalik
+              if(start > end) { let temp = start; start = end; end = temp; }
               for (let i = start; i <= end; i++) children.push(String.fromCharCode(i));
           } else {
-              children = rule.manualList.split(',').map(s => s.trim()).filter(s => s);
+              children = String(rule.manualList || '').split(',').map(s => s.trim()).filter(s => s);
           }
 
           if (parentParts.length === 0) {
@@ -2002,12 +2023,10 @@ function parseHierarchyFromRules(rulesString) {
               if (!current[part]) current[part] = {};
               current = current[part];
           }
-
           children.forEach(c => { if (!current[c]) current[c] = {}; });
       });
   } catch (e) {
-      // Legacy support (jika format data di database masih bentuk teks lama)
-      if (rulesString) {
+      if (rulesString && typeof rulesString === 'string') {
           rulesString.split('\n').forEach(line => {
               let parts = line.split('>').map(s => s.trim()).filter(s => s);
               if (parts.length === 0) return;
@@ -2266,11 +2285,11 @@ async function saveSettingsData() {
   btn.innerHTML = 'Menyimpan...';
   btn.disabled = true;
 
-// Membaca array rules dan menyimpannya dalam string JSON
-  appSettingsGlobal.tree1 = window.extractRulesFromUI('tree1');
-  appSettingsGlobal.tree2 = window.extractRulesFromUI('tree2');
-
   try {
+    // EKSTRAKSI DIMASUKKAN KE DALAM TRY-CATCH agar tidak freeze jika ada data yang crash
+    appSettingsGlobal.tree1 = window.extractRulesFromUI('tree1');
+    appSettingsGlobal.tree2 = window.extractRulesFromUI('tree2');
+
     const { error } = await supabase
       .from('app_settings')
       .upsert([{ key: 'APP_SETTINGS', value: appSettingsGlobal }], { onConflict: 'key' });
@@ -2282,7 +2301,7 @@ async function saveSettingsData() {
     $('#settingsModal').modal('hide');
     Swal.fire('Berhasil!', 'Pengaturan Hierarki Dropdown Berhasil Disimpan!', 'success');
   } catch (err) {
-    Swal.fire('Gagal Menyimpan Pengaturan', err.message, 'error');
+    Swal.fire('Gagal Menyimpan Pengaturan', err.message || 'Terjadi kesalahan pada data input.', 'error');
   } finally {
     btn.innerHTML = 'Simpan Pengaturan';
     btn.disabled = false;
