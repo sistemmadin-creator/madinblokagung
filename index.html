@@ -332,26 +332,33 @@
       background-color: #e2e8f0;
     }
 
-    /* ========================================================
+/* ========================================================
        TABEL DATABASE SANTRI BERGAYA EXCEL SAAS (#dataTable)
     ======================================================== */
     .dataTables_scrollBody {
       border-bottom: 1px solid #e2e8f0;
     }
-    .dataTables_scrollHeadInner, .dataTables_scrollHeadInner table.dataTable {
-      width: 100% !important;
+    
+    /* PERBAIKAN: Hapus pembatasan ukuran yang memaksa header menjadi lebih pendek dari body */
+    .dataTables_scrollHeadInner, 
+    .dataTables_scrollHeadInner table.dataTable {
+      width: 100%; /* Hapus !important agar DataTables bisa menghitung lebar kolom otomatis */
       margin-bottom: 0 !important;
     }
+    
     .dataTables_scrollBody table.dataTable {
       margin-bottom: 0 !important;
+      width: 100% !important; 
     }
-#dataTable th, #dataTable td,
+    
+    #dataTable th, #dataTable td,
     #dataTableFormasi th, #dataTableFormasi td {
-      white-space: nowrap !important;
+      white-space: nowrap !important; /* Mencegah teks turun ke bawah (wrap) */
       vertical-align: middle !important;
       padding: 8px 14px !important;
       font-size: 0.83rem !important;
-      box-sizing: border-box !important;
+      /* PERBAIKAN: box-sizing diubah menjadi content-box agar sesuai dengan standar DataTables */
+      box-sizing: content-box !important; 
     }
     #dataTable, #dataTableFormasi {
       border-collapse: separate !important;
@@ -526,7 +533,7 @@
 
         <!-- C. Area Tabel DataTables (#dataTable) -->
         <div id="tableSantriWrapper" style="display: none;">
-          <table id="dataTable" class="table table-hover align-middle nowrap" style="width: 100%;">
+          <table id="dataTable" class="table table-hover align-middle nowrap" style="width: 100% !important;">
             <thead class="table-light">
               <tr>
                 <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAll" class="form-check-input"></th>
@@ -588,7 +595,7 @@
 
       <div class="card-panel border-0">
         <div class="table-responsive">
-          <table id="dataTableFormasi" class="table table-hover align-middle nowrap" style="width: 100%;">  
+          <table id="dataTableFormasi" class="table table-hover align-middle nowrap" style="width: 100% !important;">
           <thead class="table-light">
               <tr>
                 <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllFormasi" class="form-check-input"></th>
