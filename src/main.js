@@ -1628,7 +1628,10 @@ Object.assign(window, {
   loadFormasiData,
   openAddFormasiModal,
   submitFormasiData,
-  hapusFormasi
+  hapusFormasi,
+  showDetailFormasi,
+  editFormasi,
+  hapusFormasiTerpilih
 });
 
 // =========================================================
@@ -1654,6 +1657,8 @@ async function loadFormasiData() {
     }
 }
 
+let selectedFormasiData = null;
+
 function renderTableFormasi(data) {
     if (dtFormasi) {
         dtFormasi.destroy();
@@ -1663,12 +1668,15 @@ function renderTableFormasi(data) {
     $('#dataTableFormasi').html(`
         <thead class="table-light">
           <tr>
+            <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllFormasi" class="form-check-input"></th>
             <th>Tingkat</th>
             <th>Kelas</th>
             <th>Bagian</th>
             <th>Gender</th>
             <th>Kapasitas</th>
             <th>Wali Kelas</th>
+            <th>Domisili</th>
+            <th>Lokal Takror</th>
             <th>Lokasi Diniyyah</th>
             <th class="text-center">Aksi</th>
           </tr>
@@ -1682,15 +1690,19 @@ function renderTableFormasi(data) {
         let genderB = f.pa_pi === 'PA' ? '<span class="text-primary fw-bold">PA</span>' : '<span class="text-danger fw-bold">PI</span>';
         
         html += `
-        <tr>
-            <td class="fw-bold">${f.tingkat}</td>
-            <td>${f.din_kls}</td>
-            <td class="fw-bold">${f.din_bag} ${badgeUg}</td>
-            <td>${genderB}</td>
-            <td>${f.kapasitas_maksimal}</td>
-            <td>${f.id_mustahiq || '-'}</td>
-            <td>${f.lokasi_diniyyah || '-'}</td>
-            <td class="text-center">
+        <tr style="cursor: pointer;">
+            <td class="text-center" onclick="event.stopPropagation();"><input type="checkbox" class="row-check-formasi form-check-input" value="${f.id}"></td>
+            <td class="fw-bold row-klik-formasi" data-id="${f.id}">${f.tingkat}</td>
+            <td class="row-klik-formasi" data-id="${f.id}">${f.din_kls}</td>
+            <td class="fw-bold row-klik-formasi" data-id="${f.id}">${f.din_bag} ${badgeUg}</td>
+            <td class="row-klik-formasi" data-id="${f.id}">${genderB}</td>
+            <td class="row-klik-formasi" data-id="${f.id}">${f.kapasitas_maksimal}</td>
+            <td class="row-klik-formasi" data-id="${f.id}">${f.id_mustahiq || '-'}</td>
+            <td class="row-klik-formasi" data-id="${f.id}">${f.domisili || '-'}</td>
+            <td class="row-klik-formasi" data-id="${f.id}">${f.lokasi_takror || '-'}</td>
+            <td class="row-klik-formasi" data-id="${f.id}">${f.lokasi_diniyyah || '-'}</td>
+            <td class="text-center" onclick="event.stopPropagation();">
+                <button class="btn btn-sm btn-outline-warning border-0" onclick="window.editFormasi('${f.id}')" title="Edit"><i class="bi bi-pencil-square"></i></button>
                 <button class="btn btn-sm btn-outline-danger border-0" onclick="window.hapusFormasi('${f.id}')" title="Hapus"><i class="bi bi-trash"></i></button>
             </td>
         </tr>`;
@@ -1698,14 +1710,49 @@ function renderTableFormasi(data) {
     
     $('#tableBodyFormasi').html(html);
     dtFormasi = $('#dataTableFormasi').DataTable({
+         scrollX: true,
          pageLength: 25,
-         language: { search: 'Cari Kelas:' }
+         language: { search: 'Cari Kelas:' },
+         columnDefs: [
+             { searchable: false, orderable: false, targets: [0, 10] }
+         ],
+         initComplete: function () {
+            if ($('#actionGroupFormasi').length === 0) {
+                $('#dataTableFormasi_filter').addClass('d-flex justify-content-end align-items-center gap-2 flex-wrap');
+                $('#dataTableFormasi_filter label').addClass('mb-0 d-flex align-items-center gap-2');
+
+                let actionBtns = $(`
+                <div class="d-flex gap-2 flex-nowrap" id="actionGroupFormasi">
+                    <div class="dropdown">
+                    <button class="btn btn-outline-danger btn-sm dropdown-toggle text-nowrap border-0" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-trash"></i> Hapus
+                    </button>
+                    <ul class="dropdown-menu shadow-sm border-0">
+                        <li><a class="dropdown-item" href="#" onclick="window.hapusFormasiTerpilih(); return false;"><i class="bi bi-check2-square text-danger me-2"></i> Hapus Terpilih</a></li>
+                    </ul>
+                    </div>
+                    <button type="button" class="btn btn-outline-secondary btn-sm text-nowrap border-0" onclick="alert('Fitur sembunyikan kolom khusus Formasi segera hadir.')"><i class="bi bi-eye-slash"></i> Sembunyikan</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm text-nowrap border-0" onclick="alert('Fitur filter lanjutan khusus Formasi segera hadir.')"><i class="bi bi-funnel"></i> Filter</button>
+                </div>
+                `);
+                $('#dataTableFormasi_filter').prepend(actionBtns);
+            }
+         }
+    });
+
+    $('.row-klik-formasi').on('click', function() {
+        window.showDetailFormasi($(this).data('id'));
+    });
+
+    $('#checkAllFormasi').on('change', function() {
+        $('.row-check-formasi').prop('checked', this.checked);
     });
 }
 
 function openAddFormasiModal() {
     document.getElementById('formasiForm').reset();
     document.getElementById('f_id').value = '';
+    document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-building-add me-2"></i> Formasi Kelas Baru';
     $('#formasiModal').modal('show');
 }
 
@@ -1723,19 +1770,25 @@ async function submitFormasiData(e) {
         is_unggulan: form.f_is_unggulan.checked,
         kapasitas_maksimal: parseInt(form.f_kapasitas_maksimal.value) || 40,
         id_mustahiq: form.f_id_mustahiq.value,
+        domisili: form.f_domisili.value,
+        lokasi_takror: form.f_lokasi_takror.value,
         lokasi_diniyyah: form.f_lokasi_diniyyah.value
     };
     
     try {
-        const { error } = await supabase.from('formasi_kelas').insert([payload]);
-        if (error) {
-           if(error.code === '23505') throw new Error("Kombinasi Tingkat, Kelas, Bagian, dan Gender tersebut sudah ada! Tidak boleh duplikat.");
-           throw error;
+        const f_id = form.f_id.value;
+        if (f_id) {
+             const { error } = await supabase.from('formasi_kelas').update(payload).eq('id', f_id);
+             if (error) { if(error.code === '23505') throw new Error("Kombinasi Tingkat, Kelas, Bagian, dan Gender duplikat!"); throw error; }
+             await logActivity('UPDATE FORMASI', `Memperbarui formasi kelas: ${payload.tingkat} ${payload.din_kls} - ${payload.din_bag}`);
+             Swal.fire('Diperbarui!', 'Formasi Kelas Berhasil Diperbarui', 'success');
+        } else {
+             const { error } = await supabase.from('formasi_kelas').insert([payload]);
+             if (error) { if(error.code === '23505') throw new Error("Kombinasi Tingkat, Kelas, Bagian, dan Gender duplikat!"); throw error; }
+             await logActivity('TAMBAH FORMASI', `Membuat kelas baru: ${payload.tingkat} ${payload.din_kls} - ${payload.din_bag}`);
+             Swal.fire('Berhasil!', 'Formasi Blueprint Kelas Berhasil Dibuat', 'success');
         }
-        
-        await logActivity('TAMBAH FORMASI', `Membuat kelas baru: ${payload.tingkat} ${payload.din_kls} - ${payload.din_bag} (${payload.pa_pi})`);
         $('#formasiModal').modal('hide');
-        Swal.fire('Berhasil!', 'Formasi Blueprint Kelas Berhasil Dibuat', 'success');
         await loadFormasiData();
     } catch (err) {
         Swal.fire('Gagal Menyimpan', err.message, 'error');
@@ -1744,10 +1797,60 @@ async function submitFormasiData(e) {
     }
 }
 
+function showDetailFormasi(id) {
+    let f = globalDataFormasi.find(x => x.id === id);
+    if (!f) return;
+    
+    let html = `
+    <div class="row mb-2"><div class="col-sm-4 text-muted">Tingkat</div><div class="col-sm-8 fw-bold">: ${f.tingkat}</div></div>
+    <div class="row mb-2"><div class="col-sm-4 text-muted">Kelas / Bagian</div><div class="col-sm-8 fw-bold">: ${f.din_kls} - ${f.din_bag} ${f.is_unggulan ? '(Unggulan)' : ''}</div></div>
+    <div class="row mb-2"><div class="col-sm-4 text-muted">Gender</div><div class="col-sm-8 fw-bold">: ${f.pa_pi}</div></div>
+    <div class="row mb-2"><div class="col-sm-4 text-muted">Kapasitas Maksimal</div><div class="col-sm-8 fw-bold">: ${f.kapasitas_maksimal} Santri</div></div>
+    <div class="row mb-2 mt-3"><div class="col-sm-4 text-muted">Wali Kelas</div><div class="col-sm-8 fw-bold">: ${f.id_mustahiq || '-'}</div></div>
+    <div class="row mb-2"><div class="col-sm-4 text-muted">Domisili</div><div class="col-sm-8 fw-bold">: ${f.domisili || '-'}</div></div>
+    <div class="row mb-2"><div class="col-sm-4 text-muted">Lokal Takror</div><div class="col-sm-8 fw-bold">: ${f.lokasi_takror || '-'}</div></div>
+    <div class="row mb-2"><div class="col-sm-4 text-muted">Lokasi Diniyyah</div><div class="col-sm-8 fw-bold">: ${f.lokasi_diniyyah || '-'}</div></div>
+    `;
+    
+    document.getElementById('detailFormasiContent').innerHTML = html;
+    
+    document.getElementById('btnHapusDetailFormasi').onclick = function() {
+        $('#detailFormasiModal').modal('hide');
+        window.hapusFormasi(id);
+    };
+    document.getElementById('btnEditDetailFormasi').onclick = function() {
+        $('#detailFormasiModal').modal('hide');
+        window.editFormasi(id);
+    };
+    
+    $('#detailFormasiModal').modal('show');
+}
+
+function editFormasi(id) {
+    let f = globalDataFormasi.find(x => x.id === id);
+    if (!f) return;
+    
+    const form = document.getElementById('formasiForm');
+    form.f_id.value = f.id;
+    form.f_tingkat.value = f.tingkat;
+    form.f_din_kls.value = f.din_kls;
+    form.f_din_bag.value = f.din_bag;
+    form.f_pa_pi.value = f.pa_pi;
+    form.f_is_unggulan.checked = f.is_unggulan;
+    form.f_kapasitas_maksimal.value = f.kapasitas_maksimal;
+    form.f_id_mustahiq.value = f.id_mustahiq || '';
+    form.f_domisili.value = f.domisili || '';
+    form.f_lokasi_takror.value = f.lokasi_takror || '';
+    form.f_lokasi_diniyyah.value = f.lokasi_diniyyah || '';
+    
+    document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Formasi Kelas';
+    $('#formasiModal').modal('show');
+}
+
 async function hapusFormasi(id) {
      const res = await Swal.fire({
         title: 'Hapus Blueprint Kelas?',
-        text: 'Ini akan menghapus formasi, namun tidak menghapus data santri di dalamnya.',
+        text: 'Menghapus formasi tidak akan menghapus data santri di dalamnya.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#ef4444',
@@ -1764,6 +1867,36 @@ async function hapusFormasi(id) {
       } catch (err) {
           Swal.fire('Error', err.message, 'error');
       }
+}
+
+async function hapusFormasiTerpilih() {
+    let selected = [];
+    $('.row-check-formasi:checked').each(function () {
+        selected.push($(this).val());
+    });
+    if (selected.length === 0) {
+        return Swal.fire('Perhatian', 'Centang minimal satu data formasi!', 'info');
+    }
+
+    const res = await Swal.fire({
+        title: `Hapus ${selected.length} Formasi?`,
+        text: 'Data yang dicentang akan dihapus permanen.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#ef4444',
+        confirmButtonText: 'Ya, Hapus Terpilih'
+    });
+    if (!res.isConfirmed) return;
+
+    try {
+        const { error } = await supabase.from('formasi_kelas').delete().in('id', selected);
+        if (error) throw error;
+        await logActivity('HAPUS BANYAK FORMASI', `Menghapus ${selected.length} formasi kelas`);
+        Swal.fire('Berhasil!', `${selected.length} formasi berhasil dihapus.`, 'success');
+        await loadFormasiData();
+    } catch (err) {
+        Swal.fire('Error', err.message, 'error');
+    }
 }
 
 // EKSPOS KE GLOBAL WINDOW HARUS DI PALING BAWAH
