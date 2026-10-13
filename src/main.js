@@ -1657,14 +1657,13 @@ async function loadFormasiData() {
     }
 }
 
-let selectedFormasiData = null;
-
 function renderTableFormasi(data) {
     if (dtFormasi) {
         dtFormasi.destroy();
         $('#dataTableFormasi').empty();
     }
 
+    // Pastikan header tabel digambar ulang dengan 11 kolom
     $('#dataTableFormasi').html(`
         <thead class="table-light">
           <tr>
@@ -1709,6 +1708,8 @@ function renderTableFormasi(data) {
     });
     
     $('#tableBodyFormasi').html(html);
+
+    // Inisialisasi DataTables dengan Toolbar (Filter, Sembunyikan, Hapus)
     dtFormasi = $('#dataTableFormasi').DataTable({
          scrollX: true,
          pageLength: 25,
@@ -1731,8 +1732,8 @@ function renderTableFormasi(data) {
                         <li><a class="dropdown-item" href="#" onclick="window.hapusFormasiTerpilih(); return false;"><i class="bi bi-check2-square text-danger me-2"></i> Hapus Terpilih</a></li>
                     </ul>
                     </div>
-                    <button type="button" class="btn btn-outline-secondary btn-sm text-nowrap border-0" onclick="alert('Fitur sembunyikan kolom khusus Formasi segera hadir.')"><i class="bi bi-eye-slash"></i> Sembunyikan</button>
-                    <button type="button" class="btn btn-outline-primary btn-sm text-nowrap border-0" onclick="alert('Fitur filter lanjutan khusus Formasi segera hadir.')"><i class="bi bi-funnel"></i> Filter</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm text-nowrap border-0" onclick="alert('Fitur Sembunyikan untuk Formasi akan dikembangkan lebih lanjut.')"><i class="bi bi-eye-slash"></i> Sembunyikan</button>
+                    <button type="button" class="btn btn-outline-primary btn-sm text-nowrap border-0" onclick="alert('Fitur Filter untuk Formasi akan dikembangkan lebih lanjut.')"><i class="bi bi-funnel"></i> Filter</button>
                 </div>
                 `);
                 $('#dataTableFormasi_filter').prepend(actionBtns);
@@ -1740,10 +1741,12 @@ function renderTableFormasi(data) {
          }
     });
 
+    // Menangani Event Klik pada baris untuk menampilkan Detail
     $('.row-klik-formasi').on('click', function() {
         window.showDetailFormasi($(this).data('id'));
     });
 
+    // Menangani Event Checkbox All
     $('#checkAllFormasi').on('change', function() {
         $('.row-check-formasi').prop('checked', this.checked);
     });
@@ -1803,7 +1806,7 @@ function showDetailFormasi(id) {
     
     let html = `
     <div class="row mb-2"><div class="col-sm-4 text-muted">Tingkat</div><div class="col-sm-8 fw-bold">: ${f.tingkat}</div></div>
-    <div class="row mb-2"><div class="col-sm-4 text-muted">Kelas / Bagian</div><div class="col-sm-8 fw-bold">: ${f.din_kls} - ${f.din_bag} ${f.is_unggulan ? '(Unggulan)' : ''}</div></div>
+    <div class="row mb-2"><div class="col-sm-4 text-muted">Kelas / Bagian</div><div class="col-sm-8 fw-bold">: ${f.din_kls} - ${f.din_bag} ${f.is_unggulan ? '<span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> Unggulan</span>' : ''}</div></div>
     <div class="row mb-2"><div class="col-sm-4 text-muted">Gender</div><div class="col-sm-8 fw-bold">: ${f.pa_pi}</div></div>
     <div class="row mb-2"><div class="col-sm-4 text-muted">Kapasitas Maksimal</div><div class="col-sm-8 fw-bold">: ${f.kapasitas_maksimal} Santri</div></div>
     <div class="row mb-2 mt-3"><div class="col-sm-4 text-muted">Wali Kelas</div><div class="col-sm-8 fw-bold">: ${f.id_mustahiq || '-'}</div></div>
@@ -1814,6 +1817,7 @@ function showDetailFormasi(id) {
     
     document.getElementById('detailFormasiContent').innerHTML = html;
     
+    // Setel ulang fungsi tombol pada Modal Detail
     document.getElementById('btnHapusDetailFormasi').onclick = function() {
         $('#detailFormasiModal').modal('hide');
         window.hapusFormasi(id);
@@ -1899,7 +1903,9 @@ async function hapusFormasiTerpilih() {
     }
 }
 
-// EKSPOS KE GLOBAL WINDOW HARUS DI PALING BAWAH
+// =========================================================
+// EKSPOR SEMUA FUNGSI KE GLOBAL WINDOW
+// =========================================================
 Object.assign(window, {
   toggleSidebar,
   showPage,
@@ -1922,5 +1928,8 @@ Object.assign(window, {
   loadFormasiData,
   openAddFormasiModal,
   submitFormasiData,
-  hapusFormasi
+  hapusFormasi,
+  showDetailFormasi,
+  editFormasi,
+  hapusFormasiTerpilih
 });
