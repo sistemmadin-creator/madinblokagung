@@ -227,9 +227,16 @@ function showPage(page) {
     document.body.classList.add('sidebar-collapsed');
     document.getElementById('desktopSidebar').classList.add('close');
   }
-  if (page === 'santri' && dataTable) {
-    dataTable.columns.adjust().draw(false);
-  }
+
+  // Sinkronisasi ukuran tabel (Beri jeda agar DOM ter-render sempurna & menyelaraskan kolom)
+  setTimeout(() => {
+      if (page === 'santri' && dataTable) {
+         dataTable.columns.adjust().draw(false);
+      }
+      if (page === 'formasi' && dtFormasi) {
+         dtFormasi.columns.adjust().draw(false);
+      }
+  }, 250);
 }
 
 function actionLogout() {
@@ -1717,7 +1724,7 @@ function renderTableFormasi(data) {
          columnDefs: [
              { searchable: false, orderable: false, targets: [0, 10] }
          ],
-         initComplete: function () {
+initComplete: function () {
             if ($('#actionGroupFormasi').length === 0) {
                 $('#dataTableFormasi_filter').addClass('d-flex justify-content-end align-items-center gap-2 flex-wrap');
                 $('#dataTableFormasi_filter label').addClass('mb-0 d-flex align-items-center gap-2');
@@ -1740,6 +1747,11 @@ function renderTableFormasi(data) {
             }
          }
     });
+
+    // Mencegah masalah misalignment (menyelaraskan header dan body setelah render selesai)
+    setTimeout(() => {
+        if (dtFormasi) dtFormasi.columns.adjust().draw(false);
+    }, 300);
 
     // Menangani Event Klik pada baris untuk menampilkan Detail
     $('.row-klik-formasi').on('click', function() {
