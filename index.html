@@ -348,30 +348,33 @@
       border-collapse: separate !important;
       border-spacing: 0 !important;
     }
-    #dataTable th,
-    #dataTable td {
+#dataTable th, #dataTable td,
+    #dataTableFormasi th, #dataTableFormasi td {
       white-space: nowrap !important;
       vertical-align: middle !important;
       padding: 8px 14px !important;
       font-size: 0.83rem !important;
       box-sizing: border-box !important;
     }
-    #dataTable {
+    #dataTable, #dataTableFormasi {
       border-collapse: separate !important;
       border-spacing: 0 !important;
       border: 1px solid #e2e8f0 !important;
     }
-    #dataTable tbody tr:nth-of-type(odd) {
+    #dataTable tbody tr:nth-of-type(odd),
+    #dataTableFormasi tbody tr:nth-of-type(odd) {
       background-color: #ffffff;
     }
-    #dataTable tbody tr:nth-of-type(even) {
+    #dataTable tbody tr:nth-of-type(even),
+    #dataTableFormasi tbody tr:nth-of-type(even) {
       background-color: #f8fafc;
     }
-    #dataTable tbody tr:hover {
+    #dataTable tbody tr:hover,
+    #dataTableFormasi tbody tr:hover {
       background-color: #f1f5f9 !important;
       cursor: pointer;
     }
-    #dataTable th {
+    #dataTable th, #dataTableFormasi th {
       background-color: #f1f5f9 !important;
       color: #334155 !important;
       font-weight: 700 !important;
@@ -380,7 +383,7 @@
       border-bottom: 2px solid #cbd5e1 !important;
       border-right: 1px solid #e2e8f0 !important;
     }
-    #dataTable td {
+    #dataTable td, #dataTableFormasi td {
       color: #334155;
       border-bottom: 1px solid #e2e8f0 !important;
       border-right: 1px solid #e2e8f0 !important;
@@ -526,7 +529,7 @@
 
         <!-- C. Area Tabel DataTables (#dataTable) -->
         <div id="tableSantriWrapper" style="display: none;">
-          <table id="dataTable" class="table w-100 table-hover align-middle">
+          <table id="dataTable" class="table table-hover align-middle nowrap" style="width: 100%;">
             <thead class="table-light">
               <tr>
                 <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAll" class="form-check-input"></th>
@@ -588,7 +591,7 @@
 
       <div class="card-panel border-0">
         <div class="table-responsive">
-          <table id="dataTableFormasi" class="table w-100 table-hover align-middle">
+          <table id="dataTableFormasi" class="table table-hover align-middle nowrap" style="width: 100%;">  
           <thead class="table-light">
               <tr>
                 <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllFormasi" class="form-check-input"></th>
