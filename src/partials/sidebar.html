@@ -1,0 +1,46 @@
+<!-- SIDEBAR DESKTOP (AUTO HOVER EXPAND/COLLAPSE) -->
+<div class="sidebar-overlay close" id="desktopSidebar">
+  <div class="header">
+    <div class="brand"></div>
+    <div class="toggle-btn" onclick="window.toggleSidebar()">
+      <i class="bi bi-chevron-left"></i>
+    </div>
+  </div>
+
+  <nav class="nav flex-column w-100 mt-2">
+    <a class="nav-link active" id="nav-desk-santri" onclick="window.showPage('santri')">
+      <i class="bi bi-person"></i> <span>Data Santri</span>
+    </a>
+    <a class="nav-link" id="nav-desk-asatidz" onclick="window.showPage('asatidz')">
+      <i class="bi bi-people"></i> <span>Data Asatidz</span>
+    </a>
+    <a class="nav-link" id="nav-desk-formasi" onclick="window.showPage('formasi')">
+      <i class="bi bi-building"></i> <span>Formasi Kelas</span>
+    </a>
+    <a class="nav-link" onclick="jQuery('#settingsModal').modal('show')">
+      <i class="bi bi-diagram-3"></i> <span>Hierarki Dropdown</span>
+    </a>
+    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+      <i class="bi bi-journal-text"></i> <span>Log Aktivitas</span>
+    </a>
+  </nav>
+</div>
+
+<!-- BOTTOM NAVIGATION (KHUSUS MOBILE < 768px) -->
+<div class="bottom-nav d-md-none">
+  <a class="nav-link active" id="nav-mob-santri" onclick="window.showPage('santri')">
+    <i class="bi bi-person"></i><span>Santri</span>
+  </a>
+  <a class="nav-link" id="nav-mob-asatidz" onclick="window.showPage('asatidz')">
+    <i class="bi bi-people"></i><span>Asatidz</span>
+  </a>
+  <a class="nav-link" id="nav-mob-formasi" onclick="window.showPage('formasi')">
+    <i class="bi bi-building"></i><span>Formasi</span>
+  </a>
+  <a class="nav-link" onclick="jQuery('#settingsModal').modal('show')">
+    <i class="bi bi-diagram-3"></i><span>Hierarki</span>
+  </a>
+  <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+    <i class="bi bi-journal-text"></i><span>Log</span>
+  </a>
+</div>
