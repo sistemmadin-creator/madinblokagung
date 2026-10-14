@@ -82,9 +82,10 @@ export function initAsatidzUI() {
   $(document).on('change', '#checkAllAsatidz', function () {
     $('.row-check-asatidz').prop('checked', this.checked);
   });
-
-  $(document).off('click', '#dataTableAsatidz tbody tr').on('click', '#dataTableAsatidz tbody tr', function (e) {
-    if ($(e.target).hasClass('row-check-asatidz') || $(e.target).is(':checkbox') || $(this).find('.dataTables_empty').length > 0) {
+jQuery(document).off('click', '#dataTableAsatidz tbody tr').on('click', '#dataTableAsatidz tbody tr', function (e) {
+    const isCheckbox = jQuery(e.target).hasClass('row-check-asatidz') || jQuery(e.target).is(':checkbox');
+    const isEmptyRow = jQuery(this).find('.dataTables_empty').length > 0;
+    if (isCheckbox || isEmptyRow) {
       return;
     }
     let id = $(this).find('.row-check-asatidz').val();
