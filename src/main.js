@@ -9,6 +9,12 @@ import * as santri from './modules/santri/santri.js';
 import * as asatidz from './modules/asatidz/asatidz.js';
 import * as formasi from './modules/formasi/formasi.js';
 
+// Import Komponen HTML Modal dari folder partials
+import modalsSantri from './partials/modals-santri.html?raw';
+import modalsSystem from './partials/modals-system.html?raw';
+import modalsFormasi from './partials/modals-formasi.html?raw';
+import modalsAsatidz from './partials/modals-asatidz.html?raw';
+
 export { supabase };
 
 // =========================================================
@@ -30,6 +36,12 @@ Object.assign(window, {
 // 2. INISIALISASI APLIKASI SAAT DOM SELESAI DIMUAT
 // =========================================================
 document.addEventListener('DOMContentLoaded', async function () {
+  // 0. Render seluruh komponen modal dari partials ke dalam #modals-container
+  const modalsContainer = document.getElementById('modals-container');
+  if (modalsContainer) {
+    modalsContainer.innerHTML = modalsSantri + modalsSystem + modalsFormasi + modalsAsatidz;
+  }
+
   // Pasang Observer Layout, Resize Tabel & Hover Sidebar
   initLayoutObservers();
 
