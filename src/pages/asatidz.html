@@ -1,0 +1,50 @@
+<!-- HALAMAN DATA ASATIDZ -->
+<div id="page-asatidz" style="display: none;">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
+    <div>
+      <h2 class="header-title fw-bold m-0">Database Asatidz</h2>
+      <p class="text-muted small m-0 mt-1">Manajemen data tenaga pengajar (Asatidz) Madrasah Diniyyah.</p>
+    </div>
+    <button class="btn btn-success px-4 shadow-sm fw-bold" onclick="window.openAddModalAsatidz()">
+      <i class="bi bi-plus-lg me-2"></i> Tambah Asatidz
+    </button>
+  </div>
+
+  <div class="card-panel border-0">
+    <div id="btnLoadAsatidzContainer" class="text-center py-5">
+      <i class="bi bi-person-vcard text-success mb-3 d-block" style="font-size: 4rem;"></i>
+      <h5 class="fw-bold">Tabel Database Asatidz</h5>
+      <p class="text-muted small mb-4">
+        Untuk menjaga performa aplikasi, tabel Asatidz tidak dimuat otomatis.<br>
+        Silakan klik tombol di bawah ini jika Anda perlu melihat atau mengelola tabel secara langsung.
+      </p>
+      <button class="btn btn-success px-4 py-2 fw-bold shadow-sm" id="btnLoadAsatidz" onclick="window.actionLoadAsatidz()">
+        <i class="bi bi-table me-2"></i> Memuat Halaman (Tabel Data)
+      </button>
+    </div>
+
+    <div id="tableAsatidzWrapper" style="display: none;">
+      <table id="dataTableAsatidz" class="table table-hover align-middle nowrap" style="width: 100%;">
+        <thead class="table-light">
+          <tr>
+            <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllAsatidz" class="form-check-input"></th>
+            <th class="text-center" style="width: 45px;">NO</th>
+            <th class="text-center" style="width: 60px;">FOTO</th>
+            <th class="text-center" style="width: 90px;">NIS</th>
+            <th class="text-center" style="width: 90px;">NIA</th>
+            <th class="text-center" style="width: 70px;">PA/PI</th>
+            <th>KELAS DINIYYAH</th>
+            <th>BLOK</th>
+            <th>NAMA ASATIDZ</th>
+            <th class="text-center">JAH</th>
+            <th>LOKASI DINIYYAH</th>
+            <th>LOKASI TAKROR</th>
+            <th>TTL</th>
+            <th>PENEMPATAN KAMAR</th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyAsatidz"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
