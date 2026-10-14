@@ -2548,32 +2548,15 @@ async function loadAuditLogs() {
   }
 }
 
+// --- [PATOKAN ATAS: Akhir fungsi loadAuditLogs() - JANGAN DIHAPUS] ---
+// } catch (err) {
+//   tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3 text-danger">Gagal memuat log: ${err.message}</td></tr>`;
+// }
+// }
+
 // =========================================================
 // 12. MODUL INPUT, KOMPRESI & PREVIEW FOTO (SANTRI & ASATIDZ)
 // =========================================================
-
-// Helper: Membuka stream kamera dengan fallback otomatis (kamera belakang -> kamera depan/default)
-async function getCameraStreamSafe() {
-  try {
-    return await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
-      audio: false
-    });
-  } catch (e) {
-    return await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-  }
-}
-
-// Helper: Menjaga scroll Bootstrap Modal tidak terkunci setelah popup SweetAlert2 ditutup
-function restoreBootstrapModalScroll() {
-  setTimeout(() => {
-    if ($('#inputModal').hasClass('show') \vert{}\vert{} $('#inputModalAsatidz').hasClass('show')) {
-      document.body.classList.add('modal-open');
-    }
-  }, 100);
-}
-
-// Helper: Kompresi File Gambar menjadi DataURL (Base64)
 function compressImageFileSantri(file, maxDim = 600, quality = 0.75) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -2611,7 +2594,26 @@ function compressImageFileSantri(file, maxDim = 600, quality = 0.75) {
   });
 }
 
-// --- A. FUNGSI FOTO SANTRI ---
+async function getCameraStreamSafe() {
+  try {
+    return await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
+      audio: false
+    });
+  } catch (e) {
+    return await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+  }
+}
+
+function restoreBootstrapModalScroll() {
+  setTimeout(() => {
+    if ($('#inputModal').hasClass('show') \vert{}\vert{} $('#inputModalAsatidz').hasClass('show')) {
+      document.body.classList.add('modal-open');
+    }
+  }, 100);
+}
+
+// --- A. FOTO SANTRI ---
 function setPreviewFotoSantri(dataUrl) {
   const inputHidden = document.getElementById('foto_santri');
   const previewImg = document.getElementById('preview_foto_santri');
@@ -2623,11 +2625,6 @@ function setPreviewFotoSantri(dataUrl) {
 
   if (dataUrl && String(dataUrl).trim() !== '') {
     inputHidden.value = dataUrl;
-    previewImg.onerror = function () {
-      this.style.display = 'none';
-      placeholder.style.display = 'flex';
-      if (statusEl) statusEl.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i> File foto lama tidak dapat dimuat.</span>';
-    };
     previewImg.src = dataUrl;
     previewImg.style.display = 'block';
     placeholder.style.display = 'none';
@@ -2657,7 +2654,7 @@ async function handleFotoSantriSelected(event) {
     const compressedBase64 = await compressImageFileSantri(file, 600, 0.75);
     setPreviewFotoSantri(compressedBase64);
   } catch (err) {
-    console.error('Gagal memproses foto santri:', err);
+    console.error(err);
     if (statusEl) statusEl.innerHTML = '<span class="text-danger">Gagal memproses foto.</span>';
   }
 
@@ -2673,7 +2670,6 @@ function hapusFotoSantri() {
 
   if (inputHidden) inputHidden.value = '';
   if (previewImg) {
-    previewImg.onerror = null;
     previewImg.src = '';
     previewImg.style.display = 'none';
   }
@@ -2692,7 +2688,6 @@ async function bukaKameraSantri() {
   try {
     stream = await getCameraStreamSafe();
   } catch (err) {
-    // Hanya buka file picker jika kamera benar-benar tidak tersedia / ditolak izinnya
     document.getElementById('inputCameraFotoSantri').click();
     return;
   }
@@ -2732,8 +2727,7 @@ async function bukaKameraSantri() {
         }
         canvas.width = w;
         canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(videoEl, 0, 0, w, h);
+        canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
         return canvas.toDataURL('image/jpeg', 0.75);
       },
       willClose: () => {
@@ -2751,6 +2745,8 @@ async function bukaKameraSantri() {
   }
 }
 
+window.bukaKameraSantri = bukaKameraSantri;
+
 function lihatFotoSantri(url, namaSantri) {
   if (!url) return;
   Swal.fire({
@@ -2763,43 +2759,8 @@ function lihatFotoSantri(url, namaSantri) {
   });
 }
 
-// --- B. FUNGSI FOTO ASATIDZ (SUPABASE STORAGE + AUTO-FALLBACK BASE64) ---
-function dataURLToBlob(dataUrl) {
-  const parts = dataUrl.split(',');
-  const mime = parts[0].match(/:(.*?);/)[1];
-  const bstr = atob(parts[1]);
-  let n = bstr.length;
-  const u8arr = new Uint8Array(n);
-  while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
-  }
-  return new Blob([u8arr], { type: mime });
-}
-
-async function uploadFotoAsatidzToStorage(blob, fileNamePrefix = 'asatidz') {
-  if (!supabase || !supabase.storage) throw new Error('Supabase Storage tidak aktif');
-  const fileName = `${fileNamePrefix}_${Date.now()}.jpg`;
-  const { error } = await supabase.storage
-    .from('foto_asatidz')
-    .upload(fileName, blob, { contentType: 'image/jpeg', upsert: true });
-  if (error) throw error;
-  const { data } = supabase.storage.from('foto_asatidz').getPublicUrl(fileName);
-  if (!data || !data.publicUrl) throw new Error('Gagal mendapatkan URL publik');
-  return data.publicUrl;
-}
-
-// Unggah ke bucket foto_asatidz; jika bucket belum ada / kena RLS, otomatis gunakan Base64 terkompresi
-async function processAndSaveFotoAsatidz(base64DataUrl) {
-  try {
-    const blob = dataURLToBlob(base64DataUrl);
-    return await uploadFotoAsatidzToStorage(blob);
-  } catch (storageErr) {
-    console.warn('Bucket foto_asatidz tidak dapat diakses, menggunakan penyimpanan Base64:', storageErr.message);
-    return base64DataUrl;
-  }
-}
-
-function setPreviewFotoAsatidz(url) {
+// --- B. FOTO ASATIDZ (KOMPRESI BASE64 LANGSUNG TANPA BUCKET STORAGE) ---
+function setPreviewFotoAsatidz(dataUrl) {
   const hidden = document.getElementById('foto_asatidz');
   const preview = document.getElementById('preview_foto_asatidz');
   const placeholder = document.getElementById('placeholder_foto_asatidz');
@@ -2808,14 +2769,9 @@ function setPreviewFotoAsatidz(url) {
 
   if (!hidden || !preview || !placeholder) return;
 
-  if (url && String(url).trim() !== '') {
-    hidden.value = url;
-    preview.onerror = function () {
-      this.style.display = 'none';
-      placeholder.style.display = 'flex';
-      if (statusEl) statusEl.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i> File foto lama tidak dapat dimuat.</span>';
-    };
-    preview.src = url;
+  if (dataUrl && String(dataUrl).trim() !== '') {
+    hidden.value = dataUrl;
+    preview.src = dataUrl;
     preview.style.display = 'block';
     placeholder.style.display = 'none';
     if (btnHapus) btnHapus.classList.remove('d-none');
@@ -2842,11 +2798,10 @@ async function handleFotoAsatidzSelected(event) {
 
   try {
     const compressedBase64 = await compressImageFileSantri(file, 600, 0.75);
-    const finalUrl = await processAndSaveFotoAsatidz(compressedBase64);
-    setPreviewFotoAsatidz(finalUrl);
+    setPreviewFotoAsatidz(compressedBase64);
   } catch (err) {
-    console.error('Gagal memproses foto asatidz:', err);
-    if (statusEl) statusEl.innerHTML = `<span class="text-danger">Gagal memproses foto: ${err.message}</span>`;
+    console.error(err);
+    if (statusEl) statusEl.innerHTML = '<span class="text-danger">Gagal memproses foto.</span>';
   }
 
   event.target.value = '';
@@ -2861,7 +2816,6 @@ function hapusFotoAsatidz() {
 
   if (hidden) hidden.value = '';
   if (preview) {
-    preview.onerror = null;
     preview.src = '';
     preview.style.display = 'none';
   }
@@ -2880,7 +2834,6 @@ async function bukaKameraAsatidz() {
   try {
     stream = await getCameraStreamSafe();
   } catch (err) {
-    // Hanya buka file picker jika kamera benar-benar tidak tersedia / ditolak izinnya
     document.getElementById('inputCameraFotoAsatidz').click();
     return;
   }
@@ -2930,12 +2883,7 @@ async function bukaKameraAsatidz() {
     });
 
     if (result.isConfirmed && result.value) {
-      const statusEl = document.getElementById('statusFotoAsatidz');
-      if (statusEl) {
-        statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-success me-1"></span> Menyimpan hasil foto kamera...';
-      }
-      const finalUrl = await processAndSaveFotoAsatidz(result.value);
-      setPreviewFotoAsatidz(finalUrl);
+      setPreviewFotoAsatidz(result.value);
     }
   } catch (err) {
     if (stream) stream.getTracks().forEach(t => t.stop());
@@ -2943,17 +2891,24 @@ async function bukaKameraAsatidz() {
   }
 }
 
-function lihatFotoAsatidz(url, namaAsatidz) {
+window.bukaKameraAsatidz = bukaKameraAsatidz;
+
+function lihatFotoAsatidz(url) {
   if (!url) return;
   Swal.fire({
-    title: namaAsatidz || 'Foto Asatidz',
     imageUrl: url,
-    imageAlt: namaAsatidz || 'Foto Asatidz',
+    imageAlt: 'Foto Asatidz',
     showConfirmButton: true,
     confirmButtonText: 'Tutup',
     confirmButtonColor: '#0f766e'
   });
 }
+
+// --- [PATOKAN BAWAH: Awal CRUD Data Asatidz - JANGAN DIHAPUS] ---
+// =========================================================
+// >>> BARU: CRUD DATA ASATIDZ (TAMBAH, UPDATE, HAPUS)
+// =========================================================
+// function openAddModalAsatidz() {
 
 // Pastikan seluruh fungsi foto terekspos ke window
 Object.assign(window, {
