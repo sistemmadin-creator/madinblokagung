@@ -12,7 +12,7 @@
   <!-- Tipografi Modern Google Fonts 'Inter' -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;600;700&display=swap" rel="stylesheet">
 
   <!-- Bootstrap 5.3, DataTables 1.13.6 & Bootstrap Icons 1.10.5 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -42,7 +42,6 @@
       <span style="letter-spacing: -0.5px;">Madin Blokagung</span>
     </div>
 
-    <!-- Tombol Dropdown Menu Profil Berbentuk Kapsul -->
     <div class="dropdown">
       <button class="header-profile-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
         <div class="header-avatar">
@@ -83,35 +82,29 @@
   <!-- 2. SIDEBAR DESKTOP (AUTO HOVER EXPAND/COLLAPSE)-->
   <!-- ============================================== -->
   <div class="sidebar-overlay close" id="desktopSidebar">
-  <div class="header">
-      <div class="brand">
-        <!-- Logo dan teks dihapus -->
-      </div>
+    <div class="header">
+      <div class="brand"></div>
       <div class="toggle-btn" onclick="window.toggleSidebar()">
         <i class="bi bi-chevron-left"></i>
       </div>
     </div>
 
     <nav class="nav flex-column w-100 mt-2">
-        <a class="nav-link active" id="nav-desk-santri" 
-onclick="window.showPage('santri')">
+      <a class="nav-link active" id="nav-desk-santri" onclick="window.showPage('santri')">
         <i class="bi bi-person"></i> <span>Data Santri</span>
-        </a>
-        <a class="nav-link" id="nav-desk-asatidz" 
-onclick="window.showPage('asatidz')">
+      </a>
+      <a class="nav-link" id="nav-desk-asatidz" onclick="window.showPage('asatidz')">
         <i class="bi bi-people"></i> <span>Data Asatidz</span>
-        </a>
-        <a class="nav-link" id="nav-desk-formasi" 
-onclick="window.showPage('formasi')">
+      </a>
+      <a class="nav-link" id="nav-desk-formasi" onclick="window.showPage('formasi')">
         <i class="bi bi-building"></i> <span>Formasi Kelas</span>
-        </a>
-        <a class="nav-link" onclick=" $('#settingsModal').modal('show')">
+      </a>
+      <a class="nav-link" onclick="jQuery('#settingsModal').modal('show')">
         <i class="bi bi-diagram-3"></i> <span>Hierarki Dropdown</span>
-        </a>
-        <a class="nav-link" data-bs-toggle="modal" data-bs-
-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+      </a>
+      <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
         <i class="bi bi-journal-text"></i> <span>Log Aktivitas</span>
-        </a>
+      </a>
     </nav>
   </div>
 
@@ -119,33 +112,29 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
   <!-- 3. BOTTOM NAVIGATION (KHUSUS MOBILE < 768px)   -->
   <!-- ============================================== -->
   <div class="bottom-nav d-md-none">
-    <a class="nav-link active" id="nav-mob-santri" 
-onclick="window.showPage('santri')">
+    <a class="nav-link active" id="nav-mob-santri" onclick="window.showPage('santri')">
       <i class="bi bi-person"></i><span>Santri</span>
     </a>
-    <a class="nav-link" id="nav-mob-asatidz" 
-onclick="window.showPage('asatidz')">
+    <a class="nav-link" id="nav-mob-asatidz" onclick="window.showPage('asatidz')">
       <i class="bi bi-people"></i><span>Asatidz</span>
     </a>
-    <a class="nav-link" id="nav-mob-formasi" 
-onclick="window.showPage('formasi')">
+    <a class="nav-link" id="nav-mob-formasi" onclick="window.showPage('formasi')">
       <i class="bi bi-building"></i><span>Formasi</span>
     </a>
-    <a class="nav-link" onclick="$('#settingsModal').modal('show')">
+    <a class="nav-link" onclick="jQuery('#settingsModal').modal('show')">
       <i class="bi bi-diagram-3"></i><span>Hierarki</span>
     </a>
-    <a class="nav-link" data-bs-toggle="modal" data-bs-
-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
       <i class="bi bi-journal-text"></i><span>Log</span>
     </a>
   </div>
 
   <!-- ============================================== -->
-  <!-- 4. KONTEN UTAMA: HALAMAN DATA SANTRI           -->
+  <!-- 4. KONTEN UTAMA (SANTRI, FORMASI & ASATIDZ)    -->
   <!-- ============================================== -->
   <div class="main-content">
+    <!-- HALAMAN DATA SANTRI -->
     <div id="page-santri">
-      <!-- A. Header Halaman -->
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
         <div>
           <h2 class="header-title fw-bold m-0">Database Santri</h2>
@@ -156,9 +145,7 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
         </button>
       </div>
 
-      <!-- B. Lazy Loading Container & Area Tabel DataTables -->
       <div class="card-panel border-0">
-        <!-- Kartu Placeholder Lazy Loading -->
         <div id="btnLoadSantriContainer" class="text-center py-5">
           <i class="bi bi-database-down text-success mb-3 d-block" style="font-size: 4rem;"></i>
           <h5 class="fw-bold">Tabel Database Santri</h5>
@@ -171,7 +158,6 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
           </button>
         </div>
 
-        <!-- C. Area Tabel DataTables (#dataTable) -->
         <div id="tableSantriWrapper" style="display: none;">
           <table id="dataTable" class="table table-hover align-middle nowrap" style="width: 100%;">
             <thead class="table-light">
@@ -219,9 +205,8 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
         </div>
       </div>
     </div>
-    <!-- ============================================== -->
-    <!-- HALAMAN FORMASI KELAS MADIN                    -->
-    <!-- ============================================== -->
+
+    <!-- HALAMAN FORMASI KELAS MADIN -->
     <div id="page-formasi" style="display: none;">
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
         <div>
@@ -236,7 +221,7 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
       <div class="card-panel border-0">
         <div class="table-responsive">
           <table id="dataTableFormasi" class="table table-hover align-middle nowrap" style="width: 100%;">
-          <thead class="table-light">
+            <thead class="table-light">
               <tr>
                 <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllFormasi" class="form-check-input"></th>
                 <th>Tingkat</th>
@@ -251,15 +236,13 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
                 <th class="text-center">Aksi</th>
               </tr>
             </thead>
-           <tbody id="tableBodyFormasi"></tbody>
+            <tbody id="tableBodyFormasi"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-      <!-- ============================================== -->
-    <!-- HALAMAN DATA ASATIDZ                             -->
-    <!-- ============================================== -->
+    <!-- HALAMAN DATA ASATIDZ -->
     <div id="page-asatidz" style="display: none;">
       <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
         <div>
@@ -272,7 +255,6 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
       </div>
 
       <div class="card-panel border-0">
-        <!-- Lazy Load Container -->
         <div id="btnLoadAsatidzContainer" class="text-center py-5">
           <i class="bi bi-person-vcard text-success mb-3 d-block" style="font-size: 4rem;"></i>
           <h5 class="fw-bold">Tabel Database Asatidz</h5>
@@ -285,7 +267,6 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
           </button>
         </div>
 
-        <!-- Area Tabel DataTables -->
         <div id="tableAsatidzWrapper" style="display: none;">
           <table id="dataTableAsatidz" class="table table-hover align-middle nowrap" style="width: 100%;">
             <thead class="table-light">
@@ -304,358 +285,19 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
                 <th>LOKASI TAKROR</th>
                 <th>TTL</th>
                 <th>PENEMPATAN KAMAR</th>
-             </tr>
+              </tr>
             </thead>
             <tbody id="tableBodyAsatidz"></tbody>
           </table>
         </div>
       </div>
     </div>
-  </div> <!-- Penutup div.main-content dipindahkan ke sini -->
+  </div>
 
   <!-- ======================================================= -->
-  <!-- KUMPULAN MODAL (FILTER, HIDE, INPUT, DETAIL, SETTINGS)  -->
+  <!-- WADAH DINAMIS SELURUH KOMPONEN MODAL (DARI PARTIALS)    -->
   <!-- ======================================================= -->
-  <!-- 1. Modal Filter Lanjutan Santri (#filterModal) -->
-  <div class="modal fade" id="filterModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-primary text-white border-0">
-          <h5 class="modal-title fw-bold"><i class="bi bi-funnel-fill me-2"></i> Filter Lanjutan Santri</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light">
-          <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 mb-4">
-            <small><i class="bi bi-info-circle me-1"></i> Centang kategori yang ingin digunakan untuk filter data di tabel.</small>
-          </div>
-          <div id="filterFormCategories"></div>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-light border text-muted" onclick="window.resetFilters()">Reset</button>
-          <button type="button" class="btn btn-primary px-4" onclick="window.applyFilters()" data-bs-dismiss="modal">Terapkan Filter</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 2. Modal Sembunyikan Kolom Santri (#hideModal) -->
-  <div class="modal fade" id="hideModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-secondary text-white border-0">
-          <h5 class="modal-title fw-bold"><i class="bi bi-eye-slash-fill me-2"></i> Kelola Tampilan Kolom</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light">
-          <div class="mb-4 d-flex gap-2">
-            <button class="btn btn-sm btn-outline-secondary" onclick="window.checkAllHide(true)">Centang Semua (Sembunyikan)</button>
-            <button class="btn btn-sm btn-light border" onclick="window.checkAllHide(false)">Batal Centang (Tampilkan)</button>
-          </div>
-          <div class="row" id="hideCheckboxes"></div>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-secondary px-4" onclick="window.applyHideColumns()" data-bs-dismiss="modal">Simpan Tampilan</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. Modal Form Input / Edit Santri (#inputModal) -->
-  <div class="modal fade" id="inputModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-success text-white border-0 py-3">
-          <h5 class="modal-title fw-bold m-0"><i class="bi bi-person-plus-fill me-2"></i> Form Data Santri</h5>
-          <div class="ms-auto d-flex align-items-center gap-2">
-            <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="window.handleExcelImport(event)">
-            <button type="button" class="btn btn-sm btn-light text-success fw-bold shadow-sm" id="btnImportExcelSantri" onclick="document.getElementById('excelFileInput').click()" title="Impor Data dari Excel">
-              <i class="bi bi-file-earmark-excel-fill"></i> Impor Excel
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-light border-0 shadow-none" onclick="$('#settingsModal').modal('show')" title="Pengaturan Hierarki">
-              <i class="bi bi-gear-fill fs-5"></i>
-            </button>
-            <button type="button" class="btn-close btn-close-white shadow-none ms-2" data-bs-dismiss="modal"></button>
-          </div>
-        </div>
-        <div class="modal-body bg-light p-4">
-          <form id="inputForm" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitData(event)">
-            <input type="hidden" name="no_induk_lama" id="no_induk_lama">
-
-            <!-- Bagian 1: Identitas Utama -->
-            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Identitas Utama</h6>
-            <div class="row g-3 mb-4">
-              <div class="col-md-3">
-                <label class="form-label">No.Induk</label>
-                <input type="number" class="form-control bg-light" name="no_induk" oninput="if(this.value.length > 6) this.value = this.value.slice(0,6);" required>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">No.Biro <span class="text-muted fw-normal">(Opsional)</span></label>
-                <input type="text" class="form-control" name="no_biro">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">NISN</label>
-                <input type="number" class="form-control" name="nisn" oninput="if(this.value.length > 10) this.value = this.value.slice(0,10);">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Gender (PA/PI)</label>
-                <select class="form-select border-success" name="pa_pi" required>
-                  <option value="">Pilih</option>
-                  <option value="PA">PA</option>
-                  <option value="PI">PI</option>
-                </select>
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label">Nama Lengkap Santri</label>
-                <input type="text" class="form-control border-success" name="nama" oninput="this.value = this.value.toUpperCase();" required>
-              </div>
-<div class="col-md-2">
-                <label class="form-label">Tempat Lahir</label>
-                <input type="text" class="form-control" name="tempat_lahir">
-              </div>
-              <div class="col-md-1">
-                <label class="form-label text-nowrap">Tanggal</label>
-                <select class="form-select px-1 text-center" name="tgl_lahir" id="tgl_lahir"></select>
-              </div>
-              <div class="col-md-2">
-                <label class="form-label text-nowrap">Bulan</label>
-                <select class="form-select px-2" name="bln_lahir" id="bln_lahir">
-                  <option value="">Pilih</option>
-                  <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
-                  <option value="04">Apr</option><option value="05">Mei</option><option value="06">Jun</option>
-                  <option value="07">Jul</option><option value="08">Agu</option><option value="09">Sep</option>
-                  <option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option>
-                </select>
-              </div>
-              <div class="col-md-1">
-                <label class="form-label text-nowrap">Tahun</label>
-                <select class="form-select px-1 text-center" name="thn_lahir" id="thn_lahir"></select>
-              </div>
-
-              <!-- Input Foto Profil Santri (Kamera & Galeri) -->
-              <div class="col-md-12 mt-3">
-                <label class="form-label fw-bold text-success">Foto Profil Santri <span class="text-muted fw-normal">(Opsional)</span></label>
-                <div class="d-flex align-items-center gap-3 bg-light border rounded p-3">
-                  <!-- Kotak Preview Foto -->
-                  <div class="flex-shrink-0 position-relative">
-                    <img id="preview_foto_santri" src=""
-                         style="width:85px;height:105px;object-fit:cover;border-radius:10px;display:none;"
-                         class="border shadow-sm">
-                    <div id="placeholder_foto_santri"
-                         class="d-flex flex-column align-items-center justify-content-center border rounded bg-white text-muted"
-                         style="width:85px;height:105px;">
-                      <i class="bi bi-person-bounding-box" style="font-size: 2rem;"></i>
-                      <span style="font-size: 10px;">Foto 3x4</span>
-                    </div>
-                  </div>
-                  <!-- Tombol Kamera, Galeri & Hapus -->
-                  <div class="flex-grow-1">
-                    <div class="d-flex gap-2 flex-wrap">
-                      <button type="button" class="btn btn-sm btn-outline-success fw-bold"
-                              onclick="window.bukaKameraSantri()">
-                        <i class="bi bi-camera-fill me-1"></i> Kamera
-                      </button>
-                      <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
-                              onclick="document.getElementById('inputGaleriFotoSantri').click()">
-                        <i class="bi bi-images me-1"></i> Pilih File / Galeri
-                      </button>
-                      <button type="button" class="btn btn-sm btn-outline-danger fw-bold d-none"
-                              id="btnHapusFotoSantri" onclick="window.hapusFotoSantri()">
-                        <i class="bi bi-trash me-1"></i> Hapus Foto
-                      </button>
-                    </div>
-                    <input type="file" id="inputCameraFotoSantri" accept="image/*" capture="environment"
-                           style="display:none;" onchange="window.handleFotoSantriSelected(event)">
-                    <input type="file" id="inputGaleriFotoSantri" accept="image/*"
-                           style="display:none;" onchange="window.handleFotoSantriSelected(event)">
-                    <div id="statusFotoSantri" class="small text-muted mt-2">Belum ada foto dipilih (Otomatis dikompresi agar ringan).</div>
-                    <input type="hidden" name="foto" id="foto_santri">
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Bagian 2: Alamat Domisili Asal -->
-            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Alamat Domisili Asal</h6>
-            <div class="row g-3 mb-4">
-              <div class="col-md-3">
-                <label class="form-label">Provinsi</label>
-                <select class="form-select" name="provinsi" id="provinsi"><option value="">Pilih Provinsi</option></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Kabupaten / Kota</label>
-                <select class="form-select" name="kabupaten" id="kabupaten" disabled><option value="">Pilih Provinsi Dahulu</option></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Kecamatan</label>
-                <select class="form-select" name="kecamatan" id="kecamatan" disabled><option value="">Pilih Kab Dahulu</option></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Desa / Kelurahan</label>
-                <select class="form-select" name="desa" id="desa" disabled><option value="">Pilih Kec Dahulu</option></select>
-              </div>
-              <div class="col-md-12">
-                <label class="form-label">Dusun / Jalan</label>
-                <input type="text" class="form-control" name="dusun" placeholder="Nama Dusun / Jalan">
-              </div>
-            </div>
-
-            <!-- Bagian 3: Penempatan Kamar & Pendidikan -->
-            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Penempatan Kamar & Pendidikan</h6>
-            <div class="row g-3 mb-4">
-              <div class="col-md-3"><label class="form-label text-primary">Blok</label><select class="form-select border-primary" name="blok" id="blok"><option value="">Pilih...</option></select></div>
-              <div class="col-md-3"><label class="form-label text-primary">Asrama</label><select class="form-select border-primary" name="asrama" id="asrama" disabled><option value="">Pilih...</option></select></div>
-              <div class="col-md-3"><label class="form-label text-primary">Kode</label><select class="form-select border-primary" name="kode" id="kode" disabled><option value="">Pilih...</option></select></div>
-              <div class="col-md-3"><label class="form-label text-primary">Kamar</label><select class="form-select border-primary" name="kamar" id="kamar" disabled><option value="">Pilih...</option></select></div>
-
-              <!-- Sekolah Formal -->
-              <div class="col-12 mt-3"><div class="badge bg-secondary mb-1">Sekolah Formal</div></div>
-              <div class="col-md-2"><label class="form-label">Unit</label><select class="form-select" name="unit" id="unit"><option value="">Pilih...</option></select></div>
-              <div class="col-md-3"><label class="form-label">Jurusan</label><select class="form-select" name="jurusan" id="jurusan" disabled><option value="">Pilih...</option></select></div>
-              <div class="col-md-3"><label class="form-label">Semester</label><select class="form-select" name="semester" id="semester" disabled><option value="">Pilih...</option></select></div>
-              <div class="col-md-2"><label class="form-label">Kelas</label><select class="form-select" name="kelas" id="kelas" disabled><option value="">Pilih...</option></select></div>
-              <div class="col-md-2"><label class="form-label">Bag</label><select class="form-select" name="bag" id="bag" disabled><option value="">Pilih...</option></select></div>
-
-              <!-- Madrasah Diniyyah -->
-              <div class="col-12 mt-3"><div class="badge bg-success mb-1">Madrasah Diniyyah</div></div>
-              <div class="col-md-3"><label class="form-label">Tingkat</label><select class="form-select" name="tingkat" id="tingkat"><option value="">Pilih...</option></select></div>
-              <div class="col-md-3"><label class="form-label">Din. Kls</label><select class="form-select" name="din_kls" id="din_kls" disabled><option value="">Pilih...</option></select></div>
-              <div class="col-md-3"><label class="form-label">Din. Bag</label><select class="form-select" name="din_bag" id="din_bag" disabled><option value="">Pilih...</option></select></div>
-              <div class="col-md-3"><label class="form-label">ORDA</label><input type="text" class="form-control" name="orda" placeholder="Organisasi Daerah"></div>
-            </div>
-
-            <!-- Bagian 4: Data Administrasi Keluarga -->
-            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Data Administrasi Keluarga</h6>
-            <div class="row g-3">
-              <div class="col-md-3"><label class="form-label">NIK Santri</label><input type="number" class="form-control" name="nik"></div>
-              <div class="col-md-3"><label class="form-label">NO. KK</label><input type="number" class="form-control" name="no_kk"></div>
-              <div class="col-md-6"><label class="form-label">No. Telepon / WA (Aktif)</label><input type="number" class="form-control" name="telepon"></div>
-
-              <div class="col-md-6"><label class="form-label">Nama Ayah (BIN)</label><input type="text" class="form-control" name="nama_ayah"></div>
-              <div class="col-md-6"><label class="form-label">NIK Ayah</label><input type="number" class="form-control" name="nik_ayah"></div>
-              <div class="col-md-6"><label class="form-label">Nama Ibu (BINTI)</label><input type="text" class="form-control" name="nama_ibu"></div>
-              <div class="col-md-6"><label class="form-label">NIK Ibu</label><input type="number" class="form-control" name="nik_ibu"></div>
-            </div>
-
-            <div class="d-flex justify-content-end gap-2 mt-5">
-              <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
-              <button type="submit" class="btn btn-success px-5 fw-bold" id="btnSubmit">Simpan Data</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 4. Modal Detail Santri (#detailModal) -->
-  <div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content shadow-lg border-0">
-        <div class="modal-header bg-success text-white border-0 py-3">
-          <h5 class="modal-title fw-bold"><i class="bi bi-person-vcard me-2"></i> Detail Data Santri</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body p-4 bg-light" id="detailContent"></div>
-        <div class="modal-footer bg-white border-top-0 pt-0">
-          <button type="button" class="btn btn-outline-danger me-auto fw-bold" id="btnHapusDetail"><i class="bi bi-trash"></i> Hapus</button>
-          <button type="button" class="btn btn-success px-4 fw-bold" id="btnEditDetail"><i class="bi bi-pencil-square"></i> Edit Data</button>
-          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 5. Modal Pengaturan Hierarki Dropdown (#settingsModal) -->
-  <div class="modal fade" id="settingsModal" tabindex="-1" style="z-index: 1060;">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-dark text-white border-0 py-3">
-          <h5 class="modal-title fw-bold"><i class="bi bi-diagram-3-fill me-2"></i> Pengaturan Hierarki Dropdown</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-<div class="modal-body bg-light p-4">
-          <!-- 1. Builder Tree 1 (Blok -> Kamar) -->
-          <div class="mb-4 bg-white p-3 rounded border shadow-sm">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
-              <label class="form-label fw-bold text-success mb-0">1. Blok &gt; Asrama &gt; Kode &gt; Kamar</label>
-              <!-- Tambahan Fitur Filter Pencarian Tree 1 -->
-              <div class="d-flex gap-2">
-                <div class="input-group input-group-sm w-auto shadow-sm">
-                  <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
-                  <input type="text" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree1', this.value)">
-                </div>
-                <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree1')">
-                  <i class="bi bi-plus-lg me-1"></i> Tambah
-                </button>
-              </div>
-            </div>
-            <!-- Ditambahkan max-height & overflow-y agar bisa di-scroll jika kepanjangan -->
-            <div id="builder-tree1" class="d-flex flex-column bg-light p-2 rounded border border-secondary border-opacity-25" style="min-height: 80px; max-height: 350px; overflow-y: auto;">
-              <!-- Baris aturan dinamis akan di-generate oleh JS di sini -->
-            </div>
-          </div>
-          
-          <!-- 2. Builder Tree 2 (Unit -> Bagian) -->
-          <div class="mb-2 bg-white p-3 rounded border shadow-sm">
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
-              <label class="form-label fw-bold text-success mb-0">2. Unit &gt; Jurusan &gt; Sem &gt; Kelas &gt; Bag</label>
-              <!-- Tambahan Fitur Filter Pencarian Tree 2 -->
-              <div class="d-flex gap-2">
-                <div class="input-group input-group-sm w-auto shadow-sm">
-                  <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
-                  <input type="text" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree2', this.value)">
-                </div>
-                <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree2')">
-                  <i class="bi bi-plus-lg me-1"></i> Tambah
-                </button>
-              </div>
-            </div>
-            <!-- Ditambahkan max-height & overflow-y agar bisa di-scroll jika kepanjangan -->
-            <div id="builder-tree2" class="d-flex flex-column bg-light p-2 rounded border border-secondary border-opacity-25" style="min-height: 80px; max-height: 350px; overflow-y: auto;">
-              <!-- Baris aturan dinamis akan di-generate oleh JS di sini -->
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-dark px-4 fw-bold" id="btnSaveSettings" onclick="window.saveSettingsData()">Simpan Pengaturan</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 6. Modal Pusat Kendali Admin / Riwayat Log Aktivitas (#modalAdminCenter) -->
-  <div class="modal fade" id="modalAdminCenter" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-dark text-white border-0 py-3">
-          <h5 class="modal-title fw-bold m-0"><i class="bi bi-shield-check me-2 text-warning"></i> Pusat Kendali Master Admin - Audit Log</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light p-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h6 class="fw-bold text-dark m-0"><i class="bi bi-journal-text me-1 text-success"></i> Catatan Aktivitas Terakhir (Tabel <code>activity_logs</code>)</h6>
-            <button class="btn btn-sm btn-outline-secondary" onclick="window.loadAuditLogs()"><i class="bi bi-arrow-clockwise me-1"></i> Segarkan Log</button>
-          </div>
-          <div class="table-responsive bg-white rounded border" style="max-height: 450px; overflow-y: auto;">
-            <table class="table table-hover align-middle mb-0 table-sm" style="font-size: 0.82rem;">
-              <thead class="table-light sticky-top">
-                <tr>
-                  <th>Waktu (WIB)</th>
-                  <th>Username</th>
-                  <th>Nama Pengguna</th>
-                  <th>Aktivitas</th>
-                  <th>Detail</th>
-                </tr>
-              </thead>
-              <tbody id="tbodyAuditLogs">
-                <tr><td colspan="5" class="text-center py-3 text-muted">Memuat riwayat aktivitas...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div id="modals-container"></div>
 
   <!-- Library Eksternal (jQuery, Bootstrap 5.3, DataTables 1.13.6, SheetJS 0.18.5) -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -666,400 +308,5 @@ target="#modalAdminCenter" onclick="window.loadAuditLogs()">
 
   <!-- Script Aplikasi Utama (Vite Module) -->
   <script type="module" src="/src/main.js"></script>
-  <!-- 7. Modal Form Formasi Kelas (#formasiModal) -->
-  <div class="modal fade" id="formasiModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-warning text-dark border-0 py-3">
-          <h5 class="modal-title fw-bold m-0"><i class="bi bi-building-add me-2"></i> Formasi Kelas Baru</h5>
-          <button type="button" class="btn-close shadow-none ms-2" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light p-4">
-          <form id="formasiForm" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitFormasiData(event)">
-            <input type="hidden" name="f_id" id="f_id">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label">Tingkat</label>
-                <select class="form-select" name="f_tingkat" required>
-                  <option value="">Pilih...</option>
-                  <option value="ULA">ULA</option>
-                  <option value="WUSTHO">WUSTHO</option>
-                  <option value="ULYA">ULYA</option>
-                  <option value="ISTI'DAD">ISTI'DAD</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Gender (PA/PI)</label>
-                <select class="form-select" name="f_pa_pi" required>
-                  <option value="">Pilih...</option>
-                  <option value="PA">PA</option>
-                  <option value="PI">PI</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Din. Kelas</label>
-                <input type="text" class="form-control" name="f_din_kls" required placeholder="Contoh: 1">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Din. Bagian</label>
-                <input type="text" class="form-control" name="f_din_bag" required placeholder="Contoh: A">
-              </div>
-              <div class="col-md-12 my-3">
-                <div class="form-check form-switch p-3 bg-light border rounded">
-                  <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="f_is_unggulan" name="f_is_unggulan" style="width: 2.5em; height: 1.2em;">
-                  <label class="form-check-label fw-bold text-warning-emphasis pt-1" for="f_is_unggulan">
-                    <i class="bi bi-star-fill text-warning me-1"></i> Jadikan Kelas Unggulan
-                  </label>
-                </div>
-              </div>
-              <div class="col-md-12">
-                <label class="form-label">Kapasitas Maksimal</label>
-                <input type="number" class="form-control" name="f_kapasitas_maksimal" value="40" required>
-              </div>
-              <div class="col-md-12">
-                <label class="form-label">Mustahiq (Wali Kelas) <span class="text-muted">(Opsional)</span></label>
-                <input type="text" class="form-control" name="f_id_mustahiq">
-              </div>
-              <div class="col-md-12">
-                <label class="form-label">Domisili <span class="text-muted">(Opsional)</span></label>
-                <input type="text" class="form-control" name="f_domisili">
-              </div>
-              <div class="col-md-12">
-                <label class="form-label">Lokal Takror <span class="text-muted">(Opsional)</span></label>
-                <input type="text" class="form-control" name="f_lokasi_takror">
-              </div>
-              <div class="col-md-12">
-                <label class="form-label">Lokasi Diniyyah <span class="text-muted">(Opsional)</span></label>
-                <input type="text" class="form-control" name="f_lokasi_diniyyah">
-              </div>
-            </div>
-            <div class="d-flex justify-content-end gap-2 mt-4">
-              <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
-              <button type="submit" class="btn btn-warning px-4 fw-bold" id="btnSubmitFormasi">Simpan Formasi</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Filter Formasi (#filterFormasiModal) -->
-  <div class="modal fade" id="filterFormasiModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-primary text-white border-0">
-          <h5 class="modal-title fw-bold"><i class="bi bi-funnel-fill me-2"></i> Filter Formasi Kelas</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light">
-          <div class="row g-3" id="filterFormCategoriesFormasi"></div>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-light border text-muted" onclick="window.resetFiltersFormasi()">Reset</button>
-          <button type="button" class="btn btn-primary px-4" onclick="window.applyFiltersFormasi()" data-bs-dismiss="modal">Terapkan Filter</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal Sembunyikan Kolom Formasi (#hideFormasiModal) -->
-  <div class="modal fade" id="hideFormasiModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-secondary text-white border-0">
-          <h5 class="modal-title fw-bold"><i class="bi bi-eye-slash-fill me-2"></i> Tampilan Kolom Formasi</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light">
-          <div class="mb-4 d-flex gap-2">
-            <button class="btn btn-sm btn-outline-secondary" onclick="window.checkAllHideFormasi(true)">Centang Semua</button>
-            <button class="btn btn-sm btn-light border" onclick="window.checkAllHideFormasi(false)">Batal Centang</button>
-          </div>
-          <div class="row" id="hideCheckboxesFormasi"></div>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-secondary px-4" onclick="window.applyHideColumnsFormasi()" data-bs-dismiss="modal">Simpan Tampilan</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- 8. Modal Detail Formasi (#detailFormasiModal) -->
-  <div class="modal fade" id="detailFormasiModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content shadow-lg border-0">
-      <div class="modal-header bg-success text-white border-0 py-3">
-          <h5 class="modal-title fw-bold"><i class="bi bi-building me-2"></i> Detail Formasi Kelas</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body p-4 bg-light" id="detailFormasiContent"></div>
-        <div class="modal-footer bg-white border-top-0 pt-0">
-          <button type="button" class="btn btn-outline-danger me-auto fw-bold" id="btnHapusDetailFormasi"><i class="bi bi-trash"></i> Hapus</button>
-          <button type="button" class="btn btn-success px-4 fw-bold" id="btnEditDetailFormasi"><i class="bi bi-pencil-square"></i> Edit Data</button>
-          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-    <!-- 9. Modal Form Input / Edit Asatidz (#inputModalAsatidz) -->
-  <div class="modal fade" id="inputModalAsatidz" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-success text-white border-0 py-3">
-          <h5 class="modal-title fw-bold m-0"><i class="bi bi-person-plus-fill me-2"></i> Form Data Asatidz</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none ms-2" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light p-4">
-          <form id="inputFormAsatidz" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitAsatidzData(event)">
-            <input type="hidden" name="id_asatidz_lama" id="id_asatidz_lama">
-
-            <!-- Identitas Utama -->
-            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Identitas Utama</h6>
-            <div class="row g-3 mb-4">
-              <div class="col-md-2">
-                <label class="form-label">NIS <span class="text-muted small">(eks-santri)</span></label>
-                <input type="text" class="form-control" name="nis" id="nis_asatidz">
-              </div>
-              <div class="col-md-2">
-                <label class="form-label text-success fw-bold">NIA</label>
-                <div class="input-group">
-                  <select class="form-select border-success px-1" id="nia_prefix" style="max-width: 62px; flex: 0 0 62px;" onchange="window.generateNIA()" title="Pilih Prefix Huruf">
-                    <option value="">-</option>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
-                    <option value="E">E</option>
-                  </select>
-                  <input type="text" class="form-control border-success bg-light fw-bold text-secondary" name="nia" id="nia_asatidz" placeholder="Otomatis" readonly>
-                </div>
-              </div>
-              <div class="col-md-5">
-                <label class="form-label text-success fw-bold">Nama Lengkap Asatidz</label>
-                <input type="text" class="form-control border-success" name="nama_asatidz" id="nama_asatidz" oninput="this.value=this.value.toUpperCase();" required>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">PA/PI</label>
-                <select class="form-select" name="pa_pi" id="pa_pi_asatidz" required>
-                  <option value="">Pilih</option>
-                  <option value="PA">PA</option>
-                  <option value="PI">PI</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Tempat Lahir</label>
-                <input type="text" class="form-control" name="tempat_lahir" id="tempat_lahir_asatidz">
-              </div>
-              <div class="col-md-3">
-                <label class="form-label text-nowrap">Tanggal</label>
-                <select class="form-select px-1 text-center" name="tgl_lahir" id="tgl_lahir_asatidz"></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label text-nowrap">Bulan</label>
-                <select class="form-select px-2" name="bln_lahir" id="bln_lahir_asatidz">
-                  <option value="">Pilih</option>
-                  <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
-                  <option value="04">Apr</option><option value="05">Mei</option><option value="06">Jun</option>
-                  <option value="07">Jul</option><option value="08">Agu</option><option value="09">Sep</option>
-                  <option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label text-nowrap">Tahun</label>
-                <select class="form-select px-1 text-center" name="thn_lahir" id="thn_lahir_asatidz"></select>
-              </div>
-            </div>
-
-            <!-- Kelas Diniyyah -->
-            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Kelas Madin (Diniyyah)</h6>
-            <div class="row g-3 mb-4">
-              <div class="col-md-3">
-                <label class="form-label">Tingkat</label>
-                <select class="form-select" name="tingkat_asatidz" id="tingkat_asatidz" required>
-                  <option value="">Pilih PA/PI Dahulu...</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Din. Kls</label>
-                <select class="form-select" name="din_kls_asatidz" id="din_kls_asatidz" disabled required>
-                  <option value="">Pilih...</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Din. Bag</label>
-                <select class="form-select" name="din_bag_asatidz" id="din_bag_asatidz" disabled required>
-                  <option value="">Pilih...</option>
-                </select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Jah</label>
-                <select class="form-select" name="jah_asatidz" id="jah_asatidz" disabled required>
-                  <option value="">Pilih PA/PI Dahulu...</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Lokasi Diniyyah</label>
-                <input type="text" class="form-control" name="lokasi_diniyyah" id="lokasi_diniyyah" placeholder="Gedung / Ruang">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Lokasi Takror</label>
-                <input type="text" class="form-control" name="lokasi_takror" id="lokasi_takror" placeholder="Gedung / Ruang">
-              </div>
-            </div>
-
-            <!-- Alamat Domisili Asal -->
-            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Alamat Domisili Asal</h6>
-            <div class="row g-3 mb-4">
-              <div class="col-md-3">
-                <label class="form-label">Provinsi</label>
-                <select class="form-select" name="provinsi" id="provinsi_asatidz"><option value="">Pilih Provinsi</option></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Kabupaten / Kota</label>
-                <select class="form-select" name="kabupaten" id="kabupaten_asatidz" disabled><option value="">Pilih Provinsi Dahulu</option></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Kecamatan</label>
-                <select class="form-select" name="kecamatan" id="kecamatan_asatidz" disabled><option value="">Pilih Kab Dahulu</option></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label">Desa / Kelurahan</label>
-                <select class="form-select" name="desa" id="desa_asatidz" disabled><option value="">Pilih Kec Dahulu</option></select>
-              </div>
-              <div class="col-md-12">
-                <label class="form-label">Dusun / Jalan</label>
-                <input type="text" class="form-control" name="dusun" id="dusun_asatidz" placeholder="Nama Dusun / Jalan">
-              </div>
-            </div>
-
-            <!-- Penempatan Kamar -->
-            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Penempatan Kamar (Blok &gt; Asrama &gt; Kode &gt; Kamar)</h6>
-            <div class="row g-3 mb-4">
-              <div class="col-md-3">
-                <label class="form-label text-primary">Blok</label>
-                <select class="form-select border-primary" name="blok" id="blok_asatidz"><option value="">Pilih...</option></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label text-primary">Asrama</label>
-                <select class="form-select border-primary" name="asrama" id="asrama_asatidz" disabled><option value="">Pilih...</option></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label text-primary">Kode</label>
-                <select class="form-select border-primary" name="kode" id="kode_asatidz" disabled><option value="">Pilih...</option></select>
-              </div>
-              <div class="col-md-3">
-                <label class="form-label text-primary">Kamar</label>
-                <select class="form-select border-primary" name="kamar" id="kamar_asatidz" disabled><option value="">Pilih...</option></select>
-              </div>
-            </div>
-
-            <!-- Foto Profil -->
-            <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Foto Profil Asatidz</h6>
-            <div class="row g-3">
-              <div class="col-md-12">
-                <div class="d-flex align-items-center gap-3 bg-light border rounded p-3">
-                  <div class="flex-shrink-0 position-relative">
-                    <img id="preview_foto_asatidz" src=""
-                      style="width:85px;height:105px;object-fit:cover;border-radius:10px;display:none;"
-                      class="border shadow-sm">
-                    <div id="placeholder_foto_asatidz"
-                      class="d-flex flex-column align-items-center justify-content-center border rounded bg-white text-muted"
-                      style="width:85px;height:105px;">
-                      <i class="bi bi-person-bounding-box" style="font-size: 2rem;"></i>
-                      <span style="font-size: 10px;">Foto</span>
-                    </div>
-                  </div>
-                  <div class="flex-grow-1">
-                    <div class="d-flex gap-2 flex-wrap">
-                      <button type="button" class="btn btn-sm btn-outline-success fw-bold" onclick="window.bukaKameraAsatidz()">
-                        <i class="bi bi-camera-fill me-1"></i> Kamera
-                      </button>
-                      <button type="button" class="btn btn-sm btn-outline-primary fw-bold" onclick="document.getElementById('inputGaleriFotoAsatidz').click()">
-                        <i class="bi bi-images me-1"></i> Pilih File / Galeri
-                      </button>
-                      <button type="button" class="btn btn-sm btn-outline-danger fw-bold d-none" id="btnHapusFotoAsatidz" onclick="window.hapusFotoAsatidz()">
-                        <i class="bi bi-trash me-1"></i> Hapus Foto
-                      </button>
-                    </div>
-                    <input type="file" id="inputCameraFotoAsatidz" accept="image/*" capture="environment" style="display:none;" onchange="window.handleFotoAsatidzSelected(event)">
-                    <input type="file" id="inputGaleriFotoAsatidz" accept="image/*" style="display:none;" onchange="window.handleFotoAsatidzSelected(event)">
-                    <div id="statusFotoAsatidz" class="small text-muted mt-2">Belum ada foto dipilih (Otomatis dikompresi agar ringan).</div>
-                    <input type="hidden" name="foto_asatidz" id="foto_asatidz">
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="d-flex justify-content-end gap-2 mt-5">
-              <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
-              <button type="submit" class="btn btn-success px-5 fw-bold" id="btnSubmitAsatidz">Simpan Data</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 10. Modal Detail Asatidz (#detailModalAsatidz) -->
-  <div class="modal fade" id="detailModalAsatidz" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl modal-dialog-scrollable">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-success text-white border-0 py-3">
-          <h5 class="modal-title fw-bold"><i class="bi bi-person-badge me-2"></i> Detail Asatidz & Santri Binaan</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body p-4 bg-light" id="detailContentAsatidz"></div>
-        <div class="modal-footer bg-white border-top-0 pt-0">
-          <button type="button" class="btn btn-outline-danger me-auto fw-bold" id="btnHapusDetailAsatidz"><i class="bi bi-trash"></i> Hapus</button>
-          <button type="button" class="btn btn-success px-4 fw-bold" id="btnEditDetailAsatidz"><i class="bi bi-pencil-square"></i> Edit Data</button>
-          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 11. Modal Filter Lanjutan Asatidz (#filterModalAsatidz) -->
-  <div class="modal fade" id="filterModalAsatidz" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-primary text-white border-0">
-          <h5 class="modal-title fw-bold"><i class="bi bi-funnel-fill me-2"></i> Filter Lanjutan Asatidz</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light">
-          <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 mb-4">
-            <small><i class="bi bi-info-circle me-1"></i> Centang kategori yang ingin digunakan untuk filter data di tabel.</small>
-          </div>
-          <div id="filterFormCategoriesAsatidz"></div>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-light border text-muted" onclick="window.resetFiltersAsatidz()">Reset</button>
-          <button type="button" class="btn btn-primary px-4" onclick="window.applyFiltersAsatidz()" data-bs-dismiss="modal">Terapkan Filter</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- 12. Modal Sembunyikan Kolom Asatidz (#hideModalAsatidz) -->
-  <div class="modal fade" id="hideModalAsatidz" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content border-0 shadow-lg">
-        <div class="modal-header bg-secondary text-white border-0">
-          <h5 class="modal-title fw-bold"><i class="bi bi-eye-slash-fill me-2"></i> Kelola Tampilan Kolom Asatidz</h5>
-          <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body bg-light">
-          <div class="mb-4 d-flex gap-2">
-            <button class="btn btn-sm btn-outline-secondary" onclick="window.checkAllHideAsatidz(true)">Centang Semua (Sembunyikan)</button>
-            <button class="btn btn-sm btn-light border" onclick="window.checkAllHideAsatidz(false)">Batal Centang (Tampilkan)</button>
-          </div>
-          <div class="row" id="hideCheckboxesAsatidz"></div>
-        </div>
-        <div class="modal-footer border-0">
-          <button type="button" class="btn btn-secondary px-4" onclick="window.applyHideColumnsAsatidz()" data-bs-dismiss="modal">Simpan Tampilan</button>
-        </div>
-      </div>
-    </div>
-  </div>
 </body>
 </html>
