@@ -1,55 +1,70 @@
-<!-- 7. Modal Tambah / Edit Formasi Kelas (#formasiModal) -->
+<!-- 7. Modal Form Formasi Kelas (#formasiModal) -->
 <div class="modal fade" id="formasiModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content border-0 shadow-lg">
       <div class="modal-header bg-warning text-dark border-0 py-3">
-        <h5 class="modal-title fw-bold m-0"><i class="bi bi-building-add me-2"></i> Form Blueprint Formasi Kelas</h5>
-        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title fw-bold m-0"><i class="bi bi-building-add me-2"></i> Formasi Kelas Baru</h5>
+        <button type="button" class="btn-close shadow-none ms-2" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body bg-light p-4">
         <form id="formasiForm" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitFormasiData(event)">
-          <input type="hidden" name="id_formasi_lama" id="id_formasi_lama">
-
-          <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Identitas Ruang Kelas Madin</h6>
-          <div class="row g-3 mb-4">
-            <div class="col-md-3">
+          <input type="hidden" name="f_id" id="f_id">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Tingkat</label>
+              <select class="form-select border-success" name="f_tingkat" id="f_tingkat" required>
+                <option value="">Pilih...</option>
+                <option value="ULA">ULA</option>
+                <option value="WUSTHO">WUSTHO</option>
+                <option value="ULYA">ULYA</option>
+                <option value="ISTI'DAD">ISTI'DAD</option>
+              </select>
+            </div>
+            <div class="col-md-6">
               <label class="form-label fw-bold">Gender (PA/PI)</label>
-              <select class="form-select border-success" name="pa_pi" id="formasi_pa_pi" required>
-                <option value="">Pilih</option>
+              <select class="form-select border-success" name="f_pa_pi" id="f_pa_pi" required>
+                <option value="">Pilih...</option>
                 <option value="PA">PA</option>
                 <option value="PI">PI</option>
               </select>
             </div>
-            <div class="col-md-3">
-              <label class="form-label fw-bold">Tingkat</label>
-              <input type="text" class="form-control border-success" name="tingkat" id="formasi_tingkat" placeholder="Contoh: ULA / WUSTHO" oninput="this.value = this.value.toUpperCase();" required>
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Din. Kelas</label>
+              <input type="text" class="form-control border-success" name="f_din_kls" id="f_din_kls" required placeholder="Contoh: 1 / 2 / 3" oninput="this.value = this.value.toUpperCase();">
             </div>
-            <div class="col-md-3">
-              <label class="form-label fw-bold">Kelas (Din. Kls)</label>
-              <input type="text" class="form-control border-success" name="din_kls" id="formasi_din_kls" placeholder="Contoh: 1 / 2 / 3" oninput="this.value = this.value.toUpperCase();" required>
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Din. Bagian</label>
+              <input type="text" class="form-control border-success" name="f_din_bag" id="f_din_bag" required placeholder="Contoh: A / B / C" oninput="this.value = this.value.toUpperCase();">
             </div>
-            <div class="col-md-3">
-              <label class="form-label fw-bold">Bagian (Din. Bag)</label>
-              <input type="text" class="form-control border-success" name="din_bag" id="formasi_din_bag" placeholder="Contoh: A / B / C" oninput="this.value = this.value.toUpperCase();" required>
+            <div class="col-md-12 my-3">
+              <div class="form-check form-switch p-3 bg-light border rounded">
+                <input class="form-check-input ms-0 me-3" type="checkbox" role="switch" id="f_is_unggulan" name="f_is_unggulan" style="width: 2.5em; height: 1.2em;">
+                <label class="form-check-label fw-bold text-warning-emphasis pt-1" for="f_is_unggulan">
+                  <i class="bi bi-star-fill text-warning me-1"></i> Jadikan Kelas Unggulan
+                </label>
+              </div>
             </div>
-          </div>
-
-          <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Kapasitas & Lokasi Pembelajaran</h6>
-          <div class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-6">
               <label class="form-label">Kapasitas Maksimal</label>
-              <input type="number" class="form-control" name="kapasitas" id="formasi_kapasitas" value="40" min="1" required>
+              <input type="number" class="form-control" name="f_kapasitas_maksimal" id="f_kapasitas_maksimal" value="40" min="1" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mustahiq (Wali Kelas) <span class="text-muted">(Opsional)</span></label>
+              <input type="text" class="form-control" name="f_id_mustahiq" id="f_id_mustahiq" placeholder="Nama / NIA Wali Kelas">
             </div>
             <div class="col-md-4">
-              <label class="form-label">Lokal Takror</label>
-              <input type="text" class="form-control" name="lokal_takror" id="formasi_lokal_takror" placeholder="Gedung / Ruang Takror">
+              <label class="form-label">Domisili <span class="text-muted">(Opsional)</span></label>
+              <input type="text" class="form-control" name="f_domisili" id="f_domisili" placeholder="Blok / Asrama">
             </div>
             <div class="col-md-4">
-              <label class="form-label">Lokasi Diniyyah</label>
-              <input type="text" class="form-control" name="lokasi_diniyyah" id="formasi_lokasi_diniyyah" placeholder="Gedung / Ruang Diniyyah">
+              <label class="form-label">Lokal Takror <span class="text-muted">(Opsional)</span></label>
+              <input type="text" class="form-control" name="f_lokasi_takror" id="f_lokasi_takror" placeholder="Gedung / Ruang Takror">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Lokasi Diniyyah <span class="text-muted">(Opsional)</span></label>
+              <input type="text" class="form-control" name="f_lokasi_diniyyah" id="f_lokasi_diniyyah" placeholder="Gedung / Ruang Diniyyah">
             </div>
           </div>
-
           <div class="d-flex justify-content-end gap-2 mt-4">
             <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
             <button type="submit" class="btn btn-warning px-4 fw-bold text-dark" id="btnSubmitFormasi">Simpan Formasi</button>
@@ -72,7 +87,7 @@
         <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 mb-4">
           <small><i class="bi bi-info-circle me-1"></i> Centang kategori yang ingin digunakan untuk memfilter tabel Formasi Kelas.</small>
         </div>
-        <div id="filterFormCategoriesFormasi"></div>
+        <div class="row g-3" id="filterFormCategoriesFormasi"></div>
       </div>
       <div class="modal-footer border-0">
         <button type="button" class="btn btn-light border text-muted" onclick="window.resetFiltersFormasi()">Reset</button>
@@ -106,14 +121,16 @@
 
 <!-- 10. Modal Detail Formasi Kelas (#detailFormasiModal) -->
 <div class="modal fade" id="detailFormasiModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-scrollable">
-    <div class="modal-content border-0 shadow-lg">
+  <div class="modal-dialog">
+    <div class="modal-content shadow-lg border-0">
       <div class="modal-header bg-success text-white border-0 py-3">
-        <h5 class="modal-title fw-bold"><i class="bi bi-building me-2"></i> Detail Formasi Kelas & Daftar Santri</h5>
+        <h5 class="modal-title fw-bold"><i class="bi bi-building me-2"></i> Detail Formasi Kelas</h5>
         <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body p-4 bg-light" id="detailContentFormasi"></div>
+      <div class="modal-body p-4 bg-light" id="detailFormasiContent"></div>
       <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-outline-danger me-auto fw-bold" id="btnHapusDetailFormasi"><i class="bi bi-trash"></i> Hapus</button>
+        <button type="button" class="btn btn-success px-4 fw-bold" id="btnEditDetailFormasi"><i class="bi bi-pencil-square"></i> Edit Data</button>
         <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
       </div>
     </div>
