@@ -1,0 +1,121 @@
+<!-- 7. Modal Tambah / Edit Formasi Kelas (#formasiModal) -->
+<div class="modal fade" id="formasiModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-warning text-dark border-0 py-3">
+        <h5 class="modal-title fw-bold m-0"><i class="bi bi-building-add me-2"></i> Form Blueprint Formasi Kelas</h5>
+        <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light p-4">
+        <form id="formasiForm" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitFormasiData(event)">
+          <input type="hidden" name="id_formasi_lama" id="id_formasi_lama">
+
+          <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Identitas Ruang Kelas Madin</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-3">
+              <label class="form-label fw-bold">Gender (PA/PI)</label>
+              <select class="form-select border-success" name="pa_pi" id="formasi_pa_pi" required>
+                <option value="">Pilih</option>
+                <option value="PA">PA</option>
+                <option value="PI">PI</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-bold">Tingkat</label>
+              <input type="text" class="form-control border-success" name="tingkat" id="formasi_tingkat" placeholder="Contoh: ULA / WUSTHO" oninput="this.value = this.value.toUpperCase();" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-bold">Kelas (Din. Kls)</label>
+              <input type="text" class="form-control border-success" name="din_kls" id="formasi_din_kls" placeholder="Contoh: 1 / 2 / 3" oninput="this.value = this.value.toUpperCase();" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label fw-bold">Bagian (Din. Bag)</label>
+              <input type="text" class="form-control border-success" name="din_bag" id="formasi_din_bag" placeholder="Contoh: A / B / C" oninput="this.value = this.value.toUpperCase();" required>
+            </div>
+          </div>
+
+          <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Kapasitas & Lokasi Pembelajaran</h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Kapasitas Maksimal</label>
+              <input type="number" class="form-control" name="kapasitas" id="formasi_kapasitas" value="40" min="1" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Lokal Takror</label>
+              <input type="text" class="form-control" name="lokal_takror" id="formasi_lokal_takror" placeholder="Gedung / Ruang Takror">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Lokasi Diniyyah</label>
+              <input type="text" class="form-control" name="lokasi_diniyyah" id="formasi_lokasi_diniyyah" placeholder="Gedung / Ruang Diniyyah">
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-4">
+            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-warning px-4 fw-bold text-dark" id="btnSubmitFormasi">Simpan Formasi</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 8. Modal Filter Formasi Kelas (#filterFormasiModal) -->
+<div class="modal fade" id="filterFormasiModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-funnel-fill me-2"></i> Filter Formasi Kelas</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 mb-4">
+          <small><i class="bi bi-info-circle me-1"></i> Centang kategori yang ingin digunakan untuk memfilter tabel Formasi Kelas.</small>
+        </div>
+        <div id="filterFormCategoriesFormasi"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-light border text-muted" onclick="window.resetFiltersFormasi()">Reset</button>
+        <button type="button" class="btn btn-primary px-4" onclick="window.applyFiltersFormasi()" data-bs-dismiss="modal">Terapkan Filter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 9. Modal Sembunyikan Kolom Formasi Kelas (#hideFormasiModal) -->
+<div class="modal fade" id="hideFormasiModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-secondary text-white border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-eye-slash-fill me-2"></i> Kelola Tampilan Kolom Formasi</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="mb-4 d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary" onclick="window.checkAllHideFormasi(true)">Centang Semua (Sembunyikan)</button>
+          <button class="btn btn-sm btn-light border" onclick="window.checkAllHideFormasi(false)">Batal Centang (Tampilkan)</button>
+        </div>
+        <div class="row" id="hideCheckboxesFormasi"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary px-4" onclick="window.applyHideColumnsFormasi()" data-bs-dismiss="modal">Simpan Tampilan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 10. Modal Detail Formasi Kelas (#detailFormasiModal) -->
+<div class="modal fade" id="detailFormasiModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <h5 class="modal-title fw-bold"><i class="bi bi-building me-2"></i> Detail Formasi Kelas & Daftar Santri</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light" id="detailContentFormasi"></div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
