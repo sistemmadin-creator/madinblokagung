@@ -1,0 +1,246 @@
+<!-- 1. Modal Filter Lanjutan Santri (#filterModal) -->
+<div class="modal fade" id="filterModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-primary text-white border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-funnel-fill me-2"></i> Filter Lanjutan Santri</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="alert alert-primary bg-primary bg-opacity-10 border-0 py-2 mb-4">
+          <small><i class="bi bi-info-circle me-1"></i> Centang kategori yang ingin digunakan untuk filter data di tabel.</small>
+        </div>
+        <div id="filterFormCategories"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-light border text-muted" onclick="window.resetFilters()">Reset</button>
+        <button type="button" class="btn btn-primary px-4" onclick="window.applyFilters()" data-bs-dismiss="modal">Terapkan Filter</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Modal Sembunyikan Kolom Santri (#hideModal) -->
+<div class="modal fade" id="hideModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-secondary text-white border-0">
+        <h5 class="modal-title fw-bold"><i class="bi bi-eye-slash-fill me-2"></i> Kelola Tampilan Kolom</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <div class="mb-4 d-flex gap-2">
+          <button class="btn btn-sm btn-outline-secondary" onclick="window.checkAllHide(true)">Centang Semua (Sembunyikan)</button>
+          <button class="btn btn-sm btn-light border" onclick="window.checkAllHide(false)">Batal Centang (Tampilkan)</button>
+        </div>
+        <div class="row" id="hideCheckboxes"></div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-secondary px-4" onclick="window.applyHideColumns()" data-bs-dismiss="modal">Simpan Tampilan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Modal Form Input / Edit Santri (#inputModal) -->
+<div class="modal fade" id="inputModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <h5 class="modal-title fw-bold m-0"><i class="bi bi-person-plus-fill me-2"></i> Form Data Santri</h5>
+        <div class="ms-auto d-flex align-items-center gap-2">
+          <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;" onchange="window.handleExcelImport(event)">
+          <button type="button" class="btn btn-sm btn-light text-success fw-bold shadow-sm" id="btnImportExcelSantri" onclick="document.getElementById('excelFileInput').click()" title="Impor Data dari Excel">
+            <i class="bi bi-file-earmark-excel-fill"></i> Impor Excel
+          </button>
+          <button type="button" class="btn btn-sm btn-outline-light border-0 shadow-none" onclick="jQuery('#settingsModal').modal('show')" title="Pengaturan Hierarki">
+            <i class="bi bi-gear-fill fs-5"></i>
+          </button>
+          <button type="button" class="btn-close btn-close-white shadow-none ms-2" data-bs-dismiss="modal"></button>
+        </div>
+      </div>
+      <div class="modal-body bg-light p-4">
+        <form id="inputForm" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitData(event)">
+          <input type="hidden" name="no_induk_lama" id="no_induk_lama">
+
+          <!-- Bagian 1: Identitas Utama -->
+          <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Identitas Utama</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-3">
+              <label class="form-label">No.Induk</label>
+              <input type="number" class="form-control bg-light" name="no_induk" oninput="if(this.value.length > 6) this.value = this.value.slice(0,6);" required>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">No.Biro <span class="text-muted fw-normal">(Opsional)</span></label>
+              <input type="text" class="form-control" name="no_biro">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">NISN</label>
+              <input type="number" class="form-control" name="nisn" oninput="if(this.value.length > 10) this.value = this.value.slice(0,10);">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Gender (PA/PI)</label>
+              <select class="form-select border-success" name="pa_pi" required>
+                <option value="">Pilih</option>
+                <option value="PA">PA</option>
+                <option value="PI">PI</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label">Nama Lengkap Santri</label>
+              <input type="text" class="form-control border-success" name="nama" oninput="this.value = this.value.toUpperCase();" required>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label">Tempat Lahir</label>
+              <input type="text" class="form-control" name="tempat_lahir">
+            </div>
+            <div class="col-md-1">
+              <label class="form-label text-nowrap">Tanggal</label>
+              <select class="form-select px-1 text-center" name="tgl_lahir" id="tgl_lahir"></select>
+            </div>
+            <div class="col-md-2">
+              <label class="form-label text-nowrap">Bulan</label>
+              <select class="form-select px-2" name="bln_lahir" id="bln_lahir">
+                <option value="">Pilih</option>
+                <option value="01">Jan</option><option value="02">Feb</option><option value="03">Mar</option>
+                <option value="04">Apr</option><option value="05">Mei</option><option value="06">Jun</option>
+                <option value="07">Jul</option><option value="08">Agu</option><option value="09">Sep</option>
+                <option value="10">Okt</option><option value="11">Nov</option><option value="12">Des</option>
+              </select>
+            </div>
+            <div class="col-md-1">
+              <label class="form-label text-nowrap">Tahun</label>
+              <select class="form-select px-1 text-center" name="thn_lahir" id="thn_lahir"></select>
+            </div>
+
+            <!-- Input Foto Profil Santri (Kamera & Galeri) -->
+            <div class="col-md-12 mt-3">
+              <label class="form-label fw-bold text-success">Foto Profil Santri <span class="text-muted fw-normal">(Opsional)</span></label>
+              <div class="d-flex align-items-center gap-3 bg-light border rounded p-3">
+                <div class="flex-shrink-0 position-relative">
+                  <img id="preview_foto_santri" src=""
+                       style="width:85px;height:105px;object-fit:cover;border-radius:10px;display:none;"
+                       class="border shadow-sm">
+                  <div id="placeholder_foto_santri"
+                       class="d-flex flex-column align-items-center justify-content-center border rounded bg-white text-muted"
+                       style="width:85px;height:105px;">
+                    <i class="bi bi-person-bounding-box" style="font-size: 2rem;"></i>
+                    <span style="font-size: 10px;">Foto 3x4</span>
+                  </div>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="d-flex gap-2 flex-wrap">
+                    <button type="button" class="btn btn-sm btn-outline-success fw-bold"
+                            onclick="window.bukaKameraSantri()">
+                      <i class="bi bi-camera-fill me-1"></i> Kamera
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-primary fw-bold"
+                            onclick="document.getElementById('inputGaleriFotoSantri').click()">
+                      <i class="bi bi-images me-1"></i> Pilih File / Galeri
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger fw-bold d-none"
+                            id="btnHapusFotoSantri" onclick="window.hapusFotoSantri()">
+                      <i class="bi bi-trash me-1"></i> Hapus Foto
+                    </button>
+                  </div>
+                  <input type="file" id="inputCameraFotoSantri" accept="image/*" capture="environment"
+                         style="display:none;" onchange="window.handleFotoSantriSelected(event)">
+                  <input type="file" id="inputGaleriFotoSantri" accept="image/*"
+                         style="display:none;" onchange="window.handleFotoSantriSelected(event)">
+                  <div id="statusFotoSantri" class="small text-muted mt-2">Belum ada foto dipilih (Otomatis dikompresi agar ringan).</div>
+                  <input type="hidden" name="foto" id="foto_santri">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bagian 2: Alamat Domisili Asal -->
+          <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Alamat Domisili Asal</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-3">
+              <label class="form-label">Provinsi</label>
+              <select class="form-select" name="provinsi" id="provinsi"><option value="">Pilih Provinsi</option></select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Kabupaten / Kota</label>
+              <select class="form-select" name="kabupaten" id="kabupaten" disabled><option value="">Pilih Provinsi Dahulu</option></select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Kecamatan</label>
+              <select class="form-select" name="kecamatan" id="kecamatan" disabled><option value="">Pilih Kab Dahulu</option></select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Desa / Kelurahan</label>
+              <select class="form-select" name="desa" id="desa" disabled><option value="">Pilih Kec Dahulu</option></select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">Dusun / Jalan</label>
+              <input type="text" class="form-control" name="dusun" placeholder="Nama Dusun / Jalan">
+            </div>
+          </div>
+
+          <!-- Bagian 3: Penempatan Kamar & Pendidikan -->
+          <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Penempatan Kamar & Pendidikan</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-3"><label class="form-label text-primary">Blok</label><select class="form-select border-primary" name="blok" id="blok"><option value="">Pilih...</option></select></div>
+            <div class="col-md-3"><label class="form-label text-primary">Asrama</label><select class="form-select border-primary" name="asrama" id="asrama" disabled><option value="">Pilih...</option></select></div>
+            <div class="col-md-3"><label class="form-label text-primary">Kode</label><select class="form-select border-primary" name="kode" id="kode" disabled><option value="">Pilih...</option></select></div>
+            <div class="col-md-3"><label class="form-label text-primary">Kamar</label><select class="form-select border-primary" name="kamar" id="kamar" disabled><option value="">Pilih...</option></select></div>
+
+            <!-- Sekolah Formal -->
+            <div class="col-12 mt-3"><div class="badge bg-secondary mb-1">Sekolah Formal</div></div>
+            <div class="col-md-2"><label class="form-label">Unit</label><select class="form-select" name="unit" id="unit"><option value="">Pilih...</option></select></div>
+            <div class="col-md-3"><label class="form-label">Jurusan</label><select class="form-select" name="jurusan" id="jurusan" disabled><option value="">Pilih...</option></select></div>
+            <div class="col-md-3"><label class="form-label">Semester</label><select class="form-select" name="semester" id="semester" disabled><option value="">Pilih...</option></select></div>
+            <div class="col-md-2"><label class="form-label">Kelas</label><select class="form-select" name="kelas" id="kelas" disabled><option value="">Pilih...</option></select></div>
+            <div class="col-md-2"><label class="form-label">Bag</label><select class="form-select" name="bag" id="bag" disabled><option value="">Pilih...</option></select></div>
+
+            <!-- Madrasah Diniyyah -->
+            <div class="col-12 mt-3"><div class="badge bg-success mb-1">Madrasah Diniyyah</div></div>
+            <div class="col-md-3"><label class="form-label">Tingkat</label><select class="form-select" name="tingkat" id="tingkat"><option value="">Pilih...</option></select></div>
+            <div class="col-md-3"><label class="form-label">Din. Kls</label><select class="form-select" name="din_kls" id="din_kls" disabled><option value="">Pilih...</option></select></div>
+            <div class="col-md-3"><label class="form-label">Din. Bag</label><select class="form-select" name="din_bag" id="din_bag" disabled><option value="">Pilih...</option></select></div>
+            <div class="col-md-3"><label class="form-label">ORDA</label><input type="text" class="form-control" name="orda" placeholder="Organisasi Daerah"></div>
+          </div>
+
+          <!-- Bagian 4: Data Administrasi Keluarga -->
+          <h6 class="text-success fw-bold border-bottom pb-2 mb-3">Data Administrasi Keluarga</h6>
+          <div class="row g-3">
+            <div class="col-md-3"><label class="form-label">NIK Santri</label><input type="number" class="form-control" name="nik"></div>
+            <div class="col-md-3"><label class="form-label">NO. KK</label><input type="number" class="form-control" name="no_kk"></div>
+            <div class="col-md-6"><label class="form-label">No. Telepon / WA (Aktif)</label><input type="number" class="form-control" name="telepon"></div>
+
+            <div class="col-md-6"><label class="form-label">Nama Ayah (BIN)</label><input type="text" class="form-control" name="nama_ayah"></div>
+            <div class="col-md-6"><label class="form-label">NIK Ayah</label><input type="number" class="form-control" name="nik_ayah"></div>
+            <div class="col-md-6"><label class="form-label">Nama Ibu (BINTI)</label><input type="text" class="form-control" name="nama_ibu"></div>
+            <div class="col-md-6"><label class="form-label">NIK Ibu</label><input type="number" class="form-control" name="nik_ibu"></div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 mt-5">
+            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-success px-5 fw-bold" id="btnSubmit">Simpan Data</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Modal Detail Santri (#detailModal) -->
+<div class="modal fade" id="detailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <h5 class="modal-title fw-bold"><i class="bi bi-person-vcard me-2"></i> Detail Data Santri</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light" id="detailContent"></div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-outline-danger me-auto fw-bold" id="btnHapusDetail"><i class="bi bi-trash"></i> Hapus</button>
+        <button type="button" class="btn btn-success px-4 fw-bold" id="btnEditDetail"><i class="bi bi-pencil-square"></i> Edit Data</button>
+        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
