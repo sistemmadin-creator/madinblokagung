@@ -1,0 +1,35 @@
+<!-- HALAMAN FORMASI KELAS MADIN -->
+<div id="page-formasi" style="display: none;">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
+    <div>
+      <h2 class="header-title fw-bold m-0">Formasi Kelas Madin</h2>
+      <p class="text-muted small m-0 mt-1">Manajemen ruang kelas, wali kelas, dan kapasitas santri berdasarkan database ter-normalisasi.</p>
+    </div>
+    <button class="btn btn-warning px-4 shadow-sm fw-bold text-dark" onclick="window.openAddFormasiModal()">
+      <i class="bi bi-building-add me-2"></i> Tambah Formasi Blueprint
+    </button>
+  </div>
+
+  <div class="card-panel border-0">
+    <div class="table-responsive">
+      <table id="dataTableFormasi" class="table table-hover align-middle nowrap" style="width: 100%;">
+        <thead class="table-light">
+          <tr>
+            <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllFormasi" class="form-check-input"></th>
+            <th>Tingkat</th>
+            <th>Kelas</th>
+            <th>Bagian</th>
+            <th>Gender</th>
+            <th>Kapasitas</th>
+            <th>Wali Kelas</th>
+            <th>Domisili</th>
+            <th>Lokal Takror</th>
+            <th>Lokasi Diniyyah</th>
+            <th class="text-center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyFormasi"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
