@@ -1,0 +1,48 @@
+<!-- TOP NAVBAR DENGAN JUDUL & MENU PROFIL -->
+<nav class="top-navbar d-flex justify-content-between align-items-center">
+  <div class="brand fw-bold text-dark fs-5 d-flex align-items-center">
+    <div class="bg-white p-1 rounded-circle shadow-sm border me-2 d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+      <img id="nav_logo_img"
+           src="https://drive.google.com/thumbnail?id=1Fkm2_aiu-me47Fm1weDrpHMCHZBThzrD&sz=w200"
+           alt="Logo"
+           style="width: 28px; height: 28px; object-fit: contain;"
+           onerror="this.style.display='none';">
+    </div>
+    <span style="letter-spacing: -0.5px;">Madin Blokagung</span>
+  </div>
+
+  <div class="dropdown">
+    <button class="header-profile-btn" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <div class="header-avatar">
+        <i class="bi bi-person-fill d-none d-sm-block"></i>
+        <i class="bi bi-list d-block d-sm-none fs-5"></i>
+      </div>
+      <div class="text-start d-none d-sm-block me-1">
+        <div class="fw-bold text-dark lh-1" style="font-size: 0.8rem;">Menu Profil</div>
+        <div class="text-muted" style="font-size: 0.65rem;">Pengaturan & Keluar</div>
+      </div>
+      <i class="bi bi-chevron-down text-muted d-none d-sm-block" style="font-size: 0.7rem;"></i>
+    </button>
+
+    <ul class="dropdown-menu dropdown-menu-end header-dropdown-menu">
+      <li class="px-3 py-2 text-center border-bottom mb-2 bg-light rounded" style="margin-top: -4px;">
+        <div class="fw-bold text-dark fs-6" id="navUserNama">Master Administrator</div>
+        <span class="badge rounded-pill mt-1 role-badge-admin" id="navUserRoleBadge" style="font-size: 10px;">Master Admin</span>
+      </li>
+
+      <li class="rbac-master-only">
+        <a class="dropdown-item py-2 fw-semibold text-secondary d-flex align-items-center gap-2" href="#" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+          <i class="bi bi-gear-fill text-primary"></i> Pusat Kendali Admin
+        </a>
+      </li>
+
+      <li><hr class="dropdown-divider rbac-master-only"></li>
+
+      <li>
+        <a class="dropdown-item py-2 fw-bold text-danger d-flex align-items-center gap-2" href="#" onclick="window.actionLogout()">
+          <i class="bi bi-box-arrow-right fs-5"></i> Keluar / Logout
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
