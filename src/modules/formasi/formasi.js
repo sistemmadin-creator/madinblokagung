@@ -42,7 +42,7 @@ export function initHideFilterFormasi() {
   const filterContainer = document.getElementById('filterFormCategoriesFormasi');
   if (filterContainer) filterContainer.innerHTML = filterHtml;
 
-  $(document).on('change', '.filter-cb-formasi', function () {
+  $(document).off('change', '.filter-cb-formasi').on('change', '.filter-cb-formasi', function () {
     $('#in_f_' + $(this).val()).prop('disabled', !this.checked).val('');
   });
 }
@@ -139,8 +139,8 @@ export function renderTableFormasi(data) {
       <td class="row-klik-formasi" data-id="${f.id}">${f.lokasi_takror || '-'}</td>
       <td class="row-klik-formasi" data-id="${f.id}">${f.lokasi_diniyyah || '-'}</td>
       <td class="text-center" onclick="event.stopPropagation();">
-        <button class="btn btn-sm btn-outline-warning border-0" onclick="window.editFormasi('${f.id}')" title="Edit"><i class="bi bi-pencil-square"></i></button>
-        <button class="btn btn-sm btn-outline-danger border-0" onclick="window.hapusFormasi('${f.id}')" title="Hapus"><i class="bi bi-trash"></i></button>
+        <button type="button" class="btn btn-sm btn-outline-warning border-0" onclick="window.editFormasi('${f.id}')" title="Edit"><i class="bi bi-pencil-square"></i></button>
+        <button type="button" class="btn btn-sm btn-outline-danger border-0" onclick="window.hapusFormasi('${f.id}')" title="Hapus"><i class="bi bi-trash"></i></button>
       </td>
     </tr>`;
   });
@@ -183,19 +183,23 @@ export function renderTableFormasi(data) {
     if (store.dtFormasi) store.dtFormasi.columns.adjust().draw(false);
   }, 300);
 
-  $('.row-klik-formasi').on('click', function () {
-    showDetailFormasi($(this).data('id'));
+  // Gunakan event delegation agar klik baris & checkAll tetap berfungsi di halaman paginasi berikutnya
+  $('#dataTableFormasi tbody').off('click', '.row-klik-formasi').on('click', '.row-klik-formasi', function () {
+    showDetailFormasi($(this).attr('data-id'));
   });
 
-  $('#checkAllFormasi').on('change', function () {
+  $(document).off('change', '#checkAllFormasi').on('change', '#checkAllFormasi', function () {
     $('.row-check-formasi').prop('checked', this.checked);
   });
 }
 
 export function openAddFormasiModal() {
-  document.getElementById('formasiForm').reset();
-  document.getElementById('f_id').value = '';
-  document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-building-add me-2"></i> Formasi Kelas Baru';
+  const form = document.getElementById('formasiForm');
+  if (form) form.reset();
+  const idInput = document.getElementById('f_id');
+  if (idInput) idInput.value = '';
+  const titleEl = document.querySelector('#formasiModal .modal-title');
+  if (titleEl) titleEl.innerHTML = '<i class="bi bi-building-add me-2"></i> Formasi Kelas Baru';
   $('#formasiModal').modal('show');
 }
 
@@ -212,7 +216,7 @@ export async function submitFormasiData(e) {
     din_bag: form.f_din_bag.value,
     pa_pi: form.f_pa_pi.value,
     is_unggulan: form.f_is_unggulan.checked,
-    kapasitas_maksimal: parseInt(form.f_kapasitas_maksimal.value) || 40,
+    kapasitas_maksimal: parseInt(form.f_kapasitas_maksimal.value, 10) || 40,
     id_mustahiq: form.f_id_mustahiq.value,
     domisili: form.f_domisili.value,
     lokasi_takror: form.f_lokasi_takror.value,
@@ -249,7 +253,7 @@ export async function submitFormasiData(e) {
 }
 
 export function showDetailFormasi(id) {
-  let f = store.globalDataFormasi.find(x => x.id === id);
+  let f = store.globalDataFormasi.find(x => String(x.id) === String(id));
   if (!f) return;
 
   let html = `
@@ -263,38 +267,49 @@ export function showDetailFormasi(id) {
   <div class="row mb-2"><div class="col-sm-4 text-muted">Lokasi Diniyyah</div><div class="col-sm-8 fw-bold">: ${f.lokasi_diniyyah || '-'}</div></div>
   `;
 
-  document.getElementById('detailFormasiContent').innerHTML = html;
+  const detailContainer = document.getElementById('detailFormasiContent');
+  if (detailContainer) detailContainer.innerHTML = html;
 
-  document.getElementById('btnHapusDetailFormasi').onclick = function () {
-    $('#detailFormasiModal').modal('hide');
-    hapusFormasi(id);
-  };
-  document.getElementById('btnEditDetailFormasi').onclick = function () {
-    $('#detailFormasiModal').modal('hide');
-    editFormasi(id);
-  };
+  const btnHapus = document.getElementById('btnHapusDetailFormasi');
+  if (btnHapus) {
+    btnHapus.onclick = function () {
+      $('#detailFormasiModal').modal('hide');
+      hapusFormasi(f.id);
+    };
+  }
+
+  const btnEdit = document.getElementById('btnEditDetailFormasi');
+  if (btnEdit) {
+    btnEdit.onclick = function () {
+      $('#detailFormasiModal').modal('hide');
+      editFormasi(f.id);
+    };
+  }
 
   $('#detailFormasiModal').modal('show');
 }
 
 export function editFormasi(id) {
-  let f = store.globalDataFormasi.find(x => x.id === id);
+  let f = store.globalDataFormasi.find(x => String(x.id) === String(id));
   if (!f) return;
 
   const form = document.getElementById('formasiForm');
+  if (!form) return;
+
   form.f_id.value = f.id;
-  form.f_tingkat.value = f.tingkat;
-  form.f_din_kls.value = f.din_kls;
-  form.f_din_bag.value = f.din_bag;
-  form.f_pa_pi.value = f.pa_pi;
-  form.f_is_unggulan.checked = f.is_unggulan;
-  form.f_kapasitas_maksimal.value = f.kapasitas_maksimal;
+  form.f_tingkat.value = f.tingkat || '';
+  form.f_din_kls.value = f.din_kls || '';
+  form.f_din_bag.value = f.din_bag || '';
+  form.f_pa_pi.value = f.pa_pi || '';
+  form.f_is_unggulan.checked = Boolean(f.is_unggulan);
+  form.f_kapasitas_maksimal.value = f.kapasitas_maksimal || 40;
   form.f_id_mustahiq.value = f.id_mustahiq || '';
   form.f_domisili.value = f.domisili || '';
   form.f_lokasi_takror.value = f.lokasi_takror || '';
   form.f_lokasi_diniyyah.value = f.lokasi_diniyyah || '';
 
-  document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Formasi Kelas';
+  const titleEl = document.querySelector('#formasiModal .modal-title');
+  if (titleEl) titleEl.innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Formasi Kelas';
   $('#formasiModal').modal('show');
 }
 
