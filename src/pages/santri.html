@@ -1,0 +1,72 @@
+<!-- HALAMAN DATA SANTRI -->
+<div id="page-santri">
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
+    <div>
+      <h2 class="header-title fw-bold m-0">Database Santri</h2>
+      <p class="text-muted small m-0 mt-1">Manajemen data induk seluruh santri.</p>
+    </div>
+    <button class="btn btn-success px-4 shadow-sm fw-bold" onclick="window.openAddModal()">
+      <i class="bi bi-plus-lg me-2"></i> Tambah Santri
+    </button>
+  </div>
+
+  <div class="card-panel border-0">
+    <div id="btnLoadSantriContainer" class="text-center py-5">
+      <i class="bi bi-database-down text-success mb-3 d-block" style="font-size: 4rem;"></i>
+      <h5 class="fw-bold">Tabel Database Santri</h5>
+      <p class="text-muted small mb-4">
+        Untuk menjaga performa aplikasi, tabel (10.000+ data) tidak dimuat otomatis.<br>
+        Silakan klik tombol di bawah ini jika Anda perlu melihat atau mengelola tabel secara langsung.
+      </p>
+      <button class="btn btn-success px-4 py-2 fw-bold shadow-sm" id="btnLoadSantri" onclick="window.actionLoadSantri()">
+        <i class="bi bi-table me-2"></i> Memuat Halaman (Tabel Data)
+      </button>
+    </div>
+
+    <div id="tableSantriWrapper" style="display: none;">
+      <table id="dataTable" class="table table-hover align-middle nowrap" style="width: 100%;">
+        <thead class="table-light">
+          <tr>
+            <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAll" class="form-check-input"></th>
+            <th class="text-center">No</th>
+            <th>No. Induk</th>
+            <th>No. Biro</th>
+            <th>NISN</th>
+            <th class="text-center">Gender</th>
+            <th>Nama Lengkap</th>
+            <th>Tempat Lahir</th>
+            <th class="text-center">Tgl</th>
+            <th class="text-center">Bln</th>
+            <th class="text-center">Thn</th>
+            <th>Dusun</th>
+            <th>Desa</th>
+            <th>Kecamatan</th>
+            <th>Kabupaten</th>
+            <th>Provinsi</th>
+            <th>Blok</th>
+            <th>Asrama</th>
+            <th>Kode</th>
+            <th>Kamar</th>
+            <th>Kelas</th>
+            <th>Bag</th>
+            <th>Semester</th>
+            <th>Jurusan</th>
+            <th>Unit</th>
+            <th>Din. Kls</th>
+            <th>Din. Bag</th>
+            <th>Tingkat</th>
+            <th>ORDA</th>
+            <th>NIK Santri</th>
+            <th>No. KK</th>
+            <th>Nama Ayah</th>
+            <th>NIK Ayah</th>
+            <th>Nama Ibu</th>
+            <th>NIK Ibu</th>
+            <th>Telepon</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
