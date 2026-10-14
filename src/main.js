@@ -2607,7 +2607,12 @@ async function getCameraStreamSafe() {
 
 function restoreBootstrapModalScroll() {
   setTimeout(() => {
-    if ($('#inputModal').hasClass('show') \vert{}\vert{} $('#inputModalAsatidz').hasClass('show')) {
+    const modalSantri = document.getElementById('inputModal');
+    const modalAsatidz = document.getElementById('inputModalAsatidz');
+    if (modalSantri && modalSantri.classList.contains('show')) {
+      document.body.classList.add('modal-open');
+    }
+    if (modalAsatidz && modalAsatidz.classList.contains('show')) {
       document.body.classList.add('modal-open');
     }
   }, 100);
