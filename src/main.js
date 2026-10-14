@@ -160,7 +160,7 @@ function dbRowToArray(obj) {
 // FITUR BARU: STRUCTURED UI BUILDER ACCORDION (V4 - COLLAPSIBLE)
 // =========================================================
 
-// 1. Fungsi Utama Penambah Baris (Accordion) - UKURAN LEBIH RAMPING
+// 1. Fungsi Utama Penambah Baris (Accordion) - UKURAN LEBIH RAMPING & DEFAULT MENUTUP
 window.addRuleRow = function(treeId, data = null) {
   const container = document.getElementById(`builder-${treeId}`);
   if (!container) return;
@@ -169,96 +169,99 @@ window.addRuleRow = function(treeId, data = null) {
   // Margin dikurangi menjadi mb-2
   row.className = 'card border border-secondary border-opacity-25 shadow-sm rule-row bg-white mb-2 overflow-hidden';
   const rowId = 'collapse_' + Date.now() + Math.floor(Math.random() * 1000);
-  
-  if (treeId === 'tree1') {
-      let parentPath = (data && data.parentPath) ? data.parentPath : '';
-      let type = (data && data.type) ? data.type : 'numeric';
 
-      row.innerHTML = `
-         <!-- Header Ramping (py-2 px-3) -->
-         <div class="card-header bg-white py-2 px-3 rule-header-cursor d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#${rowId}" aria-expanded="true">
-            <div class="text-truncate pe-3 fw-medium text-secondary rule-preview-text">
-                <i class="bi bi-folder2-open me-2 text-success"></i> <span class="preview-content">Memuat aturan...</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1" onclick="event.stopPropagation(); this.closest('.rule-row').remove()" title="Hapus Aturan"><i class="bi bi-trash"></i></button>
-                <i class="bi bi-chevron-down rule-chevron text-muted ms-1"></i>
-            </div>
-         </div>
-         <div id="${rowId}" class="collapse show">
-             <!-- Body Ramping (p-2) -->
-             <div class="card-body bg-light border-top p-2">
-                 <div class="row g-2 align-items-center">
-                    <div class="col-md-12 mb-1">
-                       <label class="form-label small fw-bold text-primary mb-0">Rute Induk Pengelompokan</label>
-                       <input type="text" class="form-control form-control-sm rule-parent font-monospace" placeholder="Contoh: Putra > Darussalam > A" value="${parentPath}" oninput="window.updateRulePreview(this)">
-                    </div>
-                    <div class="col-md-4">
-                       <label class="form-label small text-muted mb-0">Tipe Hasil Ujung</label>
-                       <select class="form-select form-select-sm rule-type border-secondary" onchange="window.toggleRuleType(this)">
-                          <option value="numeric" ${type === 'numeric' ? 'selected' : ''}>Rentang Angka</option>
-                          <option value="alpha" ${type === 'alpha' ? 'selected' : ''}>Rentang Abjad</option>
-                          <option value="manual" ${type === 'manual' ? 'selected' : ''}>Teks Manual</option>
-                       </select>
-                    </div>
-                    <div class="col-md-8 rule-inputs-container mt-auto"></div>
-                 </div>
-             </div>
-         </div>
-      `;
-      container.appendChild(row);
-      window.toggleRuleType(row.querySelector('.rule-type'), data);
+  if (treeId === 'tree1') {
+    let parentPath = (data && data.parentPath) ? data.parentPath : '';
+    let type = (data && data.type) ? data.type : 'numeric';
+
+    row.innerHTML = `
+       <!-- Header Ramping (py-2 px-3) - Default Menutup (collapsed & aria-expanded="false") -->
+       <div class="card-header bg-white py-2 px-3 rule-header-cursor d-flex justify-content-between align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#${rowId}" aria-expanded="false">
+          <div class="text-truncate pe-3 fw-medium text-secondary rule-preview-text">
+              <i class="bi bi-folder2-open me-2 text-success"></i> <span class="preview-content">Memuat aturan...</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1" onclick="event.stopPropagation(); this.closest('.rule-row').remove()" title="Hapus Aturan"><i class="bi bi-trash"></i></button>
+              <i class="bi bi-chevron-down rule-chevron text-muted ms-1"></i>
+          </div>
+       </div>
+       <div id="${rowId}" class="collapse">
+           <!-- Body Ramping (p-2) -->
+           <div class="card-body bg-light border-top p-2">
+               <div class="row g-2 align-items-center">
+                  <div class="col-md-12 mb-1">
+                     <label class="form-label small fw-bold text-primary mb-0">Rute Induk Pengelompokan</label>
+                     <input type="text" class="form-control form-control-sm rule-parent font-monospace" placeholder="Contoh: Putra > Darussalam > A" value="${parentPath}" oninput="window.updateRulePreview(this)">
+                  </div>
+                  <div class="col-md-4">
+                     <label class="form-label small text-muted mb-0">Tipe Hasil Ujung</label>
+                     <select class="form-select form-select-sm rule-type border-secondary" onchange="window.toggleRuleType(this)">
+                        <option value="numeric" ${type === 'numeric' ? 'selected' : ''}>Rentang Angka</option>
+                        <option value="alpha" ${type === 'alpha' ? 'selected' : ''}>Rentang Abjad</option>
+                        <option value="manual" ${type === 'manual' ? 'selected' : ''}>Teks Manual</option>
+                     </select>
+                  </div>
+                  <div class="col-md-8 rule-inputs-container mt-auto"></div>
+               </div>
+           </div>
+       </div>
+    `;
+    container.appendChild(row);
+    window.toggleRuleType(row.querySelector('.rule-type'), data);
 
   } else if (treeId === 'tree2') {
-      let unit = data?.unit || ''; let jurusan = data?.jurusan || '';
-      let semType = data?.semesterType || 'numeric'; let kelType = data?.kelasType || 'roman'; let bagType = data?.bagType || 'alpha';
+    let unit = data?.unit || '';
+    let jurusan = data?.jurusan || '';
+    let semType = data?.semesterType || 'numeric';
+    let kelType = data?.kelasType || 'roman';
+    let bagType = data?.bagType || 'alpha';
 
-      row.innerHTML = `
-         <!-- Header Ramping (py-2 px-3) -->
-         <div class="card-header bg-white py-2 px-3 rule-header-cursor d-flex justify-content-between align-items-center" data-bs-toggle="collapse" data-bs-target="#${rowId}" aria-expanded="true">
-            <div class="text-truncate pe-3 fw-medium text-secondary rule-preview-text">
-                <i class="bi bi-diagram-3 me-2 text-success"></i> <span class="preview-content">Memuat aturan...</span>
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1" onclick="event.stopPropagation(); this.closest('.rule-row').remove()" title="Hapus Aturan"><i class="bi bi-trash"></i></button>
-                <i class="bi bi-chevron-down rule-chevron text-muted ms-1"></i>
-            </div>
-         </div>
-         <div id="${rowId}" class="collapse show">
-             <!-- Body Ramping (p-2) -->
-             <div class="card-body bg-light border-top p-2">
-                 <div class="row g-2 mb-2">
-                     <div class="col-sm-4">
-                         <label class="form-label small fw-bold text-primary mb-0">Unit</label>
-                         <input type="text" class="form-control form-control-sm t2-unit font-monospace fw-bold" placeholder="Contoh: SMP" value="${unit}" oninput="window.updateRulePreview(this)">
-                     </div>
-                     <div class="col-sm-8">
-                         <label class="form-label small fw-bold text-primary mb-0">Jurusan (Koma jika banyak)</label>
-                         <input type="text" class="form-control form-control-sm t2-jurusan font-monospace" placeholder="MIPA, IPS (atau -)" value="${jurusan}" oninput="window.updateRulePreview(this)">
-                     </div>
-                 </div>
-                 <div class="row g-2 mb-1 align-items-center bg-white p-1 rounded border shadow-sm mx-0">
-                     <div class="col-sm-3"><label class="form-label small text-muted mb-0">Semester</label></div>
-                     <div class="col-sm-4"><select class="form-select form-select-sm t2-sem-type" onchange="window.toggleT2(this, 'sem')"><option value="numeric" ${semType === 'numeric' ? 'selected' : ''}>Angka</option><option value="manual" ${semType === 'manual' ? 'selected' : ''}>Manual</option></select></div>
-                     <div class="col-sm-5 t2-sem-container"></div>
-                 </div>
-                 <div class="row g-2 mb-1 align-items-center bg-white p-1 rounded border shadow-sm mx-0">
-                     <div class="col-sm-3"><label class="form-label small text-muted mb-0">Kelas</label></div>
-                     <div class="col-sm-4"><select class="form-select form-select-sm t2-kel-type" onchange="window.toggleT2(this, 'kel')"><option value="roman" ${kelType === 'roman' ? 'selected' : ''}>Romawi</option><option value="manual" ${kelType === 'manual' ? 'selected' : ''}>Manual</option></select></div>
-                     <div class="col-sm-5 t2-kel-container"></div>
-                 </div>
-                 <div class="row g-2 align-items-center bg-white p-1 rounded border shadow-sm mx-0">
-                     <div class="col-sm-3"><label class="form-label small text-muted mb-0">Bagian</label></div>
-                     <div class="col-sm-4"><select class="form-select form-select-sm t2-bag-type" onchange="window.toggleT2(this, 'bag')"><option value="numeric" ${bagType === 'numeric' ? 'selected' : ''}>Angka</option><option value="alpha" ${bagType === 'alpha' ? 'selected' : ''}>Abjad</option><option value="manual" ${bagType === 'manual' ? 'selected' : ''}>Manual</option></select></div>
-                     <div class="col-sm-5 t2-bag-container"></div>
-                 </div>
-             </div>
-         </div>
-      `;
-      container.appendChild(row);
-      window.toggleT2(row.querySelector('.t2-sem-type'), 'sem', data);
-      window.toggleT2(row.querySelector('.t2-kel-type'), 'kel', data);
-      window.toggleT2(row.querySelector('.t2-bag-type'), 'bag', data);
+    row.innerHTML = `
+       <!-- Header Ramping (py-2 px-3) - Default Menutup (collapsed & aria-expanded="false") -->
+       <div class="card-header bg-white py-2 px-3 rule-header-cursor d-flex justify-content-between align-items-center collapsed" data-bs-toggle="collapse" data-bs-target="#${rowId}" aria-expanded="false">
+          <div class="text-truncate pe-3 fw-medium text-secondary rule-preview-text">
+              <i class="bi bi-diagram-3 me-2 text-success"></i> <span class="preview-content">Memuat aturan...</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-outline-danger border-0 p-1" onclick="event.stopPropagation(); this.closest('.rule-row').remove()" title="Hapus Aturan"><i class="bi bi-trash"></i></button>
+              <i class="bi bi-chevron-down rule-chevron text-muted ms-1"></i>
+          </div>
+       </div>
+       <div id="${rowId}" class="collapse">
+           <!-- Body Ramping (p-2) -->
+           <div class="card-body bg-light border-top p-2">
+               <div class="row g-2 mb-2">
+                   <div class="col-sm-4">
+                       <label class="form-label small fw-bold text-primary mb-0">Unit</label>
+                       <input type="text" class="form-control form-control-sm t2-unit font-monospace fw-bold" placeholder="Contoh: SMP" value="${unit}" oninput="window.updateRulePreview(this)">
+                   </div>
+                   <div class="col-sm-8">
+                       <label class="form-label small fw-bold text-primary mb-0">Jurusan (Koma jika banyak)</label>
+                       <input type="text" class="form-control form-control-sm t2-jurusan font-monospace" placeholder="MIPA, IPS (atau -)" value="${jurusan}" oninput="window.updateRulePreview(this)">
+                   </div>
+               </div>
+               <div class="row g-2 mb-1 align-items-center bg-white p-1 rounded border shadow-sm mx-0">
+                   <div class="col-sm-3"><label class="form-label small text-muted mb-0">Semester</label></div>
+                   <div class="col-sm-4"><select class="form-select form-select-sm t2-sem-type" onchange="window.toggleT2(this, 'sem')"><option value="numeric" ${semType === 'numeric' ? 'selected' : ''}>Angka</option><option value="manual" ${semType === 'manual' ? 'selected' : ''}>Manual</option></select></div>
+                   <div class="col-sm-5 t2-sem-container"></div>
+               </div>
+               <div class="row g-2 mb-1 align-items-center bg-white p-1 rounded border shadow-sm mx-0">
+                   <div class="col-sm-3"><label class="form-label small text-muted mb-0">Kelas</label></div>
+                   <div class="col-sm-4"><select class="form-select form-select-sm t2-kel-type" onchange="window.toggleT2(this, 'kel')"><option value="roman" ${kelType === 'roman' ? 'selected' : ''}>Romawi</option><option value="manual" ${kelType === 'manual' ? 'selected' : ''}>Manual</option></select></div>
+                   <div class="col-sm-5 t2-kel-container"></div>
+               </div>
+               <div class="row g-2 align-items-center bg-white p-1 rounded border shadow-sm mx-0">
+                   <div class="col-sm-3"><label class="form-label small text-muted mb-0">Bagian</label></div>
+                   <div class="col-sm-4"><select class="form-select form-select-sm t2-bag-type" onchange="window.toggleT2(this, 'bag')"><option value="numeric" ${bagType === 'numeric' ? 'selected' : ''}>Angka</option><option value="alpha" ${bagType === 'alpha' ? 'selected' : ''}>Abjad</option><option value="manual" ${bagType === 'manual' ? 'selected' : ''}>Manual</option></select></div>
+                   <div class="col-sm-5 t2-bag-container"></div>
+               </div>
+           </div>
+       </div>
+    `;
+    container.appendChild(row);
+    window.toggleT2(row.querySelector('.t2-sem-type'), 'sem', data);
+    window.toggleT2(row.querySelector('.t2-kel-type'), 'kel', data);
+    window.toggleT2(row.querySelector('.t2-bag-type'), 'bag', data);
   }
 };
 
