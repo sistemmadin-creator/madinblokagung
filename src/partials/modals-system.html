@@ -1,0 +1,83 @@
+<!-- 5. Modal Pengaturan Hierarki Dropdown (#settingsModal) -->
+<div class="modal fade" id="settingsModal" tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-dark text-white border-0 py-3">
+        <h5 class="modal-title fw-bold"><i class="bi bi-diagram-3-fill me-2"></i> Pengaturan Hierarki Dropdown</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light p-4">
+        <!-- 1. Builder Tree 1 (Blok -> Kamar) -->
+        <div class="mb-4 bg-white p-3 rounded border shadow-sm">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+            <label class="form-label fw-bold text-success mb-0">1. Blok &gt; Asrama &gt; Kode &gt; Kamar</label>
+            <div class="d-flex gap-2">
+              <div class="input-group input-group-sm w-auto shadow-sm">
+                <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree1', this.value)">
+              </div>
+              <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree1')">
+                <i class="bi bi-plus-lg me-1"></i> Tambah
+              </button>
+            </div>
+          </div>
+          <div id="builder-tree1" class="d-flex flex-column bg-light p-2 rounded border border-secondary border-opacity-25" style="min-height: 80px; max-height: 350px; overflow-y: auto;"></div>
+        </div>
+
+        <!-- 2. Builder Tree 2 (Unit -> Bagian) -->
+        <div class="mb-2 bg-white p-3 rounded border shadow-sm">
+          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+            <label class="form-label fw-bold text-success mb-0">2. Unit &gt; Jurusan &gt; Sem &gt; Kelas &gt; Bag</label>
+            <div class="d-flex gap-2">
+              <div class="input-group input-group-sm w-auto shadow-sm">
+                <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree2', this.value)">
+              </div>
+              <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree2')">
+                <i class="bi bi-plus-lg me-1"></i> Tambah
+              </button>
+            </div>
+          </div>
+          <div id="builder-tree2" class="d-flex flex-column bg-light p-2 rounded border border-secondary border-opacity-25" style="min-height: 80px; max-height: 350px; overflow-y: auto;"></div>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button type="button" class="btn btn-dark px-4 fw-bold" id="btnSaveSettings" onclick="window.saveSettingsData()">Simpan Pengaturan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Modal Pusat Kendali Admin / Riwayat Log Aktivitas (#modalAdminCenter) -->
+<div class="modal fade" id="modalAdminCenter" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-dark text-white border-0 py-3">
+        <h5 class="modal-title fw-bold m-0"><i class="bi bi-shield-check me-2 text-warning"></i> Pusat Kendali Master Admin - Audit Log</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="fw-bold text-dark m-0"><i class="bi bi-journal-text me-1 text-success"></i> Catatan Aktivitas Terakhir (Tabel <code>activity_logs</code>)</h6>
+          <button class="btn btn-sm btn-outline-secondary" onclick="window.loadAuditLogs()"><i class="bi bi-arrow-clockwise me-1"></i> Segarkan Log</button>
+        </div>
+        <div class="table-responsive bg-white rounded border" style="max-height: 450px; overflow-y: auto;">
+          <table class="table table-hover align-middle mb-0 table-sm" style="font-size: 0.82rem;">
+            <thead class="table-light sticky-top">
+              <tr>
+                <th>Waktu (WIB)</th>
+                <th>Username</th>
+                <th>Nama Pengguna</th>
+                <th>Aktivitas</th>
+                <th>Detail</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyAuditLogs">
+              <tr><td colspan="5" class="text-center py-3 text-muted">Memuat riwayat aktivitas...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
