@@ -2549,8 +2549,31 @@ async function loadAuditLogs() {
 }
 
 // =========================================================
-// 12. MODUL INPUT, KOMPRESI & PREVIEW FOTO SANTRI
+// 12. MODUL INPUT, KOMPRESI & PREVIEW FOTO (SANTRI & ASATIDZ)
 // =========================================================
+
+// Helper: Membuka stream kamera dengan fallback otomatis (kamera belakang -> kamera depan/default)
+async function getCameraStreamSafe() {
+  try {
+    return await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
+      audio: false
+    });
+  } catch (e) {
+    return await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+  }
+}
+
+// Helper: Menjaga scroll Bootstrap Modal tidak terkunci setelah popup SweetAlert2 ditutup
+function restoreBootstrapModalScroll() {
+  setTimeout(() => {
+    if ($('#inputModal').hasClass('show') \vert{}\vert{} $('#inputModalAsatidz').hasClass('show')) {
+      document.body.classList.add('modal-open');
+    }
+  }, 100);
+}
+
+// Helper: Kompresi File Gambar menjadi DataURL (Base64)
 function compressImageFileSantri(file, maxDim = 600, quality = 0.75) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -2588,6 +2611,7 @@ function compressImageFileSantri(file, maxDim = 600, quality = 0.75) {
   });
 }
 
+// --- A. FUNGSI FOTO SANTRI ---
 function setPreviewFotoSantri(dataUrl) {
   const inputHidden = document.getElementById('foto_santri');
   const previewImg = document.getElementById('preview_foto_santri');
@@ -2597,8 +2621,13 @@ function setPreviewFotoSantri(dataUrl) {
 
   if (!inputHidden || !previewImg || !placeholder) return;
 
-  if (dataUrl && dataUrl.trim() !== '') {
+  if (dataUrl && String(dataUrl).trim() !== '') {
     inputHidden.value = dataUrl;
+    previewImg.onerror = function () {
+      this.style.display = 'none';
+      placeholder.style.display = 'flex';
+      if (statusEl) statusEl.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i> File foto lama tidak dapat dimuat.</span>';
+    };
     previewImg.src = dataUrl;
     previewImg.style.display = 'block';
     placeholder.style.display = 'none';
@@ -2615,6 +2644,7 @@ async function handleFotoSantriSelected(event) {
 
   if (!file.type.startsWith('image/')) {
     Swal.fire('Format Tidak Didukung', 'Pilih file berupa gambar (JPG/PNG/WEBP).', 'warning');
+    event.target.value = '';
     return;
   }
 
@@ -2627,7 +2657,7 @@ async function handleFotoSantriSelected(event) {
     const compressedBase64 = await compressImageFileSantri(file, 600, 0.75);
     setPreviewFotoSantri(compressedBase64);
   } catch (err) {
-    console.error(err);
+    console.error('Gagal memproses foto santri:', err);
     if (statusEl) statusEl.innerHTML = '<span class="text-danger">Gagal memproses foto.</span>';
   }
 
@@ -2643,6 +2673,7 @@ function hapusFotoSantri() {
 
   if (inputHidden) inputHidden.value = '';
   if (previewImg) {
+    previewImg.onerror = null;
     previewImg.src = '';
     previewImg.style.display = 'none';
   }
@@ -2652,7 +2683,6 @@ function hapusFotoSantri() {
 }
 
 async function bukaKameraSantri() {
-  // Jika perangkat tidak mendukung mediaDevices (atau di HP yang lebih nyaman pakai kamera bawaan), fallback ke input file kamera
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     document.getElementById('inputCameraFotoSantri').click();
     return;
@@ -2660,82 +2690,19 @@ async function bukaKameraSantri() {
 
   let stream = null;
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } },
-      audio: false
-    });
-
-    const { isConfirmed } = await Swal.fire({
-      title: 'Ambil Foto Kamera',
-      html: `
-        <div class="d-flex flex-column align-items-center">
-          <video id="webcamVideoSantri" autoplay playsinline style="width: 100%; max-width: 360px; border-radius: 12px; background: #000;"></video>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: '<i class="bi bi-camera-fill me-1"></i> Jepret Foto',
-      cancelButtonText: 'Batal',
-      confirmButtonColor: '#0f766e',
-      didOpen: () => {
-        const videoEl = document.getElementById('webcamVideoSantri');
-        if (videoEl) videoEl.srcObject = stream;
-      },
-      preConfirm: () => {
-        const videoEl = document.getElementById('webcamVideoSantri');
-        if (!videoEl) return null;
-        const canvas = document.createElement('canvas');
-        const maxDim = 600;
-        let w = videoEl.videoWidth || 640;
-        let h = videoEl.videoHeight || 480;
-        if (w > h && w > maxDim) {
-          h = Math.round(h * (maxDim / w));
-          w = maxDim;
-        } else if (h >= w && h > maxDim) {
-          w = Math.round(w * (maxDim / h));
-          h = maxDim;
-        }
-        canvas.width = w;
-        canvas.height = h;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(videoEl, 0, 0, w, h);
-        return canvas.toDataURL('image/jpeg', 0.75);
-      },
-      willClose: () => {
-        if (stream) {
-          stream.getTracks().forEach(track => track.stop());
-        }
-      }
-    });
-
-    if (isConfirmed && Swal.getPopup()) {
-      // Nilai hasil preConfirm diteruskan otomatis oleh SweetAlert2
-    }
+    stream = await getCameraStreamSafe();
   } catch (err) {
-    // Jika webcam tidak diizinkan / tidak ditemukan, buka file picker kamera bawaan
-    if (stream) stream.getTracks().forEach(track => track.stop());
-    document.getElementById('inputCameraFotoSantri').click();
-  }
-}
-
-// Tangkap hasil jepretan kamera dari SweetAlert2
-window.bukaKameraSantri = async function () {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    // Hanya buka file picker jika kamera benar-benar tidak tersedia / ditolak izinnya
     document.getElementById('inputCameraFotoSantri').click();
     return;
   }
 
-  let stream = null;
   try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' },
-      audio: false
-    });
-
     const result = await Swal.fire({
       title: 'Ambil Foto Santri',
       html: `
         <div class="d-flex flex-column align-items-center">
-          <video id="webcamVideoSantri" autoplay playsinline style="width: 100%; max-width: 360px; border-radius: 12px; background: #000;"></video>
+          <video id="webcamVideoSantri" autoplay playsinline muted style="width: 100%; max-width: 360px; border-radius: 12px; background: #000;"></video>
         </div>
       `,
       showCancelButton: true,
@@ -2744,7 +2711,10 @@ window.bukaKameraSantri = async function () {
       confirmButtonColor: '#0f766e',
       didOpen: () => {
         const videoEl = document.getElementById('webcamVideoSantri');
-        if (videoEl) videoEl.srcObject = stream;
+        if (videoEl) {
+          videoEl.srcObject = stream;
+          videoEl.play().catch(() => {});
+        }
       },
       preConfirm: () => {
         const videoEl = document.getElementById('webcamVideoSantri');
@@ -2768,6 +2738,7 @@ window.bukaKameraSantri = async function () {
       },
       willClose: () => {
         if (stream) stream.getTracks().forEach(track => track.stop());
+        restoreBootstrapModalScroll();
       }
     });
 
@@ -2776,9 +2747,9 @@ window.bukaKameraSantri = async function () {
     }
   } catch (err) {
     if (stream) stream.getTracks().forEach(track => track.stop());
-    document.getElementById('inputCameraFotoSantri').click();
+    restoreBootstrapModalScroll();
   }
-};
+}
 
 function lihatFotoSantri(url, namaSantri) {
   if (!url) return;
@@ -2792,45 +2763,40 @@ function lihatFotoSantri(url, namaSantri) {
   });
 }
 
-// =========================================================
-// >>> BARU: MODUL UPLOAD FOTO ASATIDZ KE SUPABASE STORAGE (bucket: foto_asatidz)
-// =========================================================
-function compressImageFile(file, maxDim = 1000, quality = 0.7) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const img = new Image();
-      img.onload = function () {
-        let width = img.width;
-        let height = img.height;
-        if (width > height) {
-          if (width > maxDim) { height = Math.round(height * (maxDim / width)); width = maxDim; }
-        } else {
-          if (height > maxDim) { width = Math.round(width * (maxDim / height)); height = maxDim; }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality);
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+// --- B. FUNGSI FOTO ASATIDZ (SUPABASE STORAGE + AUTO-FALLBACK BASE64) ---
+function dataURLToBlob(dataUrl) {
+  const parts = dataUrl.split(',');
+  const mime = parts[0].match(/:(.*?);/)[1];
+  const bstr = atob(parts[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+  return new Blob([u8arr], { type: mime });
 }
 
 async function uploadFotoAsatidzToStorage(blob, fileNamePrefix = 'asatidz') {
+  if (!supabase || !supabase.storage) throw new Error('Supabase Storage tidak aktif');
   const fileName = `${fileNamePrefix}_${Date.now()}.jpg`;
   const { error } = await supabase.storage
     .from('foto_asatidz')
     .upload(fileName, blob, { contentType: 'image/jpeg', upsert: true });
   if (error) throw error;
   const { data } = supabase.storage.from('foto_asatidz').getPublicUrl(fileName);
+  if (!data || !data.publicUrl) throw new Error('Gagal mendapatkan URL publik');
   return data.publicUrl;
+}
+
+// Unggah ke bucket foto_asatidz; jika bucket belum ada / kena RLS, otomatis gunakan Base64 terkompresi
+async function processAndSaveFotoAsatidz(base64DataUrl) {
+  try {
+    const blob = dataURLToBlob(base64DataUrl);
+    return await uploadFotoAsatidzToStorage(blob);
+  } catch (storageErr) {
+    console.warn('Bucket foto_asatidz tidak dapat diakses, menggunakan penyimpanan Base64:', storageErr.message);
+    return base64DataUrl;
+  }
 }
 
 function setPreviewFotoAsatidz(url) {
@@ -2838,36 +2804,51 @@ function setPreviewFotoAsatidz(url) {
   const preview = document.getElementById('preview_foto_asatidz');
   const placeholder = document.getElementById('placeholder_foto_asatidz');
   const btnHapus = document.getElementById('btnHapusFotoAsatidz');
+  const statusEl = document.getElementById('statusFotoAsatidz');
+
   if (!hidden || !preview || !placeholder) return;
-  hidden.value = url;
-  preview.src = url;
-  preview.style.display = 'block';
-  placeholder.style.display = 'none';
-  if (btnHapus) btnHapus.classList.remove('d-none');
+
+  if (url && String(url).trim() !== '') {
+    hidden.value = url;
+    preview.onerror = function () {
+      this.style.display = 'none';
+      placeholder.style.display = 'flex';
+      if (statusEl) statusEl.innerHTML = '<span class="text-warning"><i class="bi bi-exclamation-circle me-1"></i> File foto lama tidak dapat dimuat.</span>';
+    };
+    preview.src = url;
+    preview.style.display = 'block';
+    placeholder.style.display = 'none';
+    if (btnHapus) btnHapus.classList.remove('d-none');
+    if (statusEl) statusEl.innerHTML = '<span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Foto siap disimpan.</span>';
+  } else {
+    hapusFotoAsatidz();
+  }
 }
 
 async function handleFotoAsatidzSelected(event) {
   const file = event.target.files[0];
   if (!file) return;
+
   if (!file.type.startsWith('image/')) {
     Swal.fire('Format Tidak Didukung', 'Pilih file berupa gambar (JPG/PNG/WEBP).', 'warning');
+    event.target.value = '';
     return;
   }
 
   const statusEl = document.getElementById('statusFotoAsatidz');
   if (statusEl) {
-    statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-success me-1"></span> Mengompres & mengunggah foto...';
+    statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-success me-1"></span> Mengompres & menyiapkan foto...';
   }
 
   try {
-    const blob = await compressImageFile(file, 1000, 0.7);
-    const url = await uploadFotoAsatidzToStorage(blob);
-    setPreviewFotoAsatidz(url);
-    if (statusEl) statusEl.innerHTML = '<span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Foto berhasil diunggah.</span>';
+    const compressedBase64 = await compressImageFileSantri(file, 600, 0.75);
+    const finalUrl = await processAndSaveFotoAsatidz(compressedBase64);
+    setPreviewFotoAsatidz(finalUrl);
   } catch (err) {
-    console.error(err);
-    if (statusEl) statusEl.innerHTML = `<span class="text-danger">Gagal mengunggah foto: ${err.message}</span>`;
+    console.error('Gagal memproses foto asatidz:', err);
+    if (statusEl) statusEl.innerHTML = `<span class="text-danger">Gagal memproses foto: ${err.message}</span>`;
   }
+
   event.target.value = '';
 }
 
@@ -2879,7 +2860,11 @@ function hapusFotoAsatidz() {
   const statusEl = document.getElementById('statusFotoAsatidz');
 
   if (hidden) hidden.value = '';
-  if (preview) { preview.src = ''; preview.style.display = 'none'; }
+  if (preview) {
+    preview.onerror = null;
+    preview.src = '';
+    preview.style.display = 'none';
+  }
   if (placeholder) placeholder.style.display = 'flex';
   if (btnHapus) btnHapus.classList.add('d-none');
   if (statusEl) statusEl.innerText = 'Belum ada foto dipilih (Otomatis dikompresi agar ringan).';
@@ -2890,58 +2875,97 @@ async function bukaKameraAsatidz() {
     document.getElementById('inputCameraFotoAsatidz').click();
     return;
   }
+
   let stream = null;
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    stream = await getCameraStreamSafe();
+  } catch (err) {
+    // Hanya buka file picker jika kamera benar-benar tidak tersedia / ditolak izinnya
+    document.getElementById('inputCameraFotoAsatidz').click();
+    return;
+  }
+
+  try {
     const result = await Swal.fire({
       title: 'Ambil Foto Asatidz',
-      html: `<div class="d-flex flex-column align-items-center">
-        <video id="webcamVideoAsatidz" autoplay playsinline style="width:100%;max-width:360px;border-radius:12px;background:#000;"></video>
-      </div>`,
+      html: `
+        <div class="d-flex flex-column align-items-center">
+          <video id="webcamVideoAsatidz" autoplay playsinline muted style="width:100%;max-width:360px;border-radius:12px;background:#000;"></video>
+        </div>
+      `,
       showCancelButton: true,
       confirmButtonText: '<i class="bi bi-camera-fill me-1"></i> Ambil Foto',
       cancelButtonText: 'Batal',
       confirmButtonColor: '#0f766e',
       didOpen: () => {
         const videoEl = document.getElementById('webcamVideoAsatidz');
-        if (videoEl) videoEl.srcObject = stream;
+        if (videoEl) {
+          videoEl.srcObject = stream;
+          videoEl.play().catch(() => {});
+        }
       },
       preConfirm: () => {
         const videoEl = document.getElementById('webcamVideoAsatidz');
         if (!videoEl) return null;
         const canvas = document.createElement('canvas');
-        const maxDim = 1000;
-        let w = videoEl.videoWidth || 640, h = videoEl.videoHeight || 480;
-        if (w > h && w > maxDim) { h = Math.round(h * (maxDim / w)); w = maxDim; }
-        else if (h >= w && h > maxDim) { w = Math.round(w * (maxDim / h)); h = maxDim; }
-        canvas.width = w; canvas.height = h;
+        const maxDim = 600;
+        let w = videoEl.videoWidth || 640;
+        let h = videoEl.videoHeight || 480;
+        if (w > h && w > maxDim) {
+          h = Math.round(h * (maxDim / w));
+          w = maxDim;
+        } else if (h >= w && h > maxDim) {
+          w = Math.round(w * (maxDim / h));
+          h = maxDim;
+        }
+        canvas.width = w;
+        canvas.height = h;
         canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
-        return canvas.toDataURL('image/jpeg', 0.7);
+        return canvas.toDataURL('image/jpeg', 0.75);
       },
-      willClose: () => { if (stream) stream.getTracks().forEach(t => t.stop()); }
+      willClose: () => {
+        if (stream) stream.getTracks().forEach(t => t.stop());
+        restoreBootstrapModalScroll();
+      }
     });
 
     if (result.isConfirmed && result.value) {
-      const blob = await (await fetch(result.value)).blob();
-      const url = await uploadFotoAsatidzToStorage(blob);
-      setPreviewFotoAsatidz(url);
+      const statusEl = document.getElementById('statusFotoAsatidz');
+      if (statusEl) {
+        statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-success me-1"></span> Menyimpan hasil foto kamera...';
+      }
+      const finalUrl = await processAndSaveFotoAsatidz(result.value);
+      setPreviewFotoAsatidz(finalUrl);
     }
   } catch (err) {
     if (stream) stream.getTracks().forEach(t => t.stop());
-    document.getElementById('inputCameraFotoAsatidz').click();
+    restoreBootstrapModalScroll();
   }
 }
 
-function lihatFotoAsatidz(url) {
+function lihatFotoAsatidz(url, namaAsatidz) {
   if (!url) return;
   Swal.fire({
+    title: namaAsatidz || 'Foto Asatidz',
     imageUrl: url,
-    imageAlt: 'Foto Asatidz',
+    imageAlt: namaAsatidz || 'Foto Asatidz',
     showConfirmButton: true,
     confirmButtonText: 'Tutup',
     confirmButtonColor: '#0f766e'
   });
 }
+
+// Pastikan seluruh fungsi foto terekspos ke window
+Object.assign(window, {
+  bukaKameraSantri,
+  handleFotoSantriSelected,
+  hapusFotoSantri,
+  lihatFotoSantri,
+  bukaKameraAsatidz,
+  handleFotoAsatidzSelected,
+  hapusFotoAsatidz,
+  lihatFotoAsatidz
+});
 
 // =========================================================
 // >>> BARU: CRUD DATA ASATIDZ (TAMBAH, UPDATE, HAPUS)
