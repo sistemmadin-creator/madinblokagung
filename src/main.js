@@ -1,21 +1,25 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase, API_WILAYAH } from './lib/supabase.js';
+import { logActivity, loadAuditLogs } from './modules/audit/audit.js';
+import {
+  setPreviewFotoSantri,
+  handleFotoSantriSelected,
+  hapusFotoSantri,
+  bukaKameraSantri,
+  lihatFotoSantri,
+  setPreviewFotoAsatidz,
+  handleFotoAsatidzSelected,
+  hapusFotoAsatidz,
+  bukaKameraAsatidz,
+  lihatFotoAsatidz
+} from './utils/camera.js';
 
-// =========================================================
-// 1. INISIALISASI CLIENT SUPABASE DARI ENVIRONMENT VARIABLES
-// =========================================================
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-export const supabase = (SUPABASE_URL && SUPABASE_ANON_KEY)
-  ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  : null;
+export { supabase };
 
 // =========================================================
 // 2. STATE GLOBAL & KONFIGURASI KOLOM
 // =========================================================
 let dataTable = null;
 let dataTableAsatidz = null; // >>> BARU: instance DataTable untuk Asatidz
-const API_WILAYAH = 'https://www.emsifa.com/api-wilayah-indonesia/api';
 let tree1Data = {}, tree2Data = {}, tree3Data = {};
 let isEditMode = false;
 let isEditModeAsatidz = false; // >>> BARU
@@ -425,21 +429,8 @@ window.renderBuilderUI = function(treeId, jsonString) {
 };
 
 // =========================================================
-// 3. FUNGSI BACKEND SUPABASE (DATA, SETTINGS & AUDIT LOG)
+// 3. FUNGSI BACKEND SUPABASE (DATA & SETTINGS)
 // =========================================================
-async function logActivity(aktivitas, detail) {
-  if (!supabase) return;
-  try {
-    await supabase.from('activity_logs').insert([{
-      username: currentUser?.username || 'System',
-      nama: currentUser?.nama || 'Administrator',
-      aktivitas,
-      detail: detail || '-'
-    }]);
-  } catch (err) {
-    console.error('Gagal mencatat activity_logs:', err.message);
-  }
-}
 
 // Mengambil seluruh data santri dari Supabase (mendukung > 1.000 baris dengan paginasi otomatis)
 async function fetchAllSantriFromSupabase() {
@@ -2502,420 +2493,7 @@ async function saveSettingsData() {
     btn.disabled = false;
   }
 }
-
-// =========================================================
-// 11. AUDIT LOG VIEWER (TABEL `activity_logs`)
-// =========================================================
-async function loadAuditLogs() {
-  const tbody = document.getElementById('tbodyAuditLogs');
-  if (!tbody) return;
-  tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3"><span class="spinner-border spinner-border-sm me-1"></span> Mengambil riwayat aktivitas dari Supabase...</td></tr>';
-
-  if (!supabase) {
-    tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-danger">Supabase belum terhubung.</td></tr>';
-    return;
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('activity_logs')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(100);
-
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-3 text-muted">Belum ada aktivitas tercatat.</td></tr>';
-      return;
-    }
-
-    tbody.innerHTML = data.map(item => {
-      const waktuWIB = item.created_at
-        ? new Date(item.created_at).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })
-        : '-';
-      return `
-        <tr>
-          <td class="text-nowrap text-secondary">${waktuWIB}</td>
-          <td class="fw-bold">${item.username || '-'}</td>
-          <td>${item.nama || '-'}</td>
-          <td><span class="badge bg-secondary">${item.aktivitas || '-'}</span></td>
-          <td><small>${item.detail || '-'}</small></td>
-        </tr>
-      `;
-    }).join('');
-  } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3 text-danger">Gagal memuat log: ${err.message}</td></tr>`;
-  }
-}
-
-// --- [PATOKAN ATAS: Akhir fungsi loadAuditLogs() - JANGAN DIHAPUS] ---
-// } catch (err) {
-//   tbody.innerHTML = `<tr><td colspan="5" class="text-center py-3 text-danger">Gagal memuat log: ${err.message}</td></tr>`;
-// }
-// }
-
-// =========================================================
-// 12. MODUL INPUT, KOMPRESI & PREVIEW FOTO (SANTRI & ASATIDZ)
-// =========================================================
-function compressImageFileSantri(file, maxDim = 600, quality = 0.75) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const img = new Image();
-      img.onload = function () {
-        let width = img.width;
-        let height = img.height;
-
-        if (width > height) {
-          if (width > maxDim) {
-            height = Math.round(height * (maxDim / width));
-            width = maxDim;
-          }
-        } else {
-          if (height > maxDim) {
-            width = Math.round(width * (maxDim / height));
-            height = maxDim;
-          }
-        }
-
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0, width, height);
-
-        resolve(canvas.toDataURL('image/jpeg', quality));
-      };
-      img.onerror = reject;
-      img.src = e.target.result;
-    };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-async function getCameraStreamSafe() {
-  try {
-    return await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: { ideal: 'environment' }, width: { ideal: 640 }, height: { ideal: 480 } },
-      audio: false
-    });
-  } catch (e) {
-    return await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-  }
-}
-
-function restoreBootstrapModalScroll() {
-  setTimeout(() => {
-    const modalSantri = document.getElementById('inputModal');
-    const modalAsatidz = document.getElementById('inputModalAsatidz');
-    if (modalSantri && modalSantri.classList.contains('show')) {
-      document.body.classList.add('modal-open');
-    }
-    if (modalAsatidz && modalAsatidz.classList.contains('show')) {
-      document.body.classList.add('modal-open');
-    }
-  }, 100);
-}
-
-// --- A. FOTO SANTRI ---
-function setPreviewFotoSantri(dataUrl) {
-  const inputHidden = document.getElementById('foto_santri');
-  const previewImg = document.getElementById('preview_foto_santri');
-  const placeholder = document.getElementById('placeholder_foto_santri');
-  const btnHapus = document.getElementById('btnHapusFotoSantri');
-  const statusEl = document.getElementById('statusFotoSantri');
-
-  if (!inputHidden || !previewImg || !placeholder) return;
-
-  if (dataUrl && String(dataUrl).trim() !== '') {
-    inputHidden.value = dataUrl;
-    previewImg.src = dataUrl;
-    previewImg.style.display = 'block';
-    placeholder.style.display = 'none';
-    if (btnHapus) btnHapus.classList.remove('d-none');
-    if (statusEl) statusEl.innerHTML = '<span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Foto siap disimpan.</span>';
-  } else {
-    hapusFotoSantri();
-  }
-}
-
-async function handleFotoSantriSelected(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  if (!file.type.startsWith('image/')) {
-    Swal.fire('Format Tidak Didukung', 'Pilih file berupa gambar (JPG/PNG/WEBP).', 'warning');
-    event.target.value = '';
-    return;
-  }
-
-  const statusEl = document.getElementById('statusFotoSantri');
-  if (statusEl) {
-    statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-success me-1"></span> Mengompres & menyiapkan foto...';
-  }
-
-  try {
-    const compressedBase64 = await compressImageFileSantri(file, 600, 0.75);
-    setPreviewFotoSantri(compressedBase64);
-  } catch (err) {
-    console.error(err);
-    if (statusEl) statusEl.innerHTML = '<span class="text-danger">Gagal memproses foto.</span>';
-  }
-
-  event.target.value = '';
-}
-
-function hapusFotoSantri() {
-  const inputHidden = document.getElementById('foto_santri');
-  const previewImg = document.getElementById('preview_foto_santri');
-  const placeholder = document.getElementById('placeholder_foto_santri');
-  const btnHapus = document.getElementById('btnHapusFotoSantri');
-  const statusEl = document.getElementById('statusFotoSantri');
-
-  if (inputHidden) inputHidden.value = '';
-  if (previewImg) {
-    previewImg.src = '';
-    previewImg.style.display = 'none';
-  }
-  if (placeholder) placeholder.style.display = 'flex';
-  if (btnHapus) btnHapus.classList.add('d-none');
-  if (statusEl) statusEl.innerText = 'Belum ada foto dipilih (Otomatis dikompresi agar ringan).';
-}
-
-async function bukaKameraSantri() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    document.getElementById('inputCameraFotoSantri').click();
-    return;
-  }
-
-  let stream = null;
-  try {
-    stream = await getCameraStreamSafe();
-  } catch (err) {
-    document.getElementById('inputCameraFotoSantri').click();
-    return;
-  }
-
-  try {
-    const result = await Swal.fire({
-      title: 'Ambil Foto Santri',
-      html: `
-        <div class="d-flex flex-column align-items-center">
-          <video id="webcamVideoSantri" autoplay playsinline muted style="width: 100%; max-width: 360px; border-radius: 12px; background: #000;"></video>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: '<i class="bi bi-camera-fill me-1"></i> Ambil Foto',
-      cancelButtonText: 'Batal',
-      confirmButtonColor: '#0f766e',
-      didOpen: () => {
-        const videoEl = document.getElementById('webcamVideoSantri');
-        if (videoEl) {
-          videoEl.srcObject = stream;
-          videoEl.play().catch(() => {});
-        }
-      },
-      preConfirm: () => {
-        const videoEl = document.getElementById('webcamVideoSantri');
-        if (!videoEl) return null;
-        const canvas = document.createElement('canvas');
-        const maxDim = 600;
-        let w = videoEl.videoWidth || 640;
-        let h = videoEl.videoHeight || 480;
-        if (w > h && w > maxDim) {
-          h = Math.round(h * (maxDim / w));
-          w = maxDim;
-        } else if (h >= w && h > maxDim) {
-          w = Math.round(w * (maxDim / h));
-          h = maxDim;
-        }
-        canvas.width = w;
-        canvas.height = h;
-        canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
-        return canvas.toDataURL('image/jpeg', 0.75);
-      },
-      willClose: () => {
-        if (stream) stream.getTracks().forEach(track => track.stop());
-        restoreBootstrapModalScroll();
-      }
-    });
-
-    if (result.isConfirmed && result.value) {
-      setPreviewFotoSantri(result.value);
-    }
-  } catch (err) {
-    if (stream) stream.getTracks().forEach(track => track.stop());
-    restoreBootstrapModalScroll();
-  }
-}
-
-window.bukaKameraSantri = bukaKameraSantri;
-
-function lihatFotoSantri(url, namaSantri) {
-  if (!url) return;
-  Swal.fire({
-    title: namaSantri || 'Foto Santri',
-    imageUrl: url,
-    imageAlt: namaSantri || 'Foto Santri',
-    showConfirmButton: true,
-    confirmButtonText: 'Tutup',
-    confirmButtonColor: '#0f766e'
-  });
-}
-
-// --- B. FOTO ASATIDZ (KOMPRESI BASE64 LANGSUNG TANPA BUCKET STORAGE) ---
-function setPreviewFotoAsatidz(dataUrl) {
-  const hidden = document.getElementById('foto_asatidz');
-  const preview = document.getElementById('preview_foto_asatidz');
-  const placeholder = document.getElementById('placeholder_foto_asatidz');
-  const btnHapus = document.getElementById('btnHapusFotoAsatidz');
-  const statusEl = document.getElementById('statusFotoAsatidz');
-
-  if (!hidden || !preview || !placeholder) return;
-
-  if (dataUrl && String(dataUrl).trim() !== '') {
-    hidden.value = dataUrl;
-    preview.src = dataUrl;
-    preview.style.display = 'block';
-    placeholder.style.display = 'none';
-    if (btnHapus) btnHapus.classList.remove('d-none');
-    if (statusEl) statusEl.innerHTML = '<span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Foto siap disimpan.</span>';
-  } else {
-    hapusFotoAsatidz();
-  }
-}
-
-async function handleFotoAsatidzSelected(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  if (!file.type.startsWith('image/')) {
-    Swal.fire('Format Tidak Didukung', 'Pilih file berupa gambar (JPG/PNG/WEBP).', 'warning');
-    event.target.value = '';
-    return;
-  }
-
-  const statusEl = document.getElementById('statusFotoAsatidz');
-  if (statusEl) {
-    statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-success me-1"></span> Mengompres & menyiapkan foto...';
-  }
-
-  try {
-    const compressedBase64 = await compressImageFileSantri(file, 600, 0.75);
-    setPreviewFotoAsatidz(compressedBase64);
-  } catch (err) {
-    console.error(err);
-    if (statusEl) statusEl.innerHTML = '<span class="text-danger">Gagal memproses foto.</span>';
-  }
-
-  event.target.value = '';
-}
-
-function hapusFotoAsatidz() {
-  const hidden = document.getElementById('foto_asatidz');
-  const preview = document.getElementById('preview_foto_asatidz');
-  const placeholder = document.getElementById('placeholder_foto_asatidz');
-  const btnHapus = document.getElementById('btnHapusFotoAsatidz');
-  const statusEl = document.getElementById('statusFotoAsatidz');
-
-  if (hidden) hidden.value = '';
-  if (preview) {
-    preview.src = '';
-    preview.style.display = 'none';
-  }
-  if (placeholder) placeholder.style.display = 'flex';
-  if (btnHapus) btnHapus.classList.add('d-none');
-  if (statusEl) statusEl.innerText = 'Belum ada foto dipilih (Otomatis dikompresi agar ringan).';
-}
-
-async function bukaKameraAsatidz() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    document.getElementById('inputCameraFotoAsatidz').click();
-    return;
-  }
-
-  let stream = null;
-  try {
-    stream = await getCameraStreamSafe();
-  } catch (err) {
-    document.getElementById('inputCameraFotoAsatidz').click();
-    return;
-  }
-
-  try {
-    const result = await Swal.fire({
-      title: 'Ambil Foto Asatidz',
-      html: `
-        <div class="d-flex flex-column align-items-center">
-          <video id="webcamVideoAsatidz" autoplay playsinline muted style="width:100%;max-width:360px;border-radius:12px;background:#000;"></video>
-        </div>
-      `,
-      showCancelButton: true,
-      confirmButtonText: '<i class="bi bi-camera-fill me-1"></i> Ambil Foto',
-      cancelButtonText: 'Batal',
-      confirmButtonColor: '#0f766e',
-      didOpen: () => {
-        const videoEl = document.getElementById('webcamVideoAsatidz');
-        if (videoEl) {
-          videoEl.srcObject = stream;
-          videoEl.play().catch(() => {});
-        }
-      },
-      preConfirm: () => {
-        const videoEl = document.getElementById('webcamVideoAsatidz');
-        if (!videoEl) return null;
-        const canvas = document.createElement('canvas');
-        const maxDim = 600;
-        let w = videoEl.videoWidth || 640;
-        let h = videoEl.videoHeight || 480;
-        if (w > h && w > maxDim) {
-          h = Math.round(h * (maxDim / w));
-          w = maxDim;
-        } else if (h >= w && h > maxDim) {
-          w = Math.round(w * (maxDim / h));
-          h = maxDim;
-        }
-        canvas.width = w;
-        canvas.height = h;
-        canvas.getContext('2d').drawImage(videoEl, 0, 0, w, h);
-        return canvas.toDataURL('image/jpeg', 0.75);
-      },
-      willClose: () => {
-        if (stream) stream.getTracks().forEach(t => t.stop());
-        restoreBootstrapModalScroll();
-      }
-    });
-
-    if (result.isConfirmed && result.value) {
-      setPreviewFotoAsatidz(result.value);
-    }
-  } catch (err) {
-    if (stream) stream.getTracks().forEach(t => t.stop());
-    restoreBootstrapModalScroll();
-  }
-}
-
-window.bukaKameraAsatidz = bukaKameraAsatidz;
-
-function lihatFotoAsatidz(url) {
-  if (!url) return;
-  Swal.fire({
-    imageUrl: url,
-    imageAlt: 'Foto Asatidz',
-    showConfirmButton: true,
-    confirmButtonText: 'Tutup',
-    confirmButtonColor: '#0f766e'
-  });
-}
-
-// --- [PATOKAN BAWAH: Awal CRUD Data Asatidz - JANGAN DIHAPUS] ---
-// =========================================================
-// >>> BARU: CRUD DATA ASATIDZ (TAMBAH, UPDATE, HAPUS)
-// =========================================================
-// function openAddModalAsatidz() {
-
-// Pastikan seluruh fungsi foto terekspos ke window
+// Ekspos fungsi kamera ke global window
 Object.assign(window, {
   bukaKameraSantri,
   handleFotoSantriSelected,
@@ -2926,6 +2504,7 @@ Object.assign(window, {
   hapusFotoAsatidz,
   lihatFotoAsatidz
 });
+
 
 // =========================================================
 // >>> BARU: CRUD DATA ASATIDZ (TAMBAH, UPDATE, HAPUS)
