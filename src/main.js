@@ -9,6 +9,10 @@ import * as santri from './modules/santri/santri.js';
 import * as asatidz from './modules/asatidz/asatidz.js';
 import * as formasi from './modules/formasi/formasi.js';
 
+// Import Komponen Navigasi dari folder src/partials/
+import navbarHtml from './partials/navbar.html?raw';
+import sidebarHtml from './partials/sidebar.html?raw';
+
 // Import Halaman dari folder src/pages/
 import pageSantri from './pages/santri.html?raw';
 import pageFormasi from './pages/formasi.html?raw';
@@ -41,13 +45,20 @@ Object.assign(window, {
 // 2. INISIALISASI APLIKASI SAAT DOM SELESAI DIMUAT
 // =========================================================
 document.addEventListener('DOMContentLoaded', async function () {
-  // 0A. Render seluruh halaman dari src/pages/ ke dalam #pages-container
+  // 0A. Render Navbar & Sidebar dari src/partials/
+  const navbarContainer = document.getElementById('navbar-container');
+  if (navbarContainer) navbarContainer.innerHTML = navbarHtml;
+
+  const sidebarContainer = document.getElementById('sidebar-container');
+  if (sidebarContainer) sidebarContainer.innerHTML = sidebarHtml;
+
+  // 0B. Render seluruh halaman dari src/pages/ ke dalam #pages-container
   const pagesContainer = document.getElementById('pages-container');
   if (pagesContainer) {
     pagesContainer.innerHTML = pageSantri + pageFormasi + pageAsatidz;
   }
 
-  // 0B. Render seluruh komponen modal dari src/partials/ ke dalam #modals-container
+  // 0C. Render seluruh komponen modal dari src/partials/ ke dalam #modals-container
   const modalsContainer = document.getElementById('modals-container');
   if (modalsContainer) {
     modalsContainer.innerHTML = modalsSantri + modalsSystem + modalsFormasi + modalsAsatidz;
