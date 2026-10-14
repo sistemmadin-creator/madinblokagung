@@ -83,8 +83,10 @@ export function initSantriUI() {
     $('.row-check').prop('checked', this.checked);
   });
 
-  $(document).off('click', '#dataTable tbody tr').on('click', '#dataTable tbody tr', function (e) {
-    if ($(e.target).hasClass('row-check') || $(e.target).is(':checkbox') \vert{}\vert{}$(this).find('.dataTables_empty').length > 0) {
+jQuery(document).off('click', '#dataTable tbody tr').on('click', '#dataTable tbody tr', function (e) {
+    const isCheckbox = jQuery(e.target).hasClass('row-check') || jQuery(e.target).is(':checkbox');
+    const isEmptyRow = jQuery(this).find('.dataTables_empty').length > 0;
+    if (isCheckbox || isEmptyRow) {
       return;
     }
 
