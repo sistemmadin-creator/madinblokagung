@@ -1,4 +1,3 @@
-import './css/style.css';
 import { supabase } from './lib/supabase.js';
 import { store } from './state/store.js';
 import { initLayoutObservers, toggleSidebar, showPage, actionLogout } from './utils/dom.js';
@@ -10,7 +9,16 @@ import * as santri from './modules/santri/santri.js';
 import * as asatidz from './modules/asatidz/asatidz.js';
 import * as formasi from './modules/formasi/formasi.js';
 
-// Import 4 Komponen HTML Modal dari folder src/partials/
+// Import Komponen Navigasi dari folder src/partials/
+import navbarHtml from './partials/navbar.html?raw';
+import sidebarHtml from './partials/sidebar.html?raw';
+
+// Import Halaman dari folder src/pages/
+import pageSantri from './pages/santri.html?raw';
+import pageFormasi from './pages/formasi.html?raw';
+import pageAsatidz from './pages/asatidz.html?raw';
+
+// Import Komponen HTML Modal dari folder src/partials/
 import modalsSantri from './partials/modals-santri.html?raw';
 import modalsSystem from './partials/modals-system.html?raw';
 import modalsFormasi from './partials/modals-formasi.html?raw';
@@ -37,7 +45,20 @@ Object.assign(window, {
 // 2. INISIALISASI APLIKASI SAAT DOM SELESAI DIMUAT
 // =========================================================
 document.addEventListener('DOMContentLoaded', async function () {
-  // Render seluruh komponen modal dari partials ke dalam #modals-container
+  // 0A. Render Navbar & Sidebar dari src/partials/
+  const navbarContainer = document.getElementById('navbar-container');
+  if (navbarContainer) navbarContainer.innerHTML = navbarHtml;
+
+  const sidebarContainer = document.getElementById('sidebar-container');
+  if (sidebarContainer) sidebarContainer.innerHTML = sidebarHtml;
+
+  // 0B. Render seluruh halaman dari src/pages/ ke dalam #pages-container
+  const pagesContainer = document.getElementById('pages-container');
+  if (pagesContainer) {
+    pagesContainer.innerHTML = pageSantri + pageFormasi + pageAsatidz;
+  }
+
+  // 0C. Render seluruh komponen modal dari src/partials/ ke dalam #modals-container
   const modalsContainer = document.getElementById('modals-container');
   if (modalsContainer) {
     modalsContainer.innerHTML = modalsSantri + modalsSystem + modalsFormasi + modalsAsatidz;
@@ -46,7 +67,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Pasang Observer Layout, Resize Tabel & Hover Sidebar
   initLayoutObservers();
 
-  // Inisialisasi UI masing-masing modul (bekerja setelah modal di-render ke DOM)
+  // Inisialisasi UI masing-masing modul
   santri.initSantriUI();
   formasi.initHideFilterFormasi();
   asatidz.initAsatidzUI();
