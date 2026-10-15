@@ -12,3 +12,9 @@ Aplikasi web manajemen database terpadu untuk **Data Santri**, **Data Asatidz**,
 1. Instal dependensi:
    ```bash
    npm install
+
+
+## Cara Menjalankan di Lokal
+- l
+  feef
+- df
