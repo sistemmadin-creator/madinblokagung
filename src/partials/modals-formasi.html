@@ -49,8 +49,9 @@
               <input type="number" class="form-control" name="f_kapasitas_maksimal" id="f_kapasitas_maksimal" value="40" min="1" required>
             </div>
             <div class="col-md-6">
-              <label class="form-label">Mustahiq (Wali Kelas) <span class="text-muted">(Opsional)</span></label>
-              <input type="text" class="form-control" name="f_id_mustahiq" id="f_id_mustahiq" placeholder="Nama / NIA Wali Kelas">
+              <label class="form-label">Mustahiq / Wali Kelas <span class="text-muted">(Otomatis / Opsional)</span></label>
+              <input type="text" class="form-control" name="f_id_mustahiq" id="f_id_mustahiq" list="datalistMustahiqFormasi" placeholder="Kosongkan agar sinkron otomatis dari Asatidz">
+              <datalist id="datalistMustahiqFormasi"></datalist>
             </div>
             <div class="col-md-4">
               <label class="form-label">Domisili <span class="text-muted">(Opsional)</span></label>
@@ -121,10 +122,10 @@
 
 <!-- 10. Modal Detail Formasi Kelas (#detailFormasiModal) -->
 <div class="modal fade" id="detailFormasiModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
     <div class="modal-content shadow-lg border-0">
       <div class="modal-header bg-success text-white border-0 py-3">
-        <h5 class="modal-title fw-bold"><i class="bi bi-building me-2"></i> Detail Formasi Kelas</h5>
+        <h5 class="modal-title fw-bold"><i class="bi bi-building me-2"></i> Detail Formasi Kelas & Daftar Santri</h5>
         <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-4 bg-light" id="detailFormasiContent"></div>
