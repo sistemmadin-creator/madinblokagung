@@ -151,7 +151,8 @@ export function initHideFilterFormasi() {
   const formasiColNames = [
     { name: 'Tingkat', col: 1 }, { name: 'Kelas', col: 2 }, { name: 'Bagian', col: 3 },
     { name: 'Gender', col: 4 }, { name: 'Kapasitas', col: 5 }, { name: 'Wali Kelas', col: 6 },
-    { name: 'Domisili', col: 7 }, { name: 'Lokal Takror', col: 8 }, { name: 'Lokasi Diniyyah', col: 9 }
+    { name: 'Domisili', col: 7 }, { name: 'Lokal Takror', col: 8 }, { name: 'Lokasi Diniyyah', col: 9 },
+    { name: 'Blok', col: 10 }
   ];
   let hideHtml = '';
   formasiColNames.forEach(c => {
@@ -169,7 +170,8 @@ export function initHideFilterFormasi() {
   let filterHtml = '';
   const filterCats = [
     { name: 'Tingkat', col: 1 }, { name: 'Gender', col: 4 },
-    { name: 'Wali Kelas', col: 6 }, { name: 'Domisili', col: 7 }
+    { name: 'Wali Kelas', col: 6 }, { name: 'Domisili', col: 7 },
+    { name: 'Blok', col: 10 }
   ];
   filterCats.forEach(cat => {
     filterHtml += `
@@ -195,7 +197,7 @@ export function checkAllHideFormasi(status) {
 
 export function applyHideColumnsFormasi() {
   if (!store.dtFormasi) return;
-  for (let i = 1; i <= 9; i++) store.dtFormasi.column(i).visible(true, false);
+  for (let i = 1; i <= 10; i++) store.dtFormasi.column(i).visible(true, false);
   $('.hide-cb-formasi:checked').each(function () {
     store.dtFormasi.column(parseInt($(this).val(), 10)).visible(false, false);
   });
@@ -244,7 +246,7 @@ export function renderTableFormasi(data) {
     $('#dataTableFormasi').empty();
   }
 
-  $('#dataTableFormasi').html(`
+$('#dataTableFormasi').html(`
     <thead class="table-light">
       <tr>
         <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllFormasi" class="form-check-input"></th>
@@ -257,6 +259,7 @@ export function renderTableFormasi(data) {
         <th>Domisili</th>
         <th>Lokal Takror</th>
         <th>Lokasi Diniyyah</th>
+        <th>Blok</th>
         <th class="text-center">Aksi</th>
       </tr>
     </thead>
@@ -271,7 +274,11 @@ export function renderTableFormasi(data) {
     // Sinkronisasi Wali Kelas & Jumlah Santri
     const syncInfo = getWaliKelasSyncInfo(f);
     const jmlSantri = getSantriInFormasi(f).length;
-    const kapasitasBadge = `<span class="badge ${jmlSantri >= f.kapasitas_maksimal ? 'bg-danger' : 'bg-success bg-opacity-10 text-success border border-success-subtle'}">${jmlSantri} / ${f.kapasitas_maksimal} Santri</span>`;
+    const kapasitasMaks = f.kapasitas_maksimal || 80;
+    const kapasitasBadge = `<span class="badge ${jmlSantri >= kapasitasMaks ? 'bg-danger' : 'bg-success bg-opacity-10 text-success border border-success-subtle'}">${jmlSantri} / ${kapasitasMaks} Santri</span>`;
+
+    // Kolom Blok mandiri (tidak sinkron dengan Asatidz / Santri)
+    const blokMandiri = f.blok || '-';
 
     html += `
     <tr style="cursor: pointer;">
@@ -285,6 +292,7 @@ export function renderTableFormasi(data) {
       <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.domisili}</td>
       <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.lokasiTakror}</td>
       <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.lokasiDiniyyah}</td>
+      <td class="row-klik-formasi" data-id="${f.id}">${blokMandiri}</td>
       <td class="text-center" onclick="event.stopPropagation();">
         <button class="btn btn-sm btn-outline-warning border-0" onclick="window.editFormasi('${f.id}')" title="Edit"><i class="bi bi-pencil-square"></i></button>
         <button class="btn btn-sm btn-outline-danger border-0" onclick="window.hapusFormasi('${f.id}')" title="Hapus"><i class="bi bi-trash"></i></button>
@@ -300,7 +308,7 @@ export function renderTableFormasi(data) {
     autoWidth: true,
     language: { search: 'Cari Kelas:' },
     columnDefs: [
-      { searchable: false, orderable: false, targets: [0, 10] }
+      { searchable: false, orderable: false, targets: [0, 11] }
     ],
     initComplete: function () {
       if ($('#actionGroupFormasi').length === 0) {
@@ -343,6 +351,7 @@ export function openAddFormasiModal() {
   populateMustahiqDatalist();
   document.getElementById('formasiForm').reset();
   document.getElementById('f_id').value = '';
+  document.getElementById('f_kapasitas_maksimal').value = 80;
   document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-building-add me-2"></i> Formasi Kelas Baru';
   $('#formasiModal').modal('show');
 }
@@ -354,17 +363,19 @@ export async function submitFormasiData(e) {
   btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menyimpan...';
 
   const form = e.target;
+  const inputKapasitas = parseInt(form.f_kapasitas_maksimal.value, 10) || 80;
   const payload = {
     tingkat: form.f_tingkat.value,
     din_kls: form.f_din_kls.value,
     din_bag: form.f_din_bag.value,
     pa_pi: form.f_pa_pi.value,
     is_unggulan: form.f_is_unggulan.checked,
-    kapasitas_maksimal: parseInt(form.f_kapasitas_maksimal.value) || 40,
+    kapasitas_maksimal: Math.min(Math.max(inputKapasitas, 1), 80),
     id_mustahiq: form.f_id_mustahiq.value,
     domisili: form.f_domisili.value,
     lokasi_takror: form.f_lokasi_takror.value,
-    lokasi_diniyyah: form.f_lokasi_diniyyah.value
+    lokasi_diniyyah: form.f_lokasi_diniyyah.value,
+    blok: form.f_blok ? form.f_blok.value : ''
   };
 
   try {
@@ -427,7 +438,7 @@ export function showDetailFormasi(id) {
   }
 
   let html = `
-  <!-- Kartu Informasi Formasi & Wali Kelas -->
+<!-- Kartu Informasi Formasi & Wali Kelas -->
   <div class="bg-white p-3 rounded shadow-sm border mb-3">
     <h6 class="text-success fw-bold border-bottom pb-2 mb-3">
       <i class="bi bi-info-circle-fill me-1"></i> Informasi Kelas & Wali Kelas
@@ -437,13 +448,14 @@ export function showDetailFormasi(id) {
         <div class="row mb-2"><div class="col-5 text-muted">Tingkat</div><div class="col-7 fw-bold">: ${f.tingkat}</div></div>
         <div class="row mb-2"><div class="col-5 text-muted">Kelas / Bagian</div><div class="col-7 fw-bold">: ${f.din_kls} - ${f.din_bag} ${f.is_unggulan ? '<span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> Unggulan</span>' : ''}</div></div>
         <div class="row mb-2"><div class="col-5 text-muted">Gender</div><div class="col-7 fw-bold">: ${f.pa_pi === 'PA' ? 'PA (Putra)' : 'PI (Putri)'}</div></div>
-        <div class="row mb-2"><div class="col-5 text-muted">Kapasitas</div><div class="col-7 fw-bold">: <span class="badge bg-success">${daftarSantri.length} / ${f.kapasitas_maksimal} Santri</span></div></div>
+        <div class="row mb-2"><div class="col-5 text-muted">Kapasitas</div><div class="col-7 fw-bold">: <span class="badge bg-success">${daftarSantri.length} / ${f.kapasitas_maksimal || 80} Santri</span></div></div>
       </div>
       <div class="col-md-6">
         <div class="row mb-2"><div class="col-5 text-muted">Wali Kelas</div><div class="col-7 d-flex align-items-start gap-1">: <div>${syncInfo.waliKelasHtml}</div></div></div>
         <div class="row mb-2"><div class="col-5 text-muted">Domisili</div><div class="col-7 fw-bold">: ${syncInfo.domisili}</div></div>
         <div class="row mb-2"><div class="col-5 text-muted">Lokal Takror</div><div class="col-7 fw-bold">: ${syncInfo.lokasiTakror}</div></div>
         <div class="row mb-2"><div class="col-5 text-muted">Lokasi Diniyyah</div><div class="col-7 fw-bold">: ${syncInfo.lokasiDiniyyah}</div></div>
+        <div class="row mb-2"><div class="col-5 text-muted">Blok</div><div class="col-7 fw-bold">: ${f.blok || '-'}</div></div>
       </div>
     </div>
   </div>
@@ -513,11 +525,12 @@ export function editFormasi(id) {
   form.f_din_bag.value = f.din_bag;
   form.f_pa_pi.value = f.pa_pi;
   form.f_is_unggulan.checked = f.is_unggulan;
-  form.f_kapasitas_maksimal.value = f.kapasitas_maksimal;
+  form.f_kapasitas_maksimal.value = f.kapasitas_maksimal || 80;
   form.f_id_mustahiq.value = f.id_mustahiq || (syncInfo.matchedAsatidz[0]?.nama_asatidz || '');
   form.f_domisili.value = f.domisili || '';
   form.f_lokasi_takror.value = f.lokasi_takror || '';
   form.f_lokasi_diniyyah.value = f.lokasi_diniyyah || '';
+  if (form.f_blok) form.f_blok.value = f.blok || '';
 
   document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Formasi Kelas';
   $('#formasiModal').modal('show');
