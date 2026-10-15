@@ -396,6 +396,130 @@ body {
 .rule-header-cursor[aria-expanded="true"] .rule-chevron {
   transform: rotate(180deg);
 }
-.rule-preview-text {
-  font-size: 0.85rem;
+/* =========================================================
+   SUB-MENU SIDEBAR & HALAMAN FORMASI KELAS PUTRA / PUTRI
+========================================================= */
+.sidebar-submenu {
+  display: none;
+  flex-direction: column;
+  padding-left: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.sidebar-submenu.open {
+  display: flex;
+}
+
+/* Sembunyikan teks submenu saat sidebar sedang tertutup (collapsed) */
+.sidebar-overlay.close .sidebar-submenu,
+.sidebar-overlay.close .submenu-arrow {
+  display: none !important;
+}
+
+.submenu-arrow {
+  transition: transform 0.25s ease;
+}
+
+.submenu-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+.sidebar-submenu .submenu-item {
+  font-size: 0.86rem;
+  padding: 0.5rem 0.85rem !important;
+  border-radius: 8px;
+  opacity: 0.9;
+}
+
+/* Tabel Dokumen Resmi Formasi Putra / Putri */
+.fg-custom-table {
+  border: 1px solid #cbd5e1 !important;
+}
+
+.fg-custom-table thead th {
+  background-color: #e2e8f0 !important;
+  color: #1e293b !important;
+  font-size: 0.8rem;
+  letter-spacing: 0.3px;
+  border: 1px solid #94a3b8 !important;
+  padding: 10px 12px;
+}
+
+.fg-custom-table tbody td {
+  border: 1px solid #cbd5e1 !important;
+  padding: 10px 14px;
+  vertical-align: middle;
+}
+
+.fg-custom-table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Badge Biru Muda "Blok Induk" */
+.fg-blok-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #e0f2fe;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 6px;
+}
+
+/* Tombol Hijau "Lihat" Foto */
+.btn-fg-foto-lihat {
+  display: inline-flex;
+  align-items: center;
+  background-color: #d1fae5;
+  color: #0f766e;
+  border: 1px solid #6ee7b7;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-fg-foto-lihat:hover {
+  background-color: #0f766e;
+  color: #ffffff;
+}
+
+/* Tombol Outline Abu-abu "+Foto" */
+.btn-fg-foto-tambah {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-fg-foto-tambah:hover {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+
+/* Pengaturan Cetak / Print Bersih */
+@media print {
+  #navbar-container,
+  #sidebar-container,
+  #page-formasi-gender > .card-panel:first-child,
+  .no-print {
+    display: none !important;
+  }
+  .main-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  #fg-print-area {
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
 }
