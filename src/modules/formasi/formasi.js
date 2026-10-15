@@ -1,6 +1,7 @@
 import { supabase } from '../../lib/supabase.js';
 import { store } from '../../state/store.js';
 import { logActivity } from '../audit/audit.js';
+import { compressImageFileSantri } from '../../utils/camera.js';
 
 // =========================================================
 // HELPER SINKRONISASI ASATIDZ (WALI KELAS) & SANTRI KELAS
@@ -56,11 +57,13 @@ if (matchedAsatidz.length > 0) {
     }).join('');
   }
 
-  const primaryAsatidz = matchedAsatidz[0] || null;
+const primaryAsatidz = matchedAsatidz[0] || null;
 
   const domisili = f.domisili || (primaryAsatidz?.blok ? `Blok ${primaryAsatidz.blok}${primaryAsatidz.asrama ? ' - ' + primaryAsatidz.asrama : ''}` : '-');
   const lokasiTakror = f.lokasi_takror || primaryAsatidz?.lokasi_takror || '-';
   const lokasiDiniyyah = f.lokasi_diniyyah || primaryAsatidz?.lokasi_diniyyah || '-';
+  const fotoTakror = f.foto_takror || '';
+  const fotoDiniyyah = f.foto_diniyyah || '';
 
   return {
     matchedAsatidz,
@@ -68,8 +71,110 @@ if (matchedAsatidz.length > 0) {
     waliKelasHtml,
     domisili,
     lokasiTakror,
-    lokasiDiniyyah
+    lokasiDiniyyah,
+    fotoTakror,
+    fotoDiniyyah
   };
+}
+
+/**
+ * Merender tampilan gabungan Teks Nama Lokasi + Thumbnail Foto dalam 1 kolom
+ */
+function buildLokasiWithFotoHtml(namaLokasi, fotoUrl, labelPopup) {
+  const safeText = namaLokasi || '-';
+  if (!fotoUrl) return `<span>${safeText}</span>`;
+
+  const safeLabel = String(labelPopup || 'Foto Lokasi').replace(/'/g, "\\'");
+  const safeUrl = String(fotoUrl).replace(/'/g, "\\'");
+  return `
+    <div class="d-inline-flex align-items-center gap-2">
+      <img src="${safeUrl}" alt="${safeLabel}"
+           style="width: 32px; height: 32px; object-fit: cover; border-radius: 6px; cursor: zoom-in; flex-shrink: 0;"
+           class="border shadow-sm"
+           title="Klik untuk memperbesar ${safeLabel}"
+           onclick="event.stopPropagation(); window.lihatFotoLokasiFormasi('${safeUrl}', '${safeLabel}')">
+      <span>${safeText}</span>
+    </div>
+  `;
+}
+
+export function setPreviewFotoFormasi(jenis, dataUrl) {
+  const isTakror = jenis === 'takror';
+  const inputHidden = document.getElementById(isTakror ? 'f_foto_takror' : 'f_foto_diniyyah');
+  const previewImg = document.getElementById(isTakror ? 'preview_f_foto_takror' : 'preview_f_foto_diniyyah');
+  const placeholder = document.getElementById(isTakror ? 'placeholder_f_foto_takror' : 'placeholder_f_foto_diniyyah');
+  const btnHapus = document.getElementById(isTakror ? 'btnHapusFotoTakror' : 'btnHapusFotoDiniyyah');
+  const statusEl = document.getElementById(isTakror ? 'statusFotoTakror' : 'statusFotoDiniyyah');
+
+  if (!inputHidden || !previewImg || !placeholder) return;
+
+  if (dataUrl && String(dataUrl).trim() !== '') {
+    inputHidden.value = dataUrl;
+    previewImg.src = dataUrl;
+    previewImg.style.display = 'block';
+    placeholder.style.display = 'none';
+    if (btnHapus) btnHapus.classList.remove('d-none');
+    if (statusEl) statusEl.innerHTML = '<span class="text-success fw-semibold"><i class="bi bi-check-circle-fill me-1"></i> Foto siap disimpan.</span>';
+  } else {
+    hapusFotoFormasi(jenis);
+  }
+}
+
+export async function handleFotoFormasiSelected(event, jenis) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  if (!file.type.startsWith('image/')) {
+    Swal.fire('Format Tidak Didukung', 'Pilih file berupa gambar (JPG/PNG/WEBP).', 'warning');
+    event.target.value = '';
+    return;
+  }
+
+  const isTakror = jenis === 'takror';
+  const statusEl = document.getElementById(isTakror ? 'statusFotoTakror' : 'statusFotoDiniyyah');
+  if (statusEl) {
+    statusEl.innerHTML = '<span class="spinner-border spinner-border-sm text-success me-1"></span> Mengompres foto...';
+  }
+
+  try {
+    const compressedBase64 = await compressImageFileSantri(file, 700, 0.75);
+    setPreviewFotoFormasi(jenis, compressedBase64);
+  } catch (err) {
+    console.error(err);
+    if (statusEl) statusEl.innerHTML = '<span class="text-danger">Gagal memproses foto.</span>';
+  }
+
+  event.target.value = '';
+}
+
+export function hapusFotoFormasi(jenis) {
+  const isTakror = jenis === 'takror';
+  const inputHidden = document.getElementById(isTakror ? 'f_foto_takror' : 'f_foto_diniyyah');
+  const previewImg = document.getElementById(isTakror ? 'preview_f_foto_takror' : 'preview_f_foto_diniyyah');
+  const placeholder = document.getElementById(isTakror ? 'placeholder_f_foto_takror' : 'placeholder_f_foto_diniyyah');
+  const btnHapus = document.getElementById(isTakror ? 'btnHapusFotoTakror' : 'btnHapusFotoDiniyyah');
+  const statusEl = document.getElementById(isTakror ? 'statusFotoTakror' : 'statusFotoDiniyyah');
+
+  if (inputHidden) inputHidden.value = '';
+  if (previewImg) {
+    previewImg.src = '';
+    previewImg.style.display = 'none';
+  }
+  if (placeholder) placeholder.style.display = 'block';
+  if (btnHapus) btnHapus.classList.add('d-none');
+  if (statusEl) statusEl.innerText = 'Otomatis dikompresi agar ringan.';
+}
+
+export function lihatFotoLokasiFormasi(url, judul) {
+  if (!url) return;
+  Swal.fire({
+    title: judul || 'Foto Lokasi',
+    imageUrl: url,
+    imageAlt: judul || 'Foto Lokasi',
+    showConfirmButton: true,
+    confirmButtonText: 'Tutup',
+    confirmButtonColor: '#0f766e'
+  });
 }
 
 /**
@@ -276,8 +381,20 @@ $('#dataTableFormasi').html(`
     const jmlSantri = getSantriInFormasi(f).length;
     const kapasitasMaks = f.kapasitas_maksimal || 80;
     const kapasitasBadge = `<span class="badge ${jmlSantri >= kapasitasMaks ? 'bg-danger text-white' : 'bg-success text-white'}">${jmlSantri} / ${kapasitasMaks} Santri</span>`;
-    // Kolom Blok mandiri (tidak sinkron dengan Asatidz / Santri)
+// Kolom Blok mandiri (tidak sinkron dengan Asatidz / Santri)
     const blokMandiri = f.blok || '-';
+
+    // Gabungkan thumbnail foto + nama lokasi dalam satu kolom
+    const takrorCellHtml = buildLokasiWithFotoHtml(
+      syncInfo.lokasiTakror,
+      syncInfo.fotoTakror,
+      `Lokal Takror (${f.din_kls} ${f.din_bag} ${f.tingkat}): ${syncInfo.lokasiTakror}`
+    );
+    const diniyyahCellHtml = buildLokasiWithFotoHtml(
+      syncInfo.lokasiDiniyyah,
+      syncInfo.fotoDiniyyah,
+      `Lokasi Diniyyah (${f.din_kls} ${f.din_bag} ${f.tingkat}): ${syncInfo.lokasiDiniyyah}`
+    );
 
     html += `
     <tr style="cursor: pointer;">
@@ -289,8 +406,8 @@ $('#dataTableFormasi').html(`
       <td class="row-klik-formasi" data-id="${f.id}">${kapasitasBadge}</td>
       <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.waliKelasHtml}</td>
       <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.domisili}</td>
-      <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.lokasiTakror}</td>
-      <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.lokasiDiniyyah}</td>
+      <td class="row-klik-formasi" data-id="${f.id}">${takrorCellHtml}</td>
+      <td class="row-klik-formasi" data-id="${f.id}">${diniyyahCellHtml}</td>
       <td class="row-klik-formasi" data-id="${f.id}">${blokMandiri}</td>
       <td class="text-center" onclick="event.stopPropagation();">
         <button class="btn btn-sm btn-outline-warning border-0" onclick="window.editFormasi('${f.id}')" title="Edit"><i class="bi bi-pencil-square"></i></button>
@@ -351,6 +468,8 @@ export function openAddFormasiModal() {
   document.getElementById('formasiForm').reset();
   document.getElementById('f_id').value = '';
   document.getElementById('f_kapasitas_maksimal').value = 80;
+  hapusFotoFormasi('takror');
+  hapusFotoFormasi('diniyyah');
   document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-building-add me-2"></i> Formasi Kelas Baru';
   $('#formasiModal').modal('show');
 }
@@ -374,7 +493,9 @@ export async function submitFormasiData(e) {
     domisili: form.f_domisili.value,
     lokasi_takror: form.f_lokasi_takror.value,
     lokasi_diniyyah: form.f_lokasi_diniyyah.value,
-    blok: form.f_blok ? form.f_blok.value : ''
+    blok: form.f_blok ? form.f_blok.value : '',
+    foto_takror: form.f_foto_takror ? form.f_foto_takror.value : '',
+    foto_diniyyah: form.f_foto_diniyyah ? form.f_foto_diniyyah.value : ''
   };
 
   try {
@@ -452,8 +573,8 @@ export function showDetailFormasi(id) {
       <div class="col-md-6">
         <div class="row mb-2"><div class="col-5 text-muted">Wali Kelas</div><div class="col-7 d-flex align-items-start gap-1">: <div>${syncInfo.waliKelasHtml}</div></div></div>
         <div class="row mb-2"><div class="col-5 text-muted">Domisili</div><div class="col-7 fw-bold">: ${syncInfo.domisili}</div></div>
-        <div class="row mb-2"><div class="col-5 text-muted">Lokal Takror</div><div class="col-7 fw-bold">: ${syncInfo.lokasiTakror}</div></div>
-        <div class="row mb-2"><div class="col-5 text-muted">Lokasi Diniyyah</div><div class="col-7 fw-bold">: ${syncInfo.lokasiDiniyyah}</div></div>
+        <div class="row mb-2 align-items-center"><div class="col-5 text-muted">Lokal Takror</div><div class="col-7 fw-bold d-flex align-items-center gap-1">: ${buildLokasiWithFotoHtml(syncInfo.lokasiTakror, syncInfo.fotoTakror, 'Foto Lokal Takror: ' + syncInfo.lokasiTakror)}</div></div>
+        <div class="row mb-2 align-items-center"><div class="col-5 text-muted">Lokasi Diniyyah</div><div class="col-7 fw-bold d-flex align-items-center gap-1">: ${buildLokasiWithFotoHtml(syncInfo.lokasiDiniyyah, syncInfo.fotoDiniyyah, 'Foto Lokasi Diniyyah: ' + syncInfo.lokasiDiniyyah)}</div></div>
         <div class="row mb-2"><div class="col-5 text-muted">Blok</div><div class="col-7 fw-bold">: ${f.blok || '-'}</div></div>
       </div>
     </div>
@@ -530,6 +651,9 @@ export function editFormasi(id) {
   form.f_lokasi_takror.value = f.lokasi_takror || '';
   form.f_lokasi_diniyyah.value = f.lokasi_diniyyah || '';
   if (form.f_blok) form.f_blok.value = f.blok || '';
+
+  setPreviewFotoFormasi('takror', f.foto_takror || '');
+  setPreviewFotoFormasi('diniyyah', f.foto_diniyyah || '');
 
   document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Formasi Kelas';
   $('#formasiModal').modal('show');
