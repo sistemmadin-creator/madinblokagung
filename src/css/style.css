@@ -455,30 +455,33 @@ body {
   background-color: #f8fafc;
 }
 
-/* Badge Biru Muda "Blok Induk" */
-.fg-blok-badge {
+/* Badge Biru Muda "Blok" & Tombol Foto Sejajar Presisi */
+.fg-blok-badge,
+.btn-fg-foto-lihat,
+.btn-fg-foto-tambah {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  height: 24px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  padding: 0 8px;
+  border-radius: 6px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.fg-blok-badge {
   background-color: #e0f2fe;
   color: #0284c7;
   border: 1px solid #bae6fd;
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 2px 8px;
-  border-radius: 6px;
 }
 
 /* Tombol Hijau "Lihat" Foto */
 .btn-fg-foto-lihat {
-  display: inline-flex;
-  align-items: center;
   background-color: #d1fae5;
   color: #0f766e;
   border: 1px solid #6ee7b7;
-  font-size: 0.74rem;
-  font-weight: 600;
-  padding: 3px 10px;
-  border-radius: 6px;
   transition: all 0.15s ease;
 }
 
@@ -487,6 +490,18 @@ body {
   color: #ffffff;
 }
 
+/* Tombol Outline Abu-abu "+Foto" */
+.btn-fg-foto-tambah {
+  background-color: #f8fafc;
+  color: #64748b;
+  border: 1px solid #cbd5e1;
+  transition: all 0.15s ease;
+}
+
+.btn-fg-foto-tambah:hover {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
 /* Tombol Outline Abu-abu "+Foto" */
 .btn-fg-foto-tambah {
   display: inline-flex;
