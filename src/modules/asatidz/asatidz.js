@@ -242,14 +242,18 @@ export function renderTableAsatidz(data) {
       { className: 'text-center', targets: [3, 4, 5, 9] }
     ],
     order: [[8, 'asc']],
-    initComplete: function () {
+   initComplete: function () {
       const api = this.api();
       setTimeout(() => api.columns.adjust(), 150);
+
+      $('#dataTableAsatidz_length').closest('.col-md-6').removeClass('col-md-6').addClass('col-md-auto');
+      $('#dataTableAsatidz_filter').closest('.col-md-6').removeClass('col-md-6').addClass('col-md');
+
       if ($('#actionGroupAsatidz').length === 0) {
-        $('#dataTableAsatidz_filter').addClass('d-flex justify-content-end align-items-center gap-2 flex-wrap');
-        $('#dataTableAsatidz_filter label').addClass('mb-0 d-flex align-items-center gap-2');
+        $('#dataTableAsatidz_filter').addClass('d-flex justify-content-end align-items-center gap-2 flex-wrap flex-md-nowrap');
+        $('#dataTableAsatidz_filter label').addClass('mb-0 d-inline-flex align-items-center gap-2 text-nowrap');
         let actionBtns = $(`
-          <div class="d-flex gap-2 flex-nowrap" id="actionGroupAsatidz">
+          <div class="d-flex align-items-center gap-1 flex-nowrap me-1" id="actionGroupAsatidz">
             <div class="dropdown">
               <button class="btn btn-outline-danger btn-sm dropdown-toggle text-nowrap border-0" type="button" data-bs-toggle="dropdown">
                 <i class="bi bi-trash"></i> Hapus
