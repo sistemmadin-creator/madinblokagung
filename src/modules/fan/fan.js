@@ -2211,7 +2211,7 @@ function applyItemCheck(el) {
     isDragConfirmed = false;
 
     const $checkbox =$(targetRow).find(checkboxSelector);
-    if (!$checkbox.length \vert{}\vert{}$checkbox.prop('disabled')) return;
+    if (!$checkbox.length || $checkbox.prop('disabled')) return;
 
     if ($(e.target).is(checkboxSelector)) {
       isDragging = true;
