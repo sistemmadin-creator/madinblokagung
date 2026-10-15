@@ -823,15 +823,13 @@ function buildCellLokalGenderHtml(f, jenis, namaLokal, fotoBase64, syncDomisili)
   const lokasiTeks = namaLokal && namaLokal !== '-' ? namaLokal : '-';
   const rawBlok = (f.blok || (syncDomisili !== '-' ? syncDomisili : '') || '').trim();
   const blokLabel = rawBlok
-    ? (rawBlok.toLowerCase().startsWith('blok') ? rawBlok : `Blok ${rawBlok}`)
+    ? `Blok ${rawBlok.replace(/^blok\s*/i, '').trim()}`
     : '';
 
   const badgeBlokHtml = blokLabel
-    ? `<div class="mt-1">
-         <span class="fg-blok-badge">
-           <i class="bi bi-building me-1"></i>${blokLabel}
-         </span>
-       </div>`
+    ? `<span class="fg-blok-badge">
+         <i class="bi bi-building me-1"></i>${blokLabel}
+       </span>`
     : '';
 
   const hasFoto = Boolean(fotoBase64 && fotoBase64.trim() !== '');
@@ -844,12 +842,10 @@ function buildCellLokalGenderHtml(f, jenis, namaLokal, fotoBase64, syncDomisili)
        </button>`;
 
   return `
-    <div class="d-flex justify-content-between align-items-center gap-2">
-      <div>
-        <div class="fw-medium text-dark" style="font-size: 0.85rem; line-height: 1.35;">${lokasiTeks}</div>
+    <div class="d-flex flex-column align-items-start">
+      <div class="fw-semibold text-dark" style="font-size: 0.86rem; line-height: 1.35;">${lokasiTeks}</div>
+      <div class="d-flex align-items-center flex-wrap gap-1 mt-1">
         ${badgeBlokHtml}
-      </div>
-      <div class="flex-shrink-0">
         ${btnFotoHtml}
       </div>
     </div>
