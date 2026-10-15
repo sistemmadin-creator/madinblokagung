@@ -3,6 +3,148 @@ import { store } from '../../state/store.js';
 import { logActivity } from '../audit/audit.js';
 
 // =========================================================
+// HELPER SINKRONISASI ASATIDZ (WALI KELAS) & SANTRI KELAS
+// =========================================================
+const VALID_JAH_WALIKELAS = ['MUSTAHIQ', 'MS & KOOR', 'MUSTAHIQOH'];
+
+function norm(val) {
+  return String(val || '').trim().toUpperCase();
+}
+
+/**
+ * Mencari Asatidz yang bertugas sebagai Wali Kelas (Mustahiq, MS & Koor, Mustahiqoh)
+ * sesuai Tingkat, Kelas, Bagian, dan Gender pada Formasi Kelas
+ */
+export function findWaliKelasAsatidz(f) {
+  const listAsatidz = store.globalDataAsatidz || [];
+  if (!f || listAsatidz.length === 0) return [];
+
+  const fTingkat = norm(f.tingkat);
+  const fKls = norm(f.din_kls);
+  const fBag = norm(f.din_bag);
+  const fGender = norm(f.pa_pi);
+
+  return listAsatidz.filter(a => {
+    const jah = norm(a.jah_asatidz);
+    if (!VALID_JAH_WALIKELAS.includes(jah)) return false;
+
+    const matchTingkat = norm(a.tingkat_asatidz) === fTingkat;
+    const matchKls = norm(a.din_kls_asatidz) === fKls;
+    const matchBag = norm(a.din_bag_asatidz) === fBag;
+    const matchGender = !fGender || !a.pa_pi || norm(a.pa_pi) === fGender;
+
+    return matchTingkat && matchKls && matchBag && matchGender;
+  });
+}
+
+/**
+ * Mengambil informasi gabungan Formasi & Asatidz Wali Kelas (termasuk fallback lokasi/domisili)
+ */
+function getWaliKelasSyncInfo(f) {
+  const matchedAsatidz = findWaliKelasAsatidz(f);
+
+  // Nama Wali Kelas: Prioritaskan sinkronisasi dari Asatidz (Mustahiq / MS & Koor / Mustahiqoh), fallback ke f.id_mustahiq
+  let waliKelasText = f.id_mustahiq || '-';
+  let waliKelasHtml = f.id_mustahiq ? `<span class="fw-bold">${f.id_mustahiq}</span>` : '-';
+
+  if (matchedAsatidz.length > 0) {
+    waliKelasText = matchedAsatidz.map(a => a.nama_asatidz).join(', ');
+    waliKelasHtml = matchedAsatidz.map(a => {
+      const niaBadge = a.nia ? `<span class="badge bg-secondary ms-1">${a.nia}</span>` : '';
+      const jahBadge = a.jah_asatidz ? `<span class="badge bg-success bg-opacity-10 text-success border border-success-subtle ms-1">${a.jah_asatidz}</span>` : '';
+      return `<div class="fw-bold text-teal">${a.nama_asatidz} ${niaBadge} ${jahBadge}</div>`;
+    }).join('');
+  }
+
+  const primaryAsatidz = matchedAsatidz[0] || null;
+
+  const domisili = f.domisili || (primaryAsatidz?.blok ? `Blok ${primaryAsatidz.blok}${primaryAsatidz.asrama ? ' - ' + primaryAsatidz.asrama : ''}` : '-');
+  const lokasiTakror = f.lokasi_takror || primaryAsatidz?.lokasi_takror || '-';
+  const lokasiDiniyyah = f.lokasi_diniyyah || primaryAsatidz?.lokasi_diniyyah || '-';
+
+  return {
+    matchedAsatidz,
+    waliKelasText,
+    waliKelasHtml,
+    domisili,
+    lokasiTakror,
+    lokasiDiniyyah
+  };
+}
+
+/**
+ * Mengambil daftar santri dari store.globalDataSantri yang masuk ke dalam Formasi Kelas ini
+ */
+export function getSantriInFormasi(f) {
+  const listSantri = store.globalDataSantri || [];
+  if (!f || listSantri.length === 0) return [];
+
+  const fTingkat = norm(f.tingkat);
+  const fKls = norm(f.din_kls);
+  const fBag = norm(f.din_bag);
+  const fGender = norm(f.pa_pi);
+
+  const hasil = [];
+
+  listSantri.forEach(s => {
+    // Mendukung format Array (dbRowToArray) maupun Object
+    const isArr = Array.isArray(s);
+    const no_induk = isArr ? s[1] : s.no_induk;
+    const pa_pi = isArr ? s[4] : s.pa_pi;
+    const nama = isArr ? s[5] : s.nama;
+    const kabupaten = isArr ? s[13] : s.kabupaten;
+    const blok = isArr ? s[15] : s.blok;
+    const asrama = isArr ? s[16] : s.asrama;
+    const kode = isArr ? s[17] : s.kode;
+    const kamar = isArr ? s[18] : s.kamar;
+    const kelasFormal = isArr ? s[19] : s.kelas;
+    const unitFormal = isArr ? s[23] : s.unit;
+    const din_kls = isArr ? s[24] : s.din_kls;
+    const din_bag = isArr ? s[25] : s.din_bag;
+    const tingkat = isArr ? s[26] : s.tingkat;
+
+    const matchTingkat = norm(tingkat) === fTingkat;
+    const matchKls = norm(din_kls) === fKls;
+    const matchBag = norm(din_bag) === fBag;
+    const matchGender = !fGender || !pa_pi || norm(pa_pi) === fGender;
+
+    if (matchTingkat && matchKls && matchBag && matchGender) {
+      hasil.push({
+        no_induk: no_induk || '-',
+        nama: nama || '-',
+        pa_pi: pa_pi || '-',
+        kabupaten: kabupaten || '-',
+        domisiliKamar: [blok, asrama, kode, kamar].filter(Boolean).join(' - ') || '-',
+        formal: [unitFormal, kelasFormal].filter(Boolean).join(' - ') || '-'
+      });
+    }
+  });
+
+  // Urutkan berdasarkan nama santri A-Z
+  hasil.sort((a, b) => a.nama.localeCompare(b.nama));
+  return hasil;
+}
+
+/**
+ * Mengisi datalist pilihan Mustahiq pada modal Tambah/Edit Formasi
+ */
+function populateMustahiqDatalist() {
+  const dl = document.getElementById('datalistMustahiqFormasi');
+  if (!dl) return;
+
+  const listAsatidz = store.globalDataAsatidz || [];
+  const waliList = listAsatidz.filter(a => VALID_JAH_WALIKELAS.includes(norm(a.jah_asatidz)));
+
+  let optionsHtml = '';
+  waliList.forEach(a => {
+    const infoKelas = [a.din_kls_asatidz, a.din_bag_asatidz, a.tingkat_asatidz].filter(Boolean).join(' ');
+    const label = `${a.jah_asatidz || ''} ${infoKelas ? '(' + infoKelas + ')' : ''}`.trim();
+    optionsHtml += `<option value="${a.nama_asatidz}" label="${label}"></option>`;
+  });
+  dl.innerHTML = optionsHtml;
+}
+
+// =========================================================
 // MODUL FORMASI KELAS MADIN (TABEL, FILTER, HIDE & CRUD)
 // =========================================================
 export function initHideFilterFormasi() {
@@ -42,7 +184,7 @@ export function initHideFilterFormasi() {
   const filterContainer = document.getElementById('filterFormCategoriesFormasi');
   if (filterContainer) filterContainer.innerHTML = filterHtml;
 
-  $(document).off('change', '.filter-cb-formasi').on('change', '.filter-cb-formasi', function () {
+  $(document).on('change', '.filter-cb-formasi', function () {
     $('#in_f_' + $(this).val()).prop('disabled', !this.checked).val('');
   });
 }
@@ -126,6 +268,11 @@ export function renderTableFormasi(data) {
     let badgeUg = f.is_unggulan ? '<span class="badge bg-warning text-dark border ms-2 shadow-sm"><i class="bi bi-star-fill"></i> Unggulan</span>' : '';
     let genderB = f.pa_pi === 'PA' ? '<span class="text-primary fw-bold">PA</span>' : '<span class="text-danger fw-bold">PI</span>';
 
+    // Sinkronisasi Wali Kelas & Jumlah Santri
+    const syncInfo = getWaliKelasSyncInfo(f);
+    const jmlSantri = getSantriInFormasi(f).length;
+    const kapasitasBadge = `<span class="badge ${jmlSantri >= f.kapasitas_maksimal ? 'bg-danger' : 'bg-success bg-opacity-10 text-success border border-success-subtle'}">${jmlSantri} / ${f.kapasitas_maksimal} Santri</span>`;
+
     html += `
     <tr style="cursor: pointer;">
       <td class="text-center" onclick="event.stopPropagation();"><input type="checkbox" class="row-check-formasi form-check-input" value="${f.id}"></td>
@@ -133,14 +280,14 @@ export function renderTableFormasi(data) {
       <td class="row-klik-formasi" data-id="${f.id}">${f.din_kls}</td>
       <td class="fw-bold row-klik-formasi" data-id="${f.id}">${f.din_bag} ${badgeUg}</td>
       <td class="row-klik-formasi" data-id="${f.id}">${genderB}</td>
-      <td class="row-klik-formasi" data-id="${f.id}">${f.kapasitas_maksimal}</td>
-      <td class="row-klik-formasi" data-id="${f.id}">${f.id_mustahiq || '-'}</td>
-      <td class="row-klik-formasi" data-id="${f.id}">${f.domisili || '-'}</td>
-      <td class="row-klik-formasi" data-id="${f.id}">${f.lokasi_takror || '-'}</td>
-      <td class="row-klik-formasi" data-id="${f.id}">${f.lokasi_diniyyah || '-'}</td>
+      <td class="row-klik-formasi" data-id="${f.id}">${kapasitasBadge}</td>
+      <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.waliKelasHtml}</td>
+      <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.domisili}</td>
+      <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.lokasiTakror}</td>
+      <td class="row-klik-formasi" data-id="${f.id}">${syncInfo.lokasiDiniyyah}</td>
       <td class="text-center" onclick="event.stopPropagation();">
-        <button type="button" class="btn btn-sm btn-outline-warning border-0" onclick="window.editFormasi('${f.id}')" title="Edit"><i class="bi bi-pencil-square"></i></button>
-        <button type="button" class="btn btn-sm btn-outline-danger border-0" onclick="window.hapusFormasi('${f.id}')" title="Hapus"><i class="bi bi-trash"></i></button>
+        <button class="btn btn-sm btn-outline-warning border-0" onclick="window.editFormasi('${f.id}')" title="Edit"><i class="bi bi-pencil-square"></i></button>
+        <button class="btn btn-sm btn-outline-danger border-0" onclick="window.hapusFormasi('${f.id}')" title="Hapus"><i class="bi bi-trash"></i></button>
       </td>
     </tr>`;
   });
@@ -183,23 +330,20 @@ export function renderTableFormasi(data) {
     if (store.dtFormasi) store.dtFormasi.columns.adjust().draw(false);
   }, 300);
 
-  // Gunakan event delegation agar klik baris & checkAll tetap berfungsi di halaman paginasi berikutnya
   $('#dataTableFormasi tbody').off('click', '.row-klik-formasi').on('click', '.row-klik-formasi', function () {
-    showDetailFormasi($(this).attr('data-id'));
+    showDetailFormasi($(this).data('id'));
   });
 
-  $(document).off('change', '#checkAllFormasi').on('change', '#checkAllFormasi', function () {
+  $('#checkAllFormasi').on('change', function () {
     $('.row-check-formasi').prop('checked', this.checked);
   });
 }
 
 export function openAddFormasiModal() {
-  const form = document.getElementById('formasiForm');
-  if (form) form.reset();
-  const idInput = document.getElementById('f_id');
-  if (idInput) idInput.value = '';
-  const titleEl = document.querySelector('#formasiModal .modal-title');
-  if (titleEl) titleEl.innerHTML = '<i class="bi bi-building-add me-2"></i> Formasi Kelas Baru';
+  populateMustahiqDatalist();
+  document.getElementById('formasiForm').reset();
+  document.getElementById('f_id').value = '';
+  document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-building-add me-2"></i> Formasi Kelas Baru';
   $('#formasiModal').modal('show');
 }
 
@@ -216,7 +360,7 @@ export async function submitFormasiData(e) {
     din_bag: form.f_din_bag.value,
     pa_pi: form.f_pa_pi.value,
     is_unggulan: form.f_is_unggulan.checked,
-    kapasitas_maksimal: parseInt(form.f_kapasitas_maksimal.value, 10) || 40,
+    kapasitas_maksimal: parseInt(form.f_kapasitas_maksimal.value) || 40,
     id_mustahiq: form.f_id_mustahiq.value,
     domisili: form.f_domisili.value,
     lokasi_takror: form.f_lokasi_takror.value,
@@ -256,60 +400,126 @@ export function showDetailFormasi(id) {
   let f = store.globalDataFormasi.find(x => String(x.id) === String(id));
   if (!f) return;
 
+  const syncInfo = getWaliKelasSyncInfo(f);
+  const daftarSantri = getSantriInFormasi(f);
+
+  // Render baris tabel daftar santri
+  let rowsSantriHtml = '';
+  if (daftarSantri.length === 0) {
+    rowsSantriHtml = `
+      <tr>
+        <td colspan="5" class="text-center text-muted py-4">
+          <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+          Belum ada santri yang terdaftar di kelas <strong>${f.din_kls} ${f.din_bag} ${f.tingkat} (${f.pa_pi})</strong>.
+        </td>
+      </tr>`;
+  } else {
+    daftarSantri.forEach((s, idx) => {
+      rowsSantriHtml += `
+        <tr class="santri-formasi-row">
+          <td class="text-center">${idx + 1}</td>
+          <td class="fw-bold text-secondary">${s.no_induk}</td>
+          <td class="fw-bold text-dark">${s.nama}</td>
+          <td>${s.domisiliKamar}</td>
+          <td>${s.formal}</td>
+        </tr>`;
+    });
+  }
+
   let html = `
-  <div class="row mb-2"><div class="col-sm-4 text-muted">Tingkat</div><div class="col-sm-8 fw-bold">: ${f.tingkat}</div></div>
-  <div class="row mb-2"><div class="col-sm-4 text-muted">Kelas / Bagian</div><div class="col-sm-8 fw-bold">: ${f.din_kls} - ${f.din_bag} ${f.is_unggulan ? '<span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> Unggulan</span>' : ''}</div></div>
-  <div class="row mb-2"><div class="col-sm-4 text-muted">Gender</div><div class="col-sm-8 fw-bold">: ${f.pa_pi}</div></div>
-  <div class="row mb-2"><div class="col-sm-4 text-muted">Kapasitas Maksimal</div><div class="col-sm-8 fw-bold">: ${f.kapasitas_maksimal} Santri</div></div>
-  <div class="row mb-2 mt-3"><div class="col-sm-4 text-muted">Wali Kelas</div><div class="col-sm-8 fw-bold">: ${f.id_mustahiq || '-'}</div></div>
-  <div class="row mb-2"><div class="col-sm-4 text-muted">Domisili</div><div class="col-sm-8 fw-bold">: ${f.domisili || '-'}</div></div>
-  <div class="row mb-2"><div class="col-sm-4 text-muted">Lokal Takror</div><div class="col-sm-8 fw-bold">: ${f.lokasi_takror || '-'}</div></div>
-  <div class="row mb-2"><div class="col-sm-4 text-muted">Lokasi Diniyyah</div><div class="col-sm-8 fw-bold">: ${f.lokasi_diniyyah || '-'}</div></div>
-  `;
+  <!-- Kartu Informasi Formasi & Wali Kelas -->
+  <div class="bg-white p-3 rounded shadow-sm border mb-3">
+    <h6 class="text-success fw-bold border-bottom pb-2 mb-3">
+      <i class="bi bi-info-circle-fill me-1"></i> Informasi Kelas & Wali Kelas
+    </h6>
+    <div class="row g-2">
+      <div class="col-md-6">
+        <div class="row mb-2"><div class="col-5 text-muted">Tingkat</div><div class="col-7 fw-bold">: ${f.tingkat}</div></div>
+        <div class="row mb-2"><div class="col-5 text-muted">Kelas / Bagian</div><div class="col-7 fw-bold">: ${f.din_kls} - ${f.din_bag} ${f.is_unggulan ? '<span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> Unggulan</span>' : ''}</div></div>
+        <div class="row mb-2"><div class="col-5 text-muted">Gender</div><div class="col-7 fw-bold">: ${f.pa_pi === 'PA' ? 'PA (Putra)' : 'PI (Putri)'}</div></div>
+        <div class="row mb-2"><div class="col-5 text-muted">Kapasitas</div><div class="col-7 fw-bold">: <span class="badge bg-success">${daftarSantri.length} / ${f.kapasitas_maksimal} Santri</span></div></div>
+      </div>
+      <div class="col-md-6">
+        <div class="row mb-2"><div class="col-5 text-muted">Wali Kelas</div><div class="col-7 d-flex align-items-start gap-1">: <div>${syncInfo.waliKelasHtml}</div></div></div>
+        <div class="row mb-2"><div class="col-5 text-muted">Domisili</div><div class="col-7 fw-bold">: ${syncInfo.domisili}</div></div>
+        <div class="row mb-2"><div class="col-5 text-muted">Lokal Takror</div><div class="col-7 fw-bold">: ${syncInfo.lokasiTakror}</div></div>
+        <div class="row mb-2"><div class="col-5 text-muted">Lokasi Diniyyah</div><div class="col-7 fw-bold">: ${syncInfo.lokasiDiniyyah}</div></div>
+      </div>
+    </div>
+  </div>
 
-  const detailContainer = document.getElementById('detailFormasiContent');
-  if (detailContainer) detailContainer.innerHTML = html;
+  <!-- Kartu Daftar Santri di Kelas Ini -->
+  <div class="bg-white p-3 rounded shadow-sm border">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 border-bottom pb-2 mb-3">
+      <h6 class="text-success fw-bold m-0">
+        <i class="bi bi-people-fill me-1"></i> Daftar Santri Kelas ${f.din_kls} ${f.din_bag} ${f.tingkat}
+        <span class="badge bg-success ms-1">${daftarSantri.length} Santri</span>
+      </h6>
+      <input type="text" id="searchSantriFormasiInput" class="form-control form-control-sm" style="max-width: 240px;" placeholder="Cari nama / NIS / kamar..." oninput="window.filterSantriDiModalFormasi(this.value)">
+    </div>
 
-  const btnHapus = document.getElementById('btnHapusDetailFormasi');
-  if (btnHapus) {
-    btnHapus.onclick = function () {
-      $('#detailFormasiModal').modal('hide');
-      hapusFormasi(f.id);
-    };
-  }
+    <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
+      <table class="table table-sm table-hover align-middle mb-0">
+        <thead class="table-light sticky-top">
+          <tr>
+            <th class="text-center" style="width: 45px;">No</th>
+            <th style="width: 110px;">No. Induk</th>
+            <th>Nama Lengkap Santri</th>
+            <th>Domisili Kamar</th>
+            <th>Sekolah Formal</th>
+          </tr>
+        </thead>
+        <tbody id="tbodySantriFormasiDetail">
+          ${rowsSantriHtml}
+        </tbody>
+      </table>
+    </div>
+  </div>`;
 
-  const btnEdit = document.getElementById('btnEditDetailFormasi');
-  if (btnEdit) {
-    btnEdit.onclick = function () {
-      $('#detailFormasiModal').modal('hide');
-      editFormasi(f.id);
-    };
-  }
+  document.getElementById('detailFormasiContent').innerHTML = html;
+
+  document.getElementById('btnHapusDetailFormasi').onclick = function () {
+    $('#detailFormasiModal').modal('hide');
+    hapusFormasi(f.id);
+  };
+  document.getElementById('btnEditDetailFormasi').onclick = function () {
+    $('#detailFormasiModal').modal('hide');
+    editFormasi(f.id);
+  };
 
   $('#detailFormasiModal').modal('show');
+}
+
+export function filterSantriDiModalFormasi(keyword) {
+  const q = String(keyword || '').toLowerCase();
+  const rows = document.querySelectorAll('#tbodySantriFormasiDetail .santri-formasi-row');
+  rows.forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(q) ? '' : 'none';
+  });
 }
 
 export function editFormasi(id) {
   let f = store.globalDataFormasi.find(x => String(x.id) === String(id));
   if (!f) return;
 
-  const form = document.getElementById('formasiForm');
-  if (!form) return;
+  populateMustahiqDatalist();
+  const syncInfo = getWaliKelasSyncInfo(f);
 
+  const form = document.getElementById('formasiForm');
   form.f_id.value = f.id;
-  form.f_tingkat.value = f.tingkat || '';
-  form.f_din_kls.value = f.din_kls || '';
-  form.f_din_bag.value = f.din_bag || '';
-  form.f_pa_pi.value = f.pa_pi || '';
-  form.f_is_unggulan.checked = Boolean(f.is_unggulan);
-  form.f_kapasitas_maksimal.value = f.kapasitas_maksimal || 40;
-  form.f_id_mustahiq.value = f.id_mustahiq || '';
+  form.f_tingkat.value = f.tingkat;
+  form.f_din_kls.value = f.din_kls;
+  form.f_din_bag.value = f.din_bag;
+  form.f_pa_pi.value = f.pa_pi;
+  form.f_is_unggulan.checked = f.is_unggulan;
+  form.f_kapasitas_maksimal.value = f.kapasitas_maksimal;
+  form.f_id_mustahiq.value = f.id_mustahiq || (syncInfo.matchedAsatidz[0]?.nama_asatidz || '');
   form.f_domisili.value = f.domisili || '';
   form.f_lokasi_takror.value = f.lokasi_takror || '';
   form.f_lokasi_diniyyah.value = f.lokasi_diniyyah || '';
 
-  const titleEl = document.querySelector('#formasiModal .modal-title');
-  if (titleEl) titleEl.innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Formasi Kelas';
+  document.querySelector('#formasiModal .modal-title').innerHTML = '<i class="bi bi-pencil-square me-2"></i> Edit Formasi Kelas';
   $('#formasiModal').modal('show');
 }
 
