@@ -14,13 +14,29 @@ Aplikasi web manajemen database terpadu untuk **Data Santri**, **Data Asatidz**,
    npm install
 
 
-## Cara Menjalankan di Lokal
+## list progres akan datang
 ```bash
 diperbarui
 - menjadikan satu tombol hierarki dropdown dan log aktivitas menjadi satu dalam menu pengaturan
 
 diperbaiki
-- layout HP <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/30cec3d7-9553-42ee-822e-7dc9d2cd870c" />
+- klik menu utama tidak akan menutup, kalau ingin melihat menu dibawahnya cukup klik panahnya
+- layout HP
 
 menu baru selanjutnya
-- fan pelajaran
+- fan pelajaran (diberi garis batas bahwa ini Kurkulum)
+- Pengajar Fan
+- Jadwal KBM
+- Hari KBM
+- Daftar Pendidik
+- Absensi Asatidz (diberi garis batas bahwa ini TOP)
+- Rekap Absensi
+- Absen Cepat
+- Setoran (diberi garis batas bahwa ini Muhafadzoh)
+- Rekap Hafalan
+- Cetak Piagam
+- Dasboard (ditaruh atas sendiridiberi garis batas bahwa ini Dashboard)
+isinya yakni
+- Kurikulum
+- Muhafadzoh
+- TOP
