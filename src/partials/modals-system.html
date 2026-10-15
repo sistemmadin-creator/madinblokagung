@@ -1,44 +1,104 @@
 <!-- 5. Modal Pengaturan Hierarki Dropdown (#settingsModal) -->
 <div class="modal fade" id="settingsModal" tabindex="-1" style="z-index: 1060;">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content border-0 shadow-lg">
       <div class="modal-header bg-dark text-white border-0 py-3">
         <h5 class="modal-title fw-bold"><i class="bi bi-diagram-3-fill me-2"></i> Pengaturan Hierarki Dropdown</h5>
         <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body bg-light p-4">
-        <!-- 1. Builder Tree 1 (Blok -> Kamar) -->
-        <div class="mb-4 bg-white p-3 rounded border shadow-sm">
-          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
-            <label class="form-label fw-bold text-success mb-0">1. Blok &gt; Asrama &gt; Kode &gt; Kamar</label>
-            <div class="d-flex gap-2">
-              <div class="input-group input-group-sm w-auto shadow-sm">
-                <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree1', this.value)">
-              </div>
-              <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree1')">
-                <i class="bi bi-plus-lg me-1"></i> Tambah
-              </button>
-            </div>
-          </div>
-          <div id="builder-tree1" class="d-flex flex-column bg-light p-2 rounded border border-secondary border-opacity-25" style="min-height: 80px; max-height: 350px; overflow-y: auto;"></div>
-        </div>
+        <div class="row g-3">
+          <!-- KOLOM KIRI: 1. Builder Tree 1 (Blok -> Kamar) -->
+          <div class="col-lg-6">
+            <div class="bg-white p-3 rounded border shadow-sm h-100">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <label class="form-label fw-bold text-success mb-0">1. Blok &gt; Asrama &gt; Kode &gt; Kamar</label>
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                  <!-- Tombol Filter Blok & Asrama (Di Sebelah Kiri Pencarian) -->
+                  <div class="dropdown">
+                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm fw-semibold text-nowrap" data-bs-toggle="dropdown" data-bs-auto-close="outside" onclick="window.populateTreeFilterDropdown('tree1')">
+                      <i class="bi bi-funnel me-1"></i> Filter
+                    </button>
+                    <div class="dropdown-menu p-3 shadow border-0" style="min-width: 230px; z-index: 1080;">
+                      <div class="mb-2">
+                        <label class="form-label small fw-bold text-secondary mb-1">Blok</label>
+                        <select class="form-select form-select-sm" id="filter_tree1_blok" onchange="window.onTreeFilterChange('tree1', 'blok')">
+                          <option value="">Semua Blok</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary mb-1">Asrama</label>
+                        <select class="form-select form-select-sm" id="filter_tree1_asrama" onchange="window.onTreeFilterChange('tree1', 'asrama')">
+                          <option value="">Semua Asrama</option>
+                        </select>
+                      </div>
+                      <button type="button" class="btn btn-sm btn-light border w-100 fw-semibold text-secondary" onclick="window.resetTreeFilter('tree1')">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
+                      </button>
+                    </div>
+                  </div>
 
-        <!-- 2. Builder Tree 2 (Unit -> Bagian) -->
-        <div class="mb-2 bg-white p-3 rounded border shadow-sm">
-          <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
-            <label class="form-label fw-bold text-success mb-0">2. Unit &gt; Jurusan &gt; Sem &gt; Kelas &gt; Bag</label>
-            <div class="d-flex gap-2">
-              <div class="input-group input-group-sm w-auto shadow-sm">
-                <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree2', this.value)">
+                  <!-- Kotak Pencarian -->
+                  <div class="input-group input-group-sm shadow-sm" style="width: 165px;">
+                    <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
+                    <input type="text" id="search_tree1" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree1', this.value)">
+                  </div>
+
+                  <!-- Tombol Tambah -->
+                  <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree1')">
+                    <i class="bi bi-plus-lg me-1"></i> Tambah
+                  </button>
+                </div>
               </div>
-              <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree2')">
-                <i class="bi bi-plus-lg me-1"></i> Tambah
-              </button>
+              <div id="builder-tree1" class="d-flex flex-column bg-light p-2 rounded border border-secondary border-opacity-25" style="min-height: 120px; max-height: 420px; overflow-y: auto;"></div>
             </div>
           </div>
-          <div id="builder-tree2" class="d-flex flex-column bg-light p-2 rounded border border-secondary border-opacity-25" style="min-height: 80px; max-height: 350px; overflow-y: auto;"></div>
+
+          <!-- KOLOM KANAN: 2. Builder Tree 2 (Unit -> Bagian) -->
+          <div class="col-lg-6">
+            <div class="bg-white p-3 rounded border shadow-sm h-100">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+                <label class="form-label fw-bold text-success mb-0">2. Unit &gt; Jurusan &gt; Sem &gt; Kelas &gt; Bag</label>
+                <div class="d-flex align-items-center gap-2 ms-auto">
+                  <!-- Tombol Filter Unit & Jurusan (Di Sebelah Kiri Pencarian) -->
+                  <div class="dropdown">
+                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm fw-semibold text-nowrap" data-bs-toggle="dropdown" data-bs-auto-close="outside" onclick="window.populateTreeFilterDropdown('tree2')">
+                      <i class="bi bi-funnel me-1"></i> Filter
+                    </button>
+                    <div class="dropdown-menu p-3 shadow border-0" style="min-width: 230px; z-index: 1080;">
+                      <div class="mb-2">
+                        <label class="form-label small fw-bold text-secondary mb-1">Unit</label>
+                        <select class="form-select form-select-sm" id="filter_tree2_unit" onchange="window.onTreeFilterChange('tree2', 'unit')">
+                          <option value="">Semua Unit</option>
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-bold text-secondary mb-1">Jurusan</label>
+                        <select class="form-select form-select-sm" id="filter_tree2_jurusan" onchange="window.onTreeFilterChange('tree2', 'jurusan')">
+                          <option value="">Semua Jurusan</option>
+                        </select>
+                      </div>
+                      <button type="button" class="btn btn-sm btn-light border w-100 fw-semibold text-secondary" onclick="window.resetTreeFilter('tree2')">
+                        <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filter
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- Kotak Pencarian -->
+                  <div class="input-group input-group-sm shadow-sm" style="width: 165px;">
+                    <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
+                    <input type="text" id="search_tree2" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree2', this.value)">
+                  </div>
+
+                  <!-- Tombol Tambah -->
+                  <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree2')">
+                    <i class="bi bi-plus-lg me-1"></i> Tambah
+                  </button>
+                </div>
+              </div>
+              <div id="builder-tree2" class="d-flex flex-column bg-light p-2 rounded border border-secondary border-opacity-25" style="min-height: 120px; max-height: 420px; overflow-y: auto;"></div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="modal-footer border-0">
