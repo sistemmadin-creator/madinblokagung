@@ -1,0 +1,227 @@
+<!-- ===================================================================== -->
+<!-- 1. HALAMAN UTAMA: DAFTAR FAN PELAJARAN (#page-fan-pelajaran)          -->
+<!-- ===================================================================== -->
+<div id="page-fan-pelajaran" style="display:none;">
+  <!-- Header Menu & Tombol Aksi -->
+  <div class="card-panel mb-4 border-0 no-print-fan">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom pb-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="p-2 rounded-3 bg-white border shadow-sm text-success fs-3 d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+          <i class="bi bi-journal-bookmark-fill text-success"></i>
+        </div>
+        <div>
+          <h2 class="header-title fw-bold m-0">Fan Pelajaran</h2>
+          <p class="text-muted small m-0 mt-1">Daftar Mata Pelajaran &amp; Konfigurasi Kelas Madin</p>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap align-items-center">
+        <!-- 1. Dropdown Tombol Hapus Massal -->
+        <div class="dropdown d-inline-block">
+          <button class="btn btn-outline-danger fw-semibold shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-trash3-fill me-1"></i> Hapus
+          </button>
+          <ul class="dropdown-menu shadow border-0" style="border-radius: 12px; min-width: 210px;">
+            <li><h6 class="dropdown-header text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>PEMBERSIHAN DATA</h6></li>
+            <li>
+              <a class="dropdown-item py-2 fw-semibold text-danger d-flex align-items-center gap-2" href="#" onclick="window.konfirmasiHapusMassalFan('jam'); return false;">
+                <i class="bi bi-clock-history"></i> Hapus Isi Seluruh Jam
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item py-2 fw-semibold text-danger d-flex align-items-center gap-2" href="#" onclick="window.konfirmasiHapusMassalFan('pengajar'); return false;">
+                <i class="bi bi-people-fill"></i> Hapus Isi Seluruh Pengajar
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- 2. Tombol Atur Item Fan -->
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.bukaModalPengaturanFan()">
+          <i class="bi bi-gear-fill me-1"></i> Atur Item Fan
+        </button>
+
+        <!-- 3. Tombol Batch Setup Fan Khusus MS (Mustahiq) -->
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.bukaModalAturFanMS()">
+          <i class="bi bi-person-check-fill me-1"></i> Atur Fan MS
+        </button>
+
+        <!-- 4. Tombol Segarkan Data -->
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.muatUlangFanPelajaran()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Segarkan Data
+        </button>
+
+        <!-- 5. Tombol Export Excel -->
+        <button type="button" class="btn btn-light border fw-semibold shadow-sm" onclick="window.exportFanPelajaranExcel()">
+          <i class="bi bi-file-earmark-excel-fill text-success me-1"></i> Export Excel
+        </button>
+
+        <!-- 6. Tombol Cetak / Print -->
+        <button type="button" class="btn btn-success fw-bold shadow-sm px-3" onclick="window.cetakFanPelajaran()">
+          <i class="bi bi-printer-fill me-1"></i> Cetak / Print
+        </button>
+      </div>
+    </div>
+
+    <!-- Tombol Switch Kategori Fan Pelajaran -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 pt-2">
+      <div class="btn-group btn-group-sm shadow-xs" role="group" aria-label="Switch Fan Pelajaran">
+        <button type="button" class="btn btn-success fw-bold px-3 py-2" id="btnSwitchFanSemua" onclick="window.setSwitchFanPelajaran('semua')">
+          <i class="bi bi-grid-fill me-1"></i> Fan Pelajaran Semua
+        </button>
+        <button type="button" class="btn btn-outline-success fw-bold px-3 py-2" id="btnSwitchFanReguler" onclick="window.setSwitchFanPelajaran('reguler')">
+          <i class="bi bi-book-half me-1"></i> Fan Pelajaran Reguler
+        </button>
+        <button type="button" class="btn btn-outline-success fw-bold px-3 py-2" id="btnSwitchFanUnggulan" onclick="window.setSwitchFanPelajaran('unggulan')">
+          <i class="bi bi-star-fill text-warning me-1"></i> Fan Pelajaran Unggulan
+        </button>
+      </div>
+      <span class="badge bg-light text-dark border px-3 py-2" id="badgeStatusFanFilter">
+        Menampilkan: <b>Semua Kategori</b>
+      </span>
+    </div>
+
+    <!-- Bar Pencarian Fan Pelajaran -->
+    <div class="row g-2 align-items-center mt-2 pt-3 border-top">
+      <div class="col-12 col-md-7 col-lg-5">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white border-secondary"><i class="bi bi-search text-success"></i></span>
+          <input type="text" class="form-control border-secondary" id="inputCariFan"
+                 placeholder="Cari Kelas / Fan / Mata Pelajaran / Pengajar..."
+                 oninput="window.cariFanPelajaranDebounce(this.value)" autocomplete="off">
+          <button class="btn btn-outline-secondary d-none" type="button" id="btnHapusCariFan"
+                  onclick="window.resetCariFanPelajaran()" title="Bersihkan pencarian">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-12 col-md-auto">
+        <small class="text-muted" id="infoHasilCariFan"></small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Area Tabel Dokumen Resmi yang Dicetak / Ditampilkan -->
+  <div class="card-panel border-0 p-3 p-md-4 shadow-sm" id="areaPrintFanPelajaran">
+    <div class="text-center mb-3">
+      <h5 class="fw-bold m-0 text-uppercase" style="letter-spacing:0.5px;">DAFTAR MATA PELAJARAN KELAS</h5>
+      <h6 class="fw-bold text-muted m-0 mt-1">Madrasah Diniyyah Al Amiriyyah</h6>
+    </div>
+    <div class="table-responsive">
+      <table class="tabel-fan-pelajaran" id="tableFanPelajaran">
+        <thead>
+          <tr>
+            <th style="width: 42px;">NO</th>
+            <th style="width: 55px;">KLS</th>
+            <th style="width: 48px;">TNK</th>
+            <th style="width: 140px;">FAN</th>
+            <th style="width: 75px;">JAM</th>
+            <th>MATA PELAJARAN</th>
+            <th style="width: 95px;">PENGAJAR</th>
+            <th style="width: 210px;">KETERANGAN</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyFanPelajaran">
+          <!-- Di-generate otomatis oleh JavaScript (renderFanPelajaran) -->
+        </tbody>
+      </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+      <small class="text-muted fst-italic fw-semibold">*MS (Mustahiq) &nbsp;&bull;&nbsp; MB (Munawib)</small>
+      <div id="fanAutoSaveStatus" class="small"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- 2. HALAMAN SUB-MENU: PENGAJAR FAN (#page-pengajar-fan)                -->
+<!-- ===================================================================== -->
+<div id="page-pengajar-fan" style="display:none;">
+  <div class="card-panel mb-4 border-0 no-print-pfan">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom pb-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="p-2 rounded-3 bg-white border shadow-sm text-success fs-3 d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+          <i class="bi bi-person-lines-fill text-success"></i>
+        </div>
+        <div>
+          <h2 class="header-title fw-bold m-0">Pengajar Fan</h2>
+          <p class="text-muted small m-0 mt-1">Rekapitulasi Fan Mata Pelajaran yang Diajarkan oleh Masing-Masing Asatidz</p>
+        </div>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.bukaModalGrupAsal()">
+          <i class="bi bi-diagram-3-fill me-1"></i> Grup Asal
+        </button>
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.muatUlangPengajarFan()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Segarkan Data
+        </button>
+        <button type="button" class="btn btn-light border fw-semibold shadow-sm" onclick="window.exportPengajarFanExcel()">
+          <i class="bi bi-file-earmark-excel-fill text-success me-1"></i> Export Excel
+        </button>
+        <button type="button" class="btn btn-success fw-bold shadow-sm px-3" onclick="window.cetakPengajarFan()">
+          <i class="bi bi-printer-fill me-1"></i> Print / Cetak Dokumen
+        </button>
+      </div>
+    </div>
+
+    <!-- Bar Filter & Pencarian Pengajar Fan -->
+    <div class="row g-2 align-items-center mt-2 pt-3 border-top">
+      <div class="col-12 col-md-5 col-lg-4">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white border-secondary"><i class="bi bi-search text-success"></i></span>
+          <input type="text" class="form-control border-secondary" id="inputCariPengajarFan"
+                 placeholder="Cari Kode / Nama / Fan / Jah..."
+                 oninput="window.cariPengajarFanDebounce(this.value)" autocomplete="off">
+          <button class="btn btn-outline-secondary d-none" type="button" id="btnHapusCariPengajarFan"
+                  onclick="document.getElementById('inputCariPengajarFan').value=''; window.cariPengajarFan('');" title="Bersihkan pencarian">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <select class="form-select form-select-sm border-secondary" id="fltPFanTingkat" onchange="window.renderTabelPengajarFan()" title="Tampilkan fan pada tingkat tertentu">
+          <option value="">Semua Tingkat</option>
+          <option value="ISTI'DAD">ISTI'DAD</option>
+          <option value="ULA">ULA</option>
+          <option value="WUSTHO">WUSTHO</option>
+          <option value="ULYA">ULYA</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <select class="form-select form-select-sm border-secondary" id="fltPFanJah" onchange="window.renderTabelPengajarFan()">
+          <option value="">Semua Jah</option>
+        </select>
+      </div>
+      <div class="col-12 col-md d-flex align-items-center gap-2 flex-wrap">
+        <button type="button" class="btn btn-sm btn-light border" onclick="window.resetFilterPengajarFan()">
+          <i class="bi bi-arrow-counterclockwise"></i> Reset
+        </button>
+        <span class="badge bg-light text-dark border px-3 py-2" id="infoTotalAsatidzPFan">0 Asatidz</span>
+        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2" id="infoTotalFanPFan">Keterisian Fan: 0/0 (0%)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Area Tabel yang Ditampilkan & Dicetak -->
+  <div class="card-panel border-0 p-3 p-md-4 shadow-sm" id="areaPrintPengajarFan">
+    <div class="text-center mb-3">
+      <h5 class="fw-bold m-0 text-uppercase" style="letter-spacing:0.5px;">DAFTAR PENGAJAR FAN MATA PELAJARAN</h5>
+      <h6 class="fw-bold text-muted m-0 mt-1">MADRASAH DINIYYAH AL AMIRIYYAH</h6>
+    </div>
+    <div class="table-responsive">
+      <table class="tabel-daftar-pendidik" id="tablePengajarFan">
+        <thead>
+          <tr>
+            <th style="width:60px;">KODE</th>
+            <th style="min-width:200px;">NAMA</th>
+            <th style="width:40px;">ASAL</th>
+            <th style="width:90px;">JAH</th>
+            <th>MENGAJAR FAN</th>
+            <th style="width:55px;">JML</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyPengajarFan"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
