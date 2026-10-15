@@ -15,6 +15,12 @@ Aplikasi web manajemen database terpadu untuk **Data Santri**, **Data Asatidz**,
 
 
 ## Cara Menjalankan di Lokal
-- l
-  feef
-- df
+```bash
+diperbarui
+- menjadikan satu tombol hierarki dropdown dan log aktivitas menjadi satu dalam menu pengaturan
+
+diperbaiki
+- layout HP <img width="1366" height="768" alt="image" src="https://github.com/user-attachments/assets/30cec3d7-9553-42ee-822e-7dc9d2cd870c" />
+
+menu baru selanjutnya
+- fan pelajaran
