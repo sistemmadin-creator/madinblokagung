@@ -93,13 +93,24 @@ export function toggleSidebar() {
 
 export function handleClickMenuFormasi(e) {
   if (e) e.preventDefault();
+  // Hanya menuju halaman Formasi Kelas tanpa menutup sidebar & tanpa mengubah status dropdown
+  window.showPage('formasi', null, true);
+}
+
+export function toggleSubmenuFormasi(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   const submenu = document.getElementById('submenu-desk-formasi');
   const arrow = document.getElementById('arrow-submenu-formasi');
   if (submenu) {
-    submenu.classList.toggle('open');
-    if (arrow) arrow.classList.toggle('rotated', submenu.classList.contains('open'));
+    const isNowOpen = submenu.classList.toggle('open');
+    if (arrow) arrow.classList.toggle('rotated', isNowOpen);
   }
-  window.showPage('formasi', true);
+  // Pastikan sidebar tetap terbuka saat panah diklik
+  document.body.classList.remove('sidebar-collapsed');
+  document.getElementById('desktopSidebar')?.classList.remove('close');
 }
 
 export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
@@ -134,13 +145,17 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
     if (deskActive) deskActive.classList.add('active');
     if (mobActive) mobActive.classList.add('active');
 
-    if (page === 'formasi' && typeof onShowFormasi === 'function') {
-      onShowFormasi();
+    if (page === 'formasi') {
+      if (typeof onShowFormasi === 'function') {
+        onShowFormasi();
+      } else if (typeof window.loadFormasiData === 'function') {
+        window.loadFormasiData();
+      }
     }
   }
 
-  // Tutup sidebar dengan animasi halus setelah memilih halaman (kecuali saat sedang membuka induk sub-menu)
-  if (window.innerWidth >= 768 && !keepSidebarOpen && onShowFormasi !== true) {
+  // Jangan tutup sidebar jika klik menu Formasi Kelas atau jika keepSidebarOpen bernilai true
+  if (window.innerWidth >= 768 && !keepSidebarOpen && page !== 'formasi' && onShowFormasi !== true) {
     document.body.classList.add('sidebar-collapsed');
     document.getElementById('desktopSidebar')?.classList.add('close');
   }
