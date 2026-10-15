@@ -91,20 +91,24 @@ document.addEventListener('DOMContentLoaded', async function () {
     console.error('Gagal memuat app_settings:', err.message);
   }
 
-  // Background Fetch Data Santri & Formasi Kelas
+// Background Fetch Data Santri, Asatidz & Formasi Kelas
   try {
     store.globalDataSantri = await santri.fetchAllSantriFromSupabase();
     santri.populateFilterDatalists();
-    await formasi.loadFormasiData();
   } catch (err) {
-    console.error('Background fetch santri/formasi gagal:', err.message);
+    console.error('Background fetch santri gagal:', err.message);
   }
 
-  // Background Fetch Data Asatidz
   try {
     store.globalDataAsatidz = await asatidz.fetchAllAsatidzFromSupabase();
     asatidz.populateFilterDatalistsAsatidz();
   } catch (err) {
     console.error('Background fetch asatidz gagal:', err.message);
   }
-});
+
+  // Muat tabel Formasi Kelas setelah data Santri & Asatidz siap untuk disinkronkan
+  try {
+    await formasi.loadFormasiData();
+  } catch (err) {
+    console.error('Background fetch formasi gagal:', err.message);
+  }
