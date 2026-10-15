@@ -112,3 +112,4 @@ document.addEventListener('DOMContentLoaded', async function () {
   } catch (err) {
     console.error('Background fetch formasi gagal:', err.message);
   }
+});
