@@ -105,21 +105,152 @@ export function addRuleRow(treeId, data = null) {
   }
 }
 
-export function filterRules(treeId, keyword) {
+// Helper untuk membaca Blok & Asrama (tree1) atau Unit & Jurusan (tree2)
+function extractRuleFields(rowEl, treeId) {
+  const previewText = (rowEl.querySelector('.preview-content')?.innerText || '').trim();
+
+  if (treeId === 'tree1') {
+    const parentVal = (rowEl.querySelector('.rule-parent')?.value || '').trim();
+    const parts = parentVal.split('>').map(s => s.trim()).filter(Boolean);
+    const blok = parts[0] || '';
+    const asrama = parts[1] || '';
+    return {
+      blok,
+      asrama,
+      fullText: `${parentVal} ${previewText}`.toLowerCase()
+    };
+  } else {
+    const unit = (rowEl.querySelector('.t2-unit')?.value || '').trim();
+    const jurusanRaw = (rowEl.querySelector('.t2-jurusan')?.value || '').trim();
+    const jurusanList = jurusanRaw
+      ? jurusanRaw.split(',').map(j => j.trim()).filter(Boolean)
+      : [];
+    return {
+      unit,
+      jurusanRaw,
+      jurusanList,
+      fullText: `${unit} ${jurusanRaw} ${previewText}`.toLowerCase()
+    };
+  }
+}
+
+export function populateTreeFilterDropdown(treeId) {
+  const container = document.getElementById(`builder-${treeId}`);
+  if (!container) return;
+  const rows = container.querySelectorAll('.rule-row');
+
+  if (treeId === 'tree1') {
+    const selBlok = document.getElementById('filter_tree1_blok');
+    const selAsrama = document.getElementById('filter_tree1_asrama');
+    if (!selBlok || !selAsrama) return;
+
+    const currentBlok = selBlok.value;
+    const currentAsrama = selAsrama.value;
+    const blokSet = new Set();
+    const asramaSet = new Set();
+
+    rows.forEach(r => {
+      const { blok, asrama } = extractRuleFields(r, 'tree1');
+      if (blok) blokSet.add(blok);
+      if (asrama && (!currentBlok || blok === currentBlok)) {
+        asramaSet.add(asrama);
+      }
+    });
+
+    selBlok.innerHTML = '<option value="">Semua Blok</option>';
+    Array.from(blokSet).sort().forEach(b => selBlok.add(new Option(b, b, false, b === currentBlok)));
+
+    selAsrama.innerHTML = '<option value="">Semua Asrama</option>';
+    Array.from(asramaSet).sort().forEach(a => selAsrama.add(new Option(a, a, false, a === currentAsrama)));
+  } else if (treeId === 'tree2') {
+    const selUnit = document.getElementById('filter_tree2_unit');
+    const selJurusan = document.getElementById('filter_tree2_jurusan');
+    if (!selUnit || !selJurusan) return;
+
+    const currentUnit = selUnit.value;
+    const currentJurusan = selJurusan.value;
+    const unitSet = new Set();
+    const jurusanSet = new Set();
+
+    rows.forEach(r => {
+      const { unit, jurusanList } = extractRuleFields(r, 'tree2');
+      if (unit) unitSet.add(unit);
+      if (!currentUnit || unit === currentUnit) {
+        jurusanList.forEach(j => {
+          if (j && j !== '-') jurusanSet.add(j);
+        });
+      }
+    });
+
+    selUnit.innerHTML = '<option value="">Semua Unit</option>';
+    Array.from(unitSet).sort().forEach(u => selUnit.add(new Option(u, u, false, u === currentUnit)));
+
+    selJurusan.innerHTML = '<option value="">Semua Jurusan</option>';
+    Array.from(jurusanSet).sort().forEach(j => selJurusan.add(new Option(j, j, false, j === currentJurusan)));
+  }
+}
+
+export function onTreeFilterChange(treeId, changedLevel) {
+  if (treeId === 'tree1' && changedLevel === 'blok') {
+    const selAsrama = document.getElementById('filter_tree1_asrama');
+    if (selAsrama) selAsrama.value = '';
+    populateTreeFilterDropdown('tree1');
+  } else if (treeId === 'tree2' && changedLevel === 'unit') {
+    const selJurusan = document.getElementById('filter_tree2_jurusan');
+    if (selJurusan) selJurusan.value = '';
+    populateTreeFilterDropdown('tree2');
+  }
+  const searchVal = document.getElementById(`search_${treeId}`)?.value || '';
+  filterRules(treeId, searchVal);
+}
+
+export function resetTreeFilter(treeId) {
+  if (treeId === 'tree1') {
+    const selBlok = document.getElementById('filter_tree1_blok');
+    const selAsrama = document.getElementById('filter_tree1_asrama');
+    if (selBlok) selBlok.value = '';
+    if (selAsrama) selAsrama.value = '';
+  } else if (treeId === 'tree2') {
+    const selUnit = document.getElementById('filter_tree2_unit');
+    const selJurusan = document.getElementById('filter_tree2_jurusan');
+    if (selUnit) selUnit.value = '';
+    if (selJurusan) selJurusan.value = '';
+  }
+  const searchInput = document.getElementById(`search_${treeId}`);
+  if (searchInput) searchInput.value = '';
+  filterRules(treeId, '');
+}
+
+export function filterRules(treeId, keyword = '') {
   const container = document.getElementById(`builder-${treeId}`);
   if (!container) return;
 
-  const term = keyword.toLowerCase().trim();
+  const term = (keyword || document.getElementById(`search_${treeId}`)?.value || '').toLowerCase().trim();
   const rows = container.querySelectorAll('.rule-row');
 
-  rows.forEach(row => {
-    const previewText = row.querySelector('.preview-content')?.innerText || '';
-    if (previewText.toLowerCase().includes(term)) {
-      row.style.display = '';
-    } else {
-      row.style.display = 'none';
-    }
-  });
+  if (treeId === 'tree1') {
+    const fBlok = (document.getElementById('filter_tree1_blok')?.value || '').trim();
+    const fAsrama = (document.getElementById('filter_tree1_asrama')?.value || '').trim();
+
+    rows.forEach(row => {
+      const { blok, asrama, fullText } = extractRuleFields(row, 'tree1');
+      const matchBlok = !fBlok || blok === fBlok;
+      const matchAsrama = !fAsrama || asrama === fAsrama;
+      const matchTerm = !term || fullText.includes(term);
+      row.style.display = (matchBlok && matchAsrama && matchTerm) ? '' : 'none';
+    });
+  } else if (treeId === 'tree2') {
+    const fUnit = (document.getElementById('filter_tree2_unit')?.value || '').trim();
+    const fJurusan = (document.getElementById('filter_tree2_jurusan')?.value || '').trim();
+
+    rows.forEach(row => {
+      const { unit, jurusanList, fullText } = extractRuleFields(row, 'tree2');
+      const matchUnit = !fUnit || unit === fUnit;
+      const matchJurusan = !fJurusan || jurusanList.includes(fJurusan);
+      const matchTerm = !term || fullText.includes(term);
+      row.style.display = (matchUnit && matchJurusan && matchTerm) ? '' : 'none';
+    });
+  }
 }
 
 export function toggleRuleType(selectEl, data = null) {
@@ -206,11 +337,11 @@ export function updateRulePreview(element) {
     previewEl.innerHTML = `<span class="fw-bold text-dark">${parent}</span> <span class="badge bg-light text-dark border ms-1">[ ${rangeTxt} ]</span>`;
   } else {
     let unit = row.querySelector('.t2-unit')?.value || '<em class="text-danger">Unit?</em>';
-    let sType = row.querySelector('.t2-sem-type')?.value;
-    let sTxt = sType === 'numeric' ? `${row.querySelector('.t2-sem-start')?.value || '?'} s/d ${row.querySelector('.t2-sem-end')?.value || '?'}` : 'Manual';
+    let jurRaw = (row.querySelector('.t2-jurusan')?.value || '').trim();
+    let jurTxt = (jurRaw && jurRaw !== '-') ? jurRaw : '-';
     let kType = row.querySelector('.t2-kel-type')?.value;
     let kTxt = kType === 'roman' ? `${row.querySelector('.t2-kel-start')?.value || '?'} s/d ${row.querySelector('.t2-kel-end')?.value || '?'}` : 'Manual';
-    previewEl.innerHTML = `<span class="fw-bold text-dark">${unit}</span> <span class="badge bg-light text-dark border ms-1">Sem: ${sTxt}</span> <span class="badge bg-light text-dark border ms-1">Kls: ${kTxt}</span>`;
+    previewEl.innerHTML = `<span class="fw-bold text-dark">${unit}</span> <span class="badge bg-light text-dark border ms-1">Jurusan: ${jurTxt}</span> <span class="badge bg-light text-dark border ms-1">Kls: ${kTxt}</span>`;
   }
 }
 
