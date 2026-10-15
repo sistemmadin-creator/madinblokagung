@@ -427,12 +427,15 @@ $('#dataTableFormasi').html(`
       { searchable: false, orderable: false, targets: [0, 11] }
     ],
     initComplete: function () {
+      $('#dataTableFormasi_length').closest('.col-md-6').removeClass('col-md-6').addClass('col-md-auto');
+      $('#dataTableFormasi_filter').closest('.col-md-6').removeClass('col-md-6').addClass('col-md');
+
       if ($('#actionGroupFormasi').length === 0) {
-        $('#dataTableFormasi_filter').addClass('d-flex justify-content-end align-items-center gap-2 flex-wrap');
-        $('#dataTableFormasi_filter label').addClass('mb-0 d-flex align-items-center gap-2');
+        $('#dataTableFormasi_filter').addClass('d-flex justify-content-end align-items-center gap-2 flex-wrap flex-md-nowrap');
+        $('#dataTableFormasi_filter label').addClass('mb-0 d-inline-flex align-items-center gap-2 text-nowrap');
 
         let actionBtns = $(`
-        <div class="d-flex gap-2 flex-nowrap" id="actionGroupFormasi">
+        <div class="d-flex align-items-center gap-1 flex-nowrap me-1" id="actionGroupFormasi">
           <div class="dropdown">
             <button class="btn btn-outline-danger btn-sm dropdown-toggle text-nowrap border-0" type="button" data-bs-toggle="dropdown">
               <i class="bi bi-trash"></i> Hapus
