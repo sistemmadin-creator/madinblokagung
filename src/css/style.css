@@ -400,24 +400,45 @@ body {
    SUB-MENU SIDEBAR & HALAMAN FORMASI KELAS PUTRA / PUTRI
 ========================================================= */
 .sidebar-submenu {
-  display: none;
+  display: flex;
   flex-direction: column;
-  padding-left: 1.25rem;
-  margin-bottom: 0.25rem;
+  padding-left: 1.15rem;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  pointer-events: none;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.25s ease,
+              margin-bottom 0.25s ease;
 }
 
 .sidebar-submenu.open {
-  display: flex;
+  max-height: 140px;
+  opacity: 1;
+  pointer-events: auto;
+  margin-bottom: 0.35rem;
 }
 
-/* Sembunyikan teks submenu saat sidebar sedang tertutup (collapsed) */
-.sidebar-overlay.close .sidebar-submenu,
-.sidebar-overlay.close .submenu-arrow {
-  display: none !important;
+/* Saat sidebar tertutup (collapsed), sembunyikan sub-menu & panah dengan transisi halus */
+.sidebar-overlay.close .sidebar-submenu {
+  max-height: 0 !important;
+  opacity: 0 !important;
+  margin-bottom: 0 !important;
+  pointer-events: none !important;
 }
 
-.submenu-arrow {
-  transition: transform 0.25s ease;
+.sidebar-overlay .nav-link .submenu-arrow {
+  font-size: 0.85rem !important;
+  min-width: auto !important;
+  margin-right: 0 !important;
+  margin-left: auto;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
+}
+
+.sidebar-overlay.close .nav-link .submenu-arrow {
+  opacity: 0;
+  visibility: hidden;
+  width: 0;
 }
 
 .submenu-arrow.rotated {
@@ -427,7 +448,8 @@ body {
 .sidebar-submenu .submenu-item {
   font-size: 0.86rem;
   padding: 0.5rem 0.85rem !important;
-  border-radius: 8px;
+  margin-bottom: 4px;
+  border-radius: 10px;
   opacity: 0.9;
 }
 
