@@ -91,6 +91,28 @@ export function toggleSidebar() {
   document.getElementById('desktopSidebar')?.classList.toggle('close');
 }
 
+export function handleClickMenuFan(e) {
+  if (e) e.preventDefault();
+  // Menuju halaman Daftar Fan Pelajaran tanpa menutup sidebar & tanpa mengubah status dropdown
+  window.showPage('fan-pelajaran', null, true);
+}
+
+export function toggleSubmenuFan(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const submenu = document.getElementById('submenu-desk-fan');
+  const arrow = document.getElementById('arrow-submenu-fan');
+  if (submenu) {
+    const isNowOpen = submenu.classList.toggle('open');
+    if (arrow) arrow.classList.toggle('rotated', isNowOpen);
+  }
+  // Pastikan sidebar tetap terbuka saat panah diklik
+  document.body.classList.remove('sidebar-collapsed');
+  document.getElementById('desktopSidebar')?.classList.remove('close');
+}
+
 export function handleClickMenuFormasi(e) {
   if (e) e.preventDefault();
   // Hanya menuju halaman Formasi Kelas tanpa menutup sidebar & tanpa mengubah status dropdown
@@ -118,26 +140,45 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pageFormasi = document.getElementById('page-formasi');
   const pageFormasiGender = document.getElementById('page-formasi-gender');
   const pageAsatidz = document.getElementById('page-asatidz');
+  const pageFanPelajaran = document.getElementById('page-fan-pelajaran');
+  const pagePengajarFan = document.getElementById('page-pengajar-fan');
 
   if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
   if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
   if (pageFormasiGender) pageFormasiGender.style.display = (page === 'formasi-pa' || page === 'formasi-pi') ? 'block' : 'none';
   if (pageAsatidz) pageAsatidz.style.display = (page === 'asatidz') ? 'block' : 'none';
+  if (pageFanPelajaran) pageFanPelajaran.style.display = (page === 'fan-pelajaran') ? 'block' : 'none';
+  if (pagePengajarFan) pagePengajarFan.style.display = (page === 'pengajar-fan') ? 'block' : 'none';
 
   document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-link').forEach(el => el.classList.remove('active'));
 
-  const submenu = document.getElementById('submenu-desk-formasi');
-  const arrow = document.getElementById('arrow-submenu-formasi');
+  const submenuFormasi = document.getElementById('submenu-desk-formasi');
+  const arrowFormasi = document.getElementById('arrow-submenu-formasi');
+  const submenuFan = document.getElementById('submenu-desk-fan');
+  const arrowFan = document.getElementById('arrow-submenu-fan');
 
   if (page === 'formasi-pa' || page === 'formasi-pi') {
     document.getElementById('nav-desk-formasi')?.classList.add('active');
     document.getElementById(page === 'formasi-pa' ? 'nav-desk-formasi-pa' : 'nav-desk-formasi-pi')?.classList.add('active');
     document.getElementById('nav-mob-formasi')?.classList.add('active');
-    if (submenu) submenu.classList.add('open');
-    if (arrow) arrow.classList.add('rotated');
+    if (submenuFormasi) submenuFormasi.classList.add('open');
+    if (arrowFormasi) arrowFormasi.classList.add('rotated');
     const gender = page === 'formasi-pa' ? 'PA' : 'PI';
     if (typeof window.openFormasiGenderView === 'function') {
       window.openFormasiGenderView(gender);
+    }
+  } else if (page === 'fan-pelajaran' || page === 'pengajar-fan') {
+    document.getElementById('nav-desk-fan')?.classList.add('active');
+    document.getElementById('nav-desk-' + page)?.classList.add('active');
+    document.getElementById('nav-mob-fan')?.classList.add('active');
+    if (!keepSidebarOpen) {
+      if (submenuFan) submenuFan.classList.add('open');
+      if (arrowFan) arrowFan.classList.add('rotated');
+    }
+    if (page === 'fan-pelajaran' && typeof window.renderFanPelajaran === 'function') {
+      window.renderFanPelajaran();
+    } else if (page === 'pengajar-fan' && typeof window.renderTabelPengajarFan === 'function') {
+      window.renderTabelPengajarFan();
     }
   } else {
     const deskActive = document.getElementById('nav-desk-' + page);
@@ -154,7 +195,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
     }
   }
 
-  // Jangan tutup sidebar jika klik menu Formasi Kelas atau jika keepSidebarOpen bernilai true
+  // Jangan tutup sidebar jika klik menu induk atau jika keepSidebarOpen bernilai true
   if (window.innerWidth >= 768 && !keepSidebarOpen && page !== 'formasi' && onShowFormasi !== true) {
     document.body.classList.add('sidebar-collapsed');
     document.getElementById('desktopSidebar')?.classList.add('close');
