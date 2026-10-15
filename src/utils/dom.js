@@ -1,3 +1,60 @@
+import { store } from '../state/store.js';
+
+// =========================================================
+// UTILITAS DOM, SELECT DROPDOWN, TABEL & NAVIGASI HALAMAN
+// =========================================================
+
+export function forceSetSelect(selectElement, value) {
+  if (!selectElement) return;
+  if (!value) {
+    selectElement.value = '';
+    return;
+  }
+  let exists = Array.from(selectElement.options).some(opt => opt.value === String(value));
+  if (!exists) {
+    selectElement.add(new Option(value, value));
+  }
+  selectElement.value = value;
+}
+
+export function populateSelect(id, optionsArray) {
+  const select = document.getElementById(id);
+  if (!select) return;
+  select.innerHTML = '<option value="">Pilih</option>';
+  if (!optionsArray || optionsArray.length === 0) {
+    select.disabled = true;
+    return;
+  }
+  select.disabled = false;
+  optionsArray.forEach(opt => {
+    select.add(new Option(opt, opt));
+  });
+}
+
+export function resetSelects(ids) {
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.innerHTML = '<option value="">Pilih</option>';
+      el.disabled = true;
+    }
+  });
+}
+
+export function selaraskanSemuaTabel() {
+  setTimeout(() => {
+    if (store.dataTable) store.dataTable.columns.adjust();
+    if (store.dtFormasi) store.dtFormasi.columns.adjust();
+    if (store.dataTableAsatidz) store.dataTableAsatidz.columns.adjust();
+  }, 260);
+}
+
+export function toggleSidebar() {
+  const sidebar = document.getElementById('desktopSidebar');
+  if (sidebar) sidebar.classList.toggle('close');
+  selaraskanSemuaTabel();
+}
+
 export function handleClickMenuFormasi(e) {
   if (e) e.preventDefault();
   const submenu = document.getElementById('submenu-desk-formasi');
@@ -56,4 +113,47 @@ export function showPage(page, loadFormasiCallback) {
   }
 
   selaraskanSemuaTabel();
+}
+
+export function actionLogout() {
+  Swal.fire({
+    title: 'Keluar Aplikasi?',
+    text: 'Sesi Anda akan diakhiri.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    confirmButtonText: 'Ya, Keluar',
+    cancelButtonText: 'Batal'
+  }).then((res) => {
+    if (res.isConfirmed) {
+      localStorage.removeItem('madin_user');
+      window.location.reload();
+    }
+  });
+}
+
+export function initLayoutObservers() {
+  window.addEventListener('resize', () => {
+    selaraskanSemuaTabel();
+  });
+
+  const mainContent = document.querySelector('.main-content');
+  if (mainContent && typeof ResizeObserver !== 'undefined') {
+    const ro = new ResizeObserver(() => {
+      selaraskanSemuaTabel();
+    });
+    ro.observe(mainContent);
+  }
+
+  const sidebar = document.getElementById('desktopSidebar');
+  if (sidebar) {
+    sidebar.addEventListener('mouseenter', () => {
+      sidebar.classList.remove('close');
+      selaraskanSemuaTabel();
+    });
+    sidebar.addEventListener('mouseleave', () => {
+      sidebar.classList.add('close');
+      selaraskanSemuaTabel();
+    });
+  }
 }
