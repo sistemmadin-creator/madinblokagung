@@ -1,19 +1,27 @@
-<!-- HALAMAN FORMASI KELAS MADIN -->
+<!-- HALAMAN MASTER BLUEPRINT FORMASI KELAS MADIN -->
 <div id="page-formasi" style="display: none;">
   <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
     <div>
       <h2 class="header-title fw-bold m-0">Formasi Kelas Madin</h2>
       <p class="text-muted small m-0 mt-1">Manajemen ruang kelas, wali kelas, dan kapasitas santri berdasarkan database ter-normalisasi.</p>
     </div>
-    <button class="btn btn-warning px-4 shadow-sm fw-bold text-dark" onclick="window.openAddFormasiModal()">
-      <i class="bi bi-building-add me-2"></i> Tambah Formasi Blueprint
-    </button>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-outline-primary px-3 shadow-sm fw-bold" onclick="window.showPage('formasi-pa')">
+        <i class="bi bi-gender-male me-1"></i> Kelas Putra
+      </button>
+      <button class="btn btn-outline-danger px-3 shadow-sm fw-bold" onclick="window.showPage('formasi-pi')">
+        <i class="bi bi-gender-female me-1"></i> Kelas Putri
+      </button>
+      <button class="btn btn-warning px-4 shadow-sm fw-bold text-dark" onclick="window.openAddFormasiModal()">
+        <i class="bi bi-building-add me-2"></i> Tambah Formasi Blueprint
+      </button>
+    </div>
   </div>
 
   <div class="card-panel border-0">
     <div class="table-responsive">
       <table id="dataTableFormasi" class="table table-hover align-middle nowrap" style="width: 100%;">
-      <thead class="table-light">
+        <thead class="table-light">
           <tr>
             <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllFormasi" class="form-check-input"></th>
             <th>Tingkat</th>
@@ -33,4 +41,90 @@
       </table>
     </div>
   </div>
+</div>
+
+<!-- HALAMAN SUB-MENU: FORMASI KELAS PUTRA / PUTRI (SESUAI GAMBAR) -->
+<div id="page-formasi-gender" style="display: none;">
+  <!-- KARTU ATAS: HEADER, TOMBOL EXPORT/PRINT, DAN FILTER -->
+  <div class="card-panel border-0 mb-3 p-4 shadow-sm" style="border-radius: 14px;">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 pb-3 border-bottom">
+      <div class="d-flex align-items-center gap-3">
+        <div id="fg-icon-box" class="d-flex align-items-center justify-content-center rounded-3" style="width: 52px; height: 52px; background-color: #e0f2fe; color: #0284c7; font-size: 1.6rem;">
+          <i class="bi bi-gender-male" id="fg-icon"></i>
+        </div>
+        <div>
+          <h4 class="fw-bold m-0" style="color: #0f172a;" id="fg-title">Formasi Kelas Putra</h4>
+          <p class="text-muted small m-0 mt-1" id="fg-subtitle">Formasi Ruang Diniyyah dan Takror Khusus Santri Putra (PA)</p>
+        </div>
+      </div>
+
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-white bg-white border px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2" style="border-radius: 8px; font-size: 0.9rem;" onclick="window.exportExcelFormasiGender()">
+          <i class="bi bi-file-earmark-excel" style="color: #0f766e;"></i> Export Excel
+        </button>
+        <button type="button" class="btn text-white px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-2" style="background-color: #0f766e; border-radius: 8px; font-size: 0.9rem;" onclick="window.printFormasiGender()">
+          <i class="bi bi-printer-fill"></i> Cetak / Print
+        </button>
+      </div>
+    </div>
+
+    <div class="row g-3 align-items-end pt-3">
+      <div class="col-md-3 col-sm-6">
+        <label class="form-label small fw-bold text-secondary mb-1">Tingkat Diniyyah:</label>
+        <select class="form-select shadow-none" id="fg-filter-tingkat" style="border-radius: 8px;" onchange="window.renderFormasiGenderTable()">
+          <option value="">Semua Tingkat</option>
+          <option value="ISTI'DAD">ISTI'DAD</option>
+          <option value="ULA">ULA</option>
+          <option value="WUSTHO">WUSTHO</option>
+          <option value="ULYA">ULYA</option>
+        </select>
+      </div>
+      <div class="col-md-6 col-sm-6">
+        <label class="form-label small fw-bold text-secondary mb-1">Pencarian Cepat:</label>
+        <input type="text" class="form-control shadow-none" id="fg-search-input" style="border-radius: 8px;" placeholder="Cari Kelas / Nama Mustahiq / Domisili / Lokal..." oninput="window.renderFormasiGenderTable()">
+      </div>
+      <div class="col-md-3 col-sm-12 text-md-end">
+        <div class="d-inline-block bg-light border rounded-3 px-3 py-2 fw-bold text-secondary" style="font-size: 0.85rem;" id="fg-total-badge">
+          Total: 0 Kelas
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KARTU BAWAH: DOKUMEN & TABEL FORMASI RUANG DINIYYAH DAN TAKROR -->
+  <div class="card-panel border-0 p-4 shadow-sm" style="border-radius: 14px;" id="fg-print-area">
+    <div class="text-center mb-4">
+      <h5 class="fw-bold text-uppercase mb-1" style="letter-spacing: 0.5px; color: #1e293b;" id="fg-doc-title">
+        FORMASI RUANG DINIYYAH DAN TAKROR PUTRA
+      </h5>
+      <div class="fw-semibold text-uppercase" style="font-size: 0.95rem; color: #334155;">
+        MADRASAH DINIYYAH AL AMIRIYYAH
+      </div>
+      <div class="fw-bold text-uppercase mt-1" style="font-size: 0.82rem; color: #0f766e;">
+        TAHUN AJARAN 2026-2027 M / 1447-1448 H
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-bordered align-middle mb-0 fg-custom-table" id="fg-table">
+        <thead>
+          <tr class="text-center fw-bold">
+            <th rowspan="2" class="align-middle" style="width: 55px;">NO.</th>
+            <th rowspan="2" class="align-middle" style="width: 135px;">KELAS</th>
+            <th rowspan="2" class="align-middle" style="width: 130px;">DOMISILI</th>
+            <th rowspan="2" class="align-middle" style="min-width: 240px;" id="fg-th-mustahiq">MUSTAHIQ</th>
+            <th colspan="2" class="align-middle py-2">LOKAL</th>
+          </tr>
+          <tr class="text-center fw-bold">
+            <th style="width: 260px;">TAKROR</th>
+            <th style="width: 260px;">DINIYYAH</th>
+          </tr>
+        </thead>
+        <tbody id="fg-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- INPUT FILE TERSEMBUNYI UNTUK TOMBOL +FOTO LANGSUNG DARI TABEL -->
+  <input type="file" id="fg-quick-foto-input" accept="image/*" class="d-none" onchange="window.handleQuickFotoFormasiGender(event)">
 </div>
