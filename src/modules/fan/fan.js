@@ -2096,15 +2096,18 @@ export function pasangFiturDragSelect(containerSelector, itemSelector, checkboxS
   let startTouchCoord = { x: 0, y: 0 };
   const HOLD_DURATION = 250;
 
-  function applyItemCheck(el) {
-    if (!el || $(el).hasClass('d-none') \vert{}\vert{}$(el).css('display') === 'none') return;
+function applyItemCheck(el) {
+    if (!el || $(el).hasClass('d-none') || $(el).css('display') === 'none') return;
     if ($(el).attr('data-locked') === 'true') return;
 
-    const $checkbox =$(el).find(checkboxSelector);
+    const $checkbox = $(el).find(checkboxSelector);
     if ($checkbox.length && !$checkbox.prop('disabled')) {
-      if ($checkbox.prop('checked') !== targetCheckedState) {$checkbox.prop('checked', targetCheckedState);
+      if ($checkbox.prop('checked') !== targetCheckedState) {
+        $checkbox.prop('checked', targetCheckedState);
         if (targetCheckedState) {
-          $(el).addClass('bg-success bg-opacity-10 border-success border-opacity-25'); } else {$(el).removeClass('bg-success bg-opacity-10 border-success border-opacity-25');
+          $(el).addClass('bg-success bg-opacity-10 border-success border-opacity-25');
+        } else {
+          $(el).removeClass('bg-success bg-opacity-10 border-success border-opacity-25');
         }
         if (typeof callbackOnChange === 'function') callbackOnChange();
       }
