@@ -44,26 +44,30 @@
                 </label>
               </div>
             </div>
-            <div class="col-md-6">
-              <label class="form-label">Kapasitas Maksimal</label>
-              <input type="number" class="form-control" name="f_kapasitas_maksimal" id="f_kapasitas_maksimal" value="40" min="1" required>
+<div class="col-md-6">
+              <label class="form-label">Kapasitas Maksimal (Maks. 80)</label>
+              <input type="number" class="form-control" name="f_kapasitas_maksimal" id="f_kapasitas_maksimal" value="80" min="1" max="80" oninput="if(this.value > 80) this.value = 80;" required>
             </div>
             <div class="col-md-6">
               <label class="form-label">Mustahiq / Wali Kelas <span class="text-muted">(Otomatis / Opsional)</span></label>
               <input type="text" class="form-control" name="f_id_mustahiq" id="f_id_mustahiq" list="datalistMustahiqFormasi" placeholder="Kosongkan agar sinkron otomatis dari Asatidz">
               <datalist id="datalistMustahiqFormasi"></datalist>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label class="form-label">Domisili <span class="text-muted">(Opsional)</span></label>
-              <input type="text" class="form-control" name="f_domisili" id="f_domisili" placeholder="Blok / Asrama">
+              <input type="text" class="form-control" name="f_domisili" id="f_domisili" placeholder="Asrama / Daerah">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label class="form-label">Lokal Takror <span class="text-muted">(Opsional)</span></label>
               <input type="text" class="form-control" name="f_lokasi_takror" id="f_lokasi_takror" placeholder="Gedung / Ruang Takror">
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <label class="form-label">Lokasi Diniyyah <span class="text-muted">(Opsional)</span></label>
               <input type="text" class="form-control" name="f_lokasi_diniyyah" id="f_lokasi_diniyyah" placeholder="Gedung / Ruang Diniyyah">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Blok <span class="text-muted">(Opsional)</span></label>
+              <input type="text" class="form-control" name="f_blok" id="f_blok" placeholder="Nama / Kode Blok">
             </div>
           </div>
           <div class="d-flex justify-content-end gap-2 mt-4">
