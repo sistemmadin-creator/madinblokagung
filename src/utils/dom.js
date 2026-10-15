@@ -1,58 +1,94 @@
 import { store } from '../state/store.js';
 
 // =========================================================
-// UTILITAS DOM, SELECT DROPDOWN, TABEL & NAVIGASI HALAMAN
+// HELPER ELEMEN SELECT, NAVIGASI, SIDEBAR & RESIZE TABEL
 // =========================================================
-
 export function forceSetSelect(selectElement, value) {
   if (!selectElement) return;
-  if (!value) {
+  if (!value || value === '-') {
     selectElement.value = '';
     return;
   }
-  let exists = Array.from(selectElement.options).some(opt => opt.value === String(value));
-  if (!exists) {
-    selectElement.add(new Option(value, value));
+  if (!Array.from(selectElement.options).some(opt => opt.value == value)) {
+    selectElement.add(new Option(value, value, true, true));
   }
   selectElement.value = value;
+  selectElement.disabled = false;
 }
 
 export function populateSelect(id, optionsArray) {
-  const select = document.getElementById(id);
-  if (!select) return;
-  select.innerHTML = '<option value="">Pilih</option>';
-  if (!optionsArray || optionsArray.length === 0) {
-    select.disabled = true;
-    return;
+  let sel = document.getElementById(id);
+  if (!sel) return;
+  sel.innerHTML = '<option value="">Pilih...</option>';
+  if (optionsArray && optionsArray.length > 0) {
+    sel.disabled = false;
+    optionsArray.forEach(opt => sel.add(new Option(opt, opt)));
+  } else {
+    sel.disabled = true;
   }
-  select.disabled = false;
-  optionsArray.forEach(opt => {
-    select.add(new Option(opt, opt));
-  });
 }
 
 export function resetSelects(ids) {
   ids.forEach(id => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.innerHTML = '<option value="">Pilih</option>';
-      el.disabled = true;
+    let sel = document.getElementById(id);
+    if (sel) {
+      sel.innerHTML = '<option value="">Pilih...</option>';
+      sel.disabled = true;
     }
   });
 }
 
 export function selaraskanSemuaTabel() {
-  setTimeout(() => {
-    if (store.dataTable) store.dataTable.columns.adjust();
-    if (store.dtFormasi) store.dtFormasi.columns.adjust();
-    if (store.dataTableAsatidz) store.dataTableAsatidz.columns.adjust();
-  }, 260);
+  if (store.dataTable && $('#page-santri').is(':visible')) {
+    store.dataTable.columns.adjust();
+  }
+  if (store.dtFormasi && $('#page-formasi').is(':visible')) {
+    store.dtFormasi.columns.adjust();
+  }
+  if (store.dataTableAsatidz && $('#page-asatidz').is(':visible')) {
+    store.dataTableAsatidz.columns.adjust();
+  }
+}
+
+export function initLayoutObservers() {
+  // A. Auto-adjust saat jendela browser di-resize
+  $(window).on('resize', function () {
+    selaraskanSemuaTabel();
+  });
+
+  // B. Auto-adjust mendeteksi perubahan lebar layar (buka/tutup/hover sidebar)
+  if (window.ResizeObserver) {
+    const observerKonten = new ResizeObserver(() => {
+      selaraskanSemuaTabel();
+    });
+    const mainEl = document.querySelector('.main-content');
+    if (mainEl) observerKonten.observe(mainEl);
+  }
+
+  // C. Pastikan penyesuaian sempurna setelah animasi transisi sidebar selesai
+  document.addEventListener('transitionend', function (e) {
+    if (e.target && (e.target.classList.contains('main-content') || e.target.classList.contains('sidebar-overlay'))) {
+      selaraskanSemuaTabel();
+    }
+  });
+
+  // D. Efek Hover Auto-Open & Auto-Close Sidebar Desktop beserta Animasi Geser Konten
+  const sidebarEl = document.getElementById('desktopSidebar');
+  if (sidebarEl) {
+    sidebarEl.addEventListener('mouseenter', function () {
+      document.body.classList.remove('sidebar-collapsed');
+      sidebarEl.classList.remove('close');
+    });
+    sidebarEl.addEventListener('mouseleave', function () {
+      document.body.classList.add('sidebar-collapsed');
+      sidebarEl.classList.add('close');
+    });
+  }
 }
 
 export function toggleSidebar() {
-  const sidebar = document.getElementById('desktopSidebar');
-  if (sidebar) sidebar.classList.toggle('close');
-  selaraskanSemuaTabel();
+  document.body.classList.toggle('sidebar-collapsed');
+  document.getElementById('desktopSidebar')?.classList.toggle('close');
 }
 
 export function handleClickMenuFormasi(e) {
@@ -63,40 +99,26 @@ export function handleClickMenuFormasi(e) {
     submenu.classList.toggle('open');
     if (arrow) arrow.classList.toggle('rotated', submenu.classList.contains('open'));
   }
-  window.showPage('formasi');
+  window.showPage('formasi', true);
 }
 
-export function showPage(page, loadFormasiCallback) {
+export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pageSantri = document.getElementById('page-santri');
   const pageFormasi = document.getElementById('page-formasi');
   const pageFormasiGender = document.getElementById('page-formasi-gender');
   const pageAsatidz = document.getElementById('page-asatidz');
 
-  if (pageSantri) pageSantri.style.display = 'none';
-  if (pageFormasi) pageFormasi.style.display = 'none';
-  if (pageFormasiGender) pageFormasiGender.style.display = 'none';
-  if (pageAsatidz) pageAsatidz.style.display = 'none';
+  if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
+  if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
+  if (pageFormasiGender) pageFormasiGender.style.display = (page === 'formasi-pa' || page === 'formasi-pi') ? 'block' : 'none';
+  if (pageAsatidz) pageAsatidz.style.display = (page === 'asatidz') ? 'block' : 'none';
 
-  document.querySelectorAll('#desktopSidebar .nav-link, .bottom-nav .nav-link').forEach(el => {
-    el.classList.remove('active');
-  });
+  document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-link').forEach(el => el.classList.remove('active'));
 
   const submenu = document.getElementById('submenu-desk-formasi');
   const arrow = document.getElementById('arrow-submenu-formasi');
 
-  if (page === 'santri') {
-    if (pageSantri) pageSantri.style.display = 'block';
-    document.getElementById('nav-desk-santri')?.classList.add('active');
-    document.getElementById('nav-mob-santri')?.classList.add('active');
-  } else if (page === 'formasi') {
-    if (pageFormasi) pageFormasi.style.display = 'block';
-    document.getElementById('nav-desk-formasi')?.classList.add('active');
-    document.getElementById('nav-mob-formasi')?.classList.add('active');
-    if (submenu) submenu.classList.add('open');
-    if (arrow) arrow.classList.add('rotated');
-    if (typeof loadFormasiCallback === 'function') loadFormasiCallback();
-  } else if (page === 'formasi-pa' || page === 'formasi-pi') {
-    if (pageFormasiGender) pageFormasiGender.style.display = 'block';
+  if (page === 'formasi-pa' || page === 'formasi-pi') {
     document.getElementById('nav-desk-formasi')?.classList.add('active');
     document.getElementById(page === 'formasi-pa' ? 'nav-desk-formasi-pa' : 'nav-desk-formasi-pi')?.classList.add('active');
     document.getElementById('nav-mob-formasi')?.classList.add('active');
@@ -106,54 +128,60 @@ export function showPage(page, loadFormasiCallback) {
     if (typeof window.openFormasiGenderView === 'function') {
       window.openFormasiGenderView(gender);
     }
-  } else if (page === 'asatidz') {
-    if (pageAsatidz) pageAsatidz.style.display = 'block';
-    document.getElementById('nav-desk-asatidz')?.classList.add('active');
-    document.getElementById('nav-mob-asatidz')?.classList.add('active');
+  } else {
+    const deskActive = document.getElementById('nav-desk-' + page);
+    const mobActive = document.getElementById('nav-mob-' + page);
+    if (deskActive) deskActive.classList.add('active');
+    if (mobActive) mobActive.classList.add('active');
+
+    if (page === 'formasi' && typeof onShowFormasi === 'function') {
+      onShowFormasi();
+    }
   }
 
-  selaraskanSemuaTabel();
+  // Tutup sidebar dengan animasi halus setelah memilih halaman (kecuali saat sedang membuka induk sub-menu)
+  if (window.innerWidth >= 768 && !keepSidebarOpen && onShowFormasi !== true) {
+    document.body.classList.add('sidebar-collapsed');
+    document.getElementById('desktopSidebar')?.classList.add('close');
+  }
+
+  setTimeout(() => {
+    if (page === 'santri' && store.dataTable) {
+      store.dataTable.columns.adjust().draw(false);
+    }
+    if (page === 'formasi' && store.dtFormasi) {
+      store.dtFormasi.columns.adjust().draw(false);
+    }
+    if (page === 'asatidz' && store.dataTableAsatidz) {
+      store.dataTableAsatidz.columns.adjust().draw(false);
+    }
+  }, 250);
 }
 
 export function actionLogout() {
   Swal.fire({
-    title: 'Keluar Aplikasi?',
-    text: 'Sesi Anda akan diakhiri.',
-    icon: 'question',
+    title: 'Keluar dari Aplikasi?',
+    text: 'Sesi Anda akan diakhiri. Anda harus login kembali untuk masuk.',
+    icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#ef4444',
-    confirmButtonText: 'Ya, Keluar',
-    cancelButtonText: 'Batal'
-  }).then((res) => {
-    if (res.isConfirmed) {
-      localStorage.removeItem('madin_user');
-      window.location.reload();
+    confirmButtonColor: '#0f766e',
+    cancelButtonColor: '#ef4444',
+    confirmButtonText: '<i class="bi bi-box-arrow-right me-1"></i> Ya, Keluar',
+    cancelButtonText: 'Batal',
+    background: '#ffffff',
+    borderRadius: '16px',
+    backdrop: 'rgba(11, 87, 81, 0.4)'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      sessionStorage.removeItem('MUHAFADZOH_USER');
+      Swal.fire({
+        title: 'Berhasil Keluar!',
+        icon: 'success',
+        showConfirmButton: false,
+        timer: 1000
+      }).then(() => {
+        window.location.reload();
+      });
     }
   });
-}
-
-export function initLayoutObservers() {
-  window.addEventListener('resize', () => {
-    selaraskanSemuaTabel();
-  });
-
-  const mainContent = document.querySelector('.main-content');
-  if (mainContent && typeof ResizeObserver !== 'undefined') {
-    const ro = new ResizeObserver(() => {
-      selaraskanSemuaTabel();
-    });
-    ro.observe(mainContent);
-  }
-
-  const sidebar = document.getElementById('desktopSidebar');
-  if (sidebar) {
-    sidebar.addEventListener('mouseenter', () => {
-      sidebar.classList.remove('close');
-      selaraskanSemuaTabel();
-    });
-    sidebar.addEventListener('mouseleave', () => {
-      sidebar.classList.add('close');
-      selaraskanSemuaTabel();
-    });
-  }
 }
