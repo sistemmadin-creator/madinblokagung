@@ -477,6 +477,112 @@ export function openAddFormasiModal() {
   $('#formasiModal').modal('show');
 }
 
+export function openGeneratorFormasiModal() {
+  const form = document.getElementById('generatorFormasiForm');
+  if (form) {
+    form.reset();
+    document.getElementById('gen_tingkat').value = 'ULA';
+    document.getElementById('gen_pa_pi').value = 'PA';
+    document.getElementById('gen_din_kls').value = '1';
+    document.getElementById('gen_bag_awal').value = 'A';
+    document.getElementById('gen_bag_akhir').value = 'J';
+  }
+  $('#generatorFormasiModal').modal('show');
+}
+
+export async function submitGeneratorFormasi(e) {
+  e.preventDefault();
+  const tingkat = (document.getElementById('gen_tingkat')?.value || '').trim().toUpperCase();
+  const pa_pi = (document.getElementById('gen_pa_pi')?.value || '').trim().toUpperCase();
+  const din_kls = (document.getElementById('gen_din_kls')?.value || '').trim().toUpperCase();
+  const bagAwal = (document.getElementById('gen_bag_awal')?.value || '').trim().toUpperCase();
+  const bagAkhir = (document.getElementById('gen_bag_akhir')?.value || '').trim().toUpperCase();
+
+  if (!tingkat || !pa_pi || !din_kls || !bagAwal || !bagAkhir) {
+    return Swal.fire('Perhatian', 'Harap lengkapi semua kolom pada Generator!', 'warning');
+  }
+
+  const startCode = bagAwal.charCodeAt(0);
+  const endCode = bagAkhir.charCodeAt(0);
+
+  if (startCode < 65 || startCode > 90 || endCode < 65 || endCode > 90) {
+    return Swal.fire('Perhatian', 'Din. Bagian harus berupa huruf A sampai Z.', 'warning');
+  }
+
+  if (startCode > endCode) {
+    return Swal.fire('Perhatian', `Huruf awal (${bagAwal}) tidak boleh melebihi huruf akhir (${bagAkhir}). Contoh: A s/d J.`, 'warning');
+  }
+
+  const btn = document.getElementById('btnSubmitGeneratorFormasi');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menginput Otomatis...';
+
+  try {
+    const existingSet = new Set(
+      (store.globalDataFormasi || []).map(f =>
+        `${String(f.tingkat || '').trim().toUpperCase()}|${String(f.din_kls || '').trim().toUpperCase()}|${String(f.din_bag || '').trim().toUpperCase()}|${String(f.pa_pi || '').trim().toUpperCase()}`
+      )
+    );
+
+    const payloadsToInsert = [];
+    const generatedBags = [];
+
+    for (let code = startCode; code <= endCode; code++) {
+      const hurufBag = String.fromCharCode(code);
+      const uniqueKey = `${tingkat}|${din_kls}|${hurufBag}|${pa_pi}`;
+
+      if (!existingSet.has(uniqueKey)) {
+        payloadsToInsert.push({
+          tingkat: tingkat,
+          din_kls: din_kls,
+          din_bag: hurufBag,
+          pa_pi: pa_pi,
+          is_unggulan: false,
+          kapasitas_maksimal: 80,
+          id_mustahiq: '',
+          domisili: '',
+          lokasi_takror: '',
+          lokasi_diniyyah: '',
+          blok: '',
+          foto_takror: '',
+          foto_diniyyah: ''
+        });
+        generatedBags.push(hurufBag);
+      }
+    }
+
+    if (payloadsToInsert.length === 0) {
+      Swal.fire('Informasi', `Seluruh kelas ${tingkat} ${din_kls} (${bagAwal} s/d ${bagAkhir}) ${pa_pi} sudah ada di dalam tabel.`, 'info');
+      return;
+    }
+
+    const { error } = await supabase.from('formasi_kelas').insert(payloadsToInsert);
+    if (error) throw error;
+
+    await logActivity(
+      'GENERATOR FORMASI',
+      `Input otomatis ${payloadsToInsert.length} kelas: ${tingkat} ${din_kls} (${generatedBags.join(', ')}) - ${pa_pi}`
+    );
+
+    $('#generatorFormasiModal').modal('hide');
+    await loadFormasiData();
+
+    Swal.fire(
+      'Berhasil!',
+      `${payloadsToInsert.length} Kelas (${tingkat} ${din_kls} Bagian ${generatedBags[0]} s/d ${generatedBags[generatedBags.length - 1]} - ${pa_pi}) berhasil diinput otomatis.`,
+      'success'
+    );
+  } catch (err) {
+    Swal.fire('Gagal Menginput', err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-lightning-charge-fill me-1"></i> Input Otomatis Kelas';
+  }
+}
+
+window.openGeneratorFormasiModal = openGeneratorFormasiModal;
+window.submitGeneratorFormasi = submitGeneratorFormasi;
+
 export async function submitFormasiData(e) {
   e.preventDefault();
   const btn = document.getElementById('btnSubmitFormasi');
