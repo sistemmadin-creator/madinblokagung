@@ -710,3 +710,325 @@ export async function hapusFormasiTerpilih() {
     Swal.fire('Error', err.message, 'error');
   }
 }
+
+// =========================================================
+// SUB-MENU: FORMASI KELAS PUTRA (PA) & KELAS PUTRI (PI)
+// =========================================================
+let currentFormasiGender = 'PA';
+let quickUploadTarget = { id: null, jenis: null };
+
+export function handleClickMenuFormasi(e) {
+  if (e) e.preventDefault();
+  const submenu = document.getElementById('submenu-desk-formasi');
+  const arrow = document.getElementById('arrow-submenu-formasi');
+  if (submenu) {
+    submenu.classList.toggle('open');
+    if (arrow) arrow.classList.toggle('rotated', submenu.classList.contains('open'));
+  }
+  window.showPage('formasi');
+}
+
+export async function openFormasiGenderView(gender = 'PA') {
+  currentFormasiGender = gender === 'PI' ? 'PI' : 'PA';
+  const isPutra = currentFormasiGender === 'PA';
+
+  // Perbarui Header, Ikon, dan Judul Dokumen sesuai Gender
+  const iconBox = document.getElementById('fg-icon-box');
+  const iconEl = document.getElementById('fg-icon');
+  const titleEl = document.getElementById('fg-title');
+  const subtitleEl = document.getElementById('fg-subtitle');
+  const docTitleEl = document.getElementById('fg-doc-title');
+  const thMustahiqEl = document.getElementById('fg-th-mustahiq');
+
+  if (iconBox) {
+    iconBox.style.backgroundColor = isPutra ? '#e0f2fe' : '#fce7f3';
+    iconBox.style.color = isPutra ? '#0284c7' : '#db2777';
+  }
+  if (iconEl) {
+    iconEl.className = isPutra ? 'bi bi-gender-male' : 'bi bi-gender-female';
+  }
+  if (titleEl) {
+    titleEl.textContent = isPutra ? 'Formasi Kelas Putra' : 'Formasi Kelas Putri';
+  }
+  if (subtitleEl) {
+    subtitleEl.textContent = isPutra
+      ? 'Formasi Ruang Diniyyah dan Takror Khusus Santri Putra (PA)'
+      : 'Formasi Ruang Diniyyah dan Takror Khusus Santri Putri (PI)';
+  }
+  if (docTitleEl) {
+    docTitleEl.textContent = isPutra
+      ? 'FORMASI RUANG DINIYYAH DAN TAKROR PUTRA'
+      : 'FORMASI RUANG DINIYYAH DAN TAKROR PUTRI';
+  }
+  if (thMustahiqEl) {
+    thMustahiqEl.textContent = 'MUSTAHIQ';
+  }
+
+  // Pastikan data formasi sudah dimuat dari Supabase
+  if (!store.globalDataFormasi || store.globalDataFormasi.length === 0) {
+    await loadFormasiData();
+  }
+
+  renderFormasiGenderTable();
+}
+
+function getFilteredSortedFormasiGender() {
+  const tingkatFilter = (document.getElementById('fg-filter-tingkat')?.value || '').trim().toUpperCase();
+  const keyword = (document.getElementById('fg-search-input')?.value || '').trim().toLowerCase();
+
+  const urutanTingkat = { "ISTI'DAD": 1, "ULA": 2, "WUSTHO": 3, "ULYA": 4 };
+
+  const list = (store.globalDataFormasi || []).filter(f => {
+    if ((f.pa_pi || '').toUpperCase() !== currentFormasiGender) return false;
+    if (tingkatFilter && (f.tingkat || '').toUpperCase() !== tingkatFilter) return false;
+
+    if (keyword) {
+      const syncInfo = getWaliKelasSyncInfo(f);
+      const labelKelas = `${f.din_kls || ''} ${f.din_bag || ''} ${f.tingkat || ''}`.toLowerCase();
+      const mustahiq = (syncInfo.waliKelasText || '').toLowerCase();
+      const domisili = (syncInfo.domisili || '').toLowerCase();
+      const takror = (syncInfo.lokasiTakror || '').toLowerCase();
+      const diniyyah = (syncInfo.lokasiDiniyyah || '').toLowerCase();
+      const blok = (f.blok || '').toLowerCase();
+
+      const match =
+        labelKelas.includes(keyword) ||
+        mustahiq.includes(keyword) ||
+        domisili.includes(keyword) ||
+        takror.includes(keyword) ||
+        diniyyah.includes(keyword) ||
+        blok.includes(keyword);
+
+      if (!match) return false;
+    }
+    return true;
+  });
+
+  list.sort((a, b) => {
+    const tA = urutanTingkat[(a.tingkat || '').toUpperCase()] || 99;
+    const tB = urutanTingkat[(b.tingkat || '').toUpperCase()] || 99;
+    if (tA !== tB) return tA - tB;
+
+    const kA = parseInt(a.din_kls, 10) || 0;
+    const kB = parseInt(b.din_kls, 10) || 0;
+    if (kA !== kB) return kA - kB;
+
+    return String(a.din_bag || '').localeCompare(String(b.din_bag || ''));
+  });
+
+  return list;
+}
+
+function buildCellLokalGenderHtml(f, jenis, namaLokal, fotoBase64, syncDomisili) {
+  const lokasiTeks = namaLokal && namaLokal !== '-' ? namaLokal : '-';
+  const rawBlok = (f.blok || (syncDomisili !== '-' ? syncDomisili : '') || '').trim();
+  const blokLabel = rawBlok
+    ? (rawBlok.toLowerCase().startsWith('blok') ? rawBlok : `Blok ${rawBlok}`)
+    : '';
+
+  const badgeBlokHtml = blokLabel
+    ? `<div class="mt-1">
+         <span class="fg-blok-badge">
+           <i class="bi bi-building me-1"></i>${blokLabel}
+         </span>
+       </div>`
+    : '';
+
+  const hasFoto = Boolean(fotoBase64 && fotoBase64.trim() !== '');
+  const btnFotoHtml = hasFoto
+    ? `<button type="button" class="btn-fg-foto-lihat no-print" onclick="event.stopPropagation(); window.lihatAtauUbahFotoFormasiGender('${f.id}', '${jenis}')">
+         <i class="bi bi-camera-fill me-1"></i>Lihat
+       </button>`
+    : `<button type="button" class="btn-fg-foto-tambah no-print" onclick="event.stopPropagation(); window.triggerQuickFotoFormasi('${f.id}', '${jenis}')">
+         <i class="bi bi-camera me-1"></i>+Foto
+       </button>`;
+
+  return `
+    <div class="d-flex justify-content-between align-items-center gap-2">
+      <div>
+        <div class="fw-medium text-dark" style="font-size: 0.85rem; line-height: 1.35;">${lokasiTeks}</div>
+        ${badgeBlokHtml}
+      </div>
+      <div class="flex-shrink-0">
+        ${btnFotoHtml}
+      </div>
+    </div>
+  `;
+}
+
+export function renderFormasiGenderTable() {
+  const tbody = document.getElementById('fg-tbody');
+  const totalBadge = document.getElementById('fg-total-badge');
+  if (!tbody) return;
+
+  const list = getFilteredSortedFormasiGender();
+  if (totalBadge) {
+    totalBadge.textContent = `Total: ${list.length} Kelas`;
+  }
+
+  if (list.length === 0) {
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6" class="text-center text-muted py-5">
+          <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+          Tidak ada data formasi kelas yang sesuai dengan filter/pencarian.
+        </td>
+      </tr>`;
+    return;
+  }
+
+  let html = '';
+  list.forEach((f, idx) => {
+    const syncInfo = getWaliKelasSyncInfo(f);
+    const namaKelas = `${f.din_kls || ''} ${f.din_bag || ''} ${f.tingkat || ''}`.trim();
+    const badgeUnggulan = f.is_unggulan
+      ? `<div class="mt-1"><span class="badge bg-warning text-dark" style="font-size: 0.68rem;"><i class="bi bi-star-fill"></i> Unggulan</span></div>`
+      : '';
+
+    const namaMustahiq = syncInfo.waliKelasText && syncInfo.waliKelasText !== '-'
+      ? syncInfo.waliKelasText
+      : '<span class="text-muted fst-italic">Belum ditentukan</span>';
+
+    const domisiliTeks = (f.domisili || syncInfo.domisili || '-').replace(/^Blok\s+/i, '');
+
+    const takrorHtml = buildCellLokalGenderHtml(
+      f,
+      'takror',
+      syncInfo.lokasiTakror,
+      syncInfo.fotoTakror || f.foto_takror || '',
+      domisiliTeks
+    );
+
+    const diniyyahHtml = buildCellLokalGenderHtml(
+      f,
+      'diniyyah',
+      syncInfo.lokasiDiniyyah,
+      syncInfo.fotoDiniyyah || f.foto_diniyyah || '',
+      domisiliTeks
+    );
+
+    html += `
+      <tr onclick="window.showDetailFormasi('${f.id}')" style="cursor: pointer;" title="Klik untuk melihat detail kelas & daftar santri">
+        <td class="text-center fw-semibold text-secondary">${idx + 1}</td>
+        <td class="text-center">
+          <span class="fw-bold" style="color: #0f766e; font-size: 0.88rem;">${namaKelas}</span>
+          ${badgeUnggulan}
+        </td>
+        <td class="text-center text-dark" style="font-size: 0.86rem;">${domisiliTeks}</td>
+        <td class="fw-bold text-dark" style="font-size: 0.88rem;">${namaMustahiq}</td>
+        <td>${takrorHtml}</td>
+        <td>${diniyyahHtml}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+export function triggerQuickFotoFormasi(id, jenis) {
+  quickUploadTarget = { id, jenis };
+  const input = document.getElementById('fg-quick-foto-input');
+  if (input) {
+    input.value = '';
+    input.click();
+  }
+}
+
+export async function handleQuickFotoFormasiGender(event) {
+  const file = event.target.files?.[0];
+  if (!file || !quickUploadTarget.id || !quickUploadTarget.jenis) return;
+
+  try {
+    Swal.fire({
+      title: 'Mengompres & Menyimpan Foto...',
+      allowOutsideClick: false,
+      didOpen: () => Swal.showLoading()
+    });
+
+    const compressedBase64 = await compressImageFileSantri(file, 800, 0.75);
+    const colName = quickUploadTarget.jenis === 'takror' ? 'foto_takror' : 'foto_diniyyah';
+
+    const { error } = await supabase
+      .from('formasi_kelas')
+      .update({ [colName]: compressedBase64 })
+      .eq('id', quickUploadTarget.id);
+
+    if (error) throw error;
+
+    const targetRow = (store.globalDataFormasi || []).find(x => String(x.id) === String(quickUploadTarget.id));
+    if (targetRow) targetRow[colName] = compressedBase64;
+
+    renderFormasiGenderTable();
+    Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Foto lokal berhasil disimpan.', timer: 1400, showConfirmButton: false });
+  } catch (err) {
+    Swal.fire('Gagal Menyimpan Foto', err.message, 'error');
+  }
+}
+
+export function lihatAtauUbahFotoFormasiGender(id, jenis) {
+  const f = (store.globalDataFormasi || []).find(x => String(x.id) === String(id));
+  if (!f) return;
+
+  const syncInfo = getWaliKelasSyncInfo(f);
+  const isTakror = jenis === 'takror';
+  const fotoSrc = isTakror ? (syncInfo.fotoTakror || f.foto_takror) : (syncInfo.fotoDiniyyah || f.foto_diniyyah);
+  const namaLokal = isTakror ? syncInfo.lokasiTakror : syncInfo.lokasiDiniyyah;
+  const labelJenis = isTakror ? 'Lokal Takror' : 'Lokal Diniyyah';
+  const namaKelas = `${f.din_kls || ''} ${f.din_bag || ''} ${f.tingkat || ''}`.trim();
+
+  Swal.fire({
+    title: `${labelJenis} - ${namaKelas}`,
+    text: namaLokal || '-',
+    imageUrl: fotoSrc,
+    imageAlt: labelJenis,
+    showCancelButton: true,
+    showDenyButton: true,
+    confirmButtonText: '<i class="bi bi-camera me-1"></i> Ganti Foto',
+    confirmButtonColor: '#0f766e',
+    denyButtonText: '<i class="bi bi-trash me-1"></i> Hapus Foto',
+    cancelButtonText: 'Tutup'
+  }).then(async (res) => {
+    if (res.isConfirmed) {
+      triggerQuickFotoFormasi(id, jenis);
+    } else if (res.isDenied) {
+      const colName = isTakror ? 'foto_takror' : 'foto_diniyyah';
+      const { error } = await supabase.from('formasi_kelas').update({ [colName]: '' }).eq('id', id);
+      if (!error) {
+        f[colName] = '';
+        renderFormasiGenderTable();
+        Swal.fire('Terhapus', 'Foto lokal telah dihapus.', 'success');
+      }
+    }
+  });
+}
+
+export function exportExcelFormasiGender() {
+  const list = getFilteredSortedFormasiGender();
+  if (list.length === 0) {
+    return Swal.fire('Info', 'Tidak ada data untuk diekspor.', 'info');
+  }
+
+  const rows = list.map((f, i) => {
+    const syncInfo = getWaliKelasSyncInfo(f);
+    return {
+      'NO': i + 1,
+      'KELAS': `${f.din_kls || ''} ${f.din_bag || ''} ${f.tingkat || ''}`.trim(),
+      'TINGKAT': f.tingkat || '-',
+      'DOMISILI': (f.domisili || syncInfo.domisili || '-').replace(/^Blok\s+/i, ''),
+      'MUSTAHIQ': syncInfo.waliKelasText || '-',
+      'LOKAL TAKROR': syncInfo.lokasiTakror || '-',
+      'LOKAL DINIYYAH': syncInfo.lokasiDiniyyah || '-',
+      'BLOK': f.blok || '-'
+    };
+  });
+
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  const labelGender = currentFormasiGender === 'PA' ? 'Putra' : 'Putri';
+  XLSX.utils.book_append_sheet(wb, ws, `Formasi_${labelGender}`);
+  XLSX.writeFile(wb, `Formasi_Kelas_${labelGender}_Madin.xlsx`);
+}
+
+export function printFormasiGender() {
+  window.print();
+}
