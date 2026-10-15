@@ -193,3 +193,56 @@
     </div>
   </div>
 </div>
+
+<!-- 11. Modal Generator Otomatis Formasi Kelas (#generatorFormasiModal) -->
+<div class="modal fade" id="generatorFormasiModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <h5 class="modal-title fw-bold m-0"><i class="bi bi-magic me-2"></i> Generator Formasi Kelas</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none ms-2" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light p-4">
+        <form id="generatorFormasiForm" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitGeneratorFormasi(event)">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Tingkat</label>
+              <select class="form-select border-success" name="gen_tingkat" id="gen_tingkat" required>
+                <option value="ULA" selected>ULA</option>
+                <option value="WUSTHO">WUSTHO</option>
+                <option value="ULYA">ULYA</option>
+                <option value="ISTI'DAD">ISTI'DAD</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-bold">Gender</label>
+              <select class="form-select border-success" name="gen_pa_pi" id="gen_pa_pi" required>
+                <option value="PA" selected>PA</option>
+                <option value="PI">PI</option>
+              </select>
+            </div>
+            <div class="col-md-12">
+              <label class="form-label fw-bold">Kelas</label>
+              <input type="text" class="form-control border-success" name="gen_din_kls" id="gen_din_kls" value="1" required placeholder="Contoh: 1 / 2 / 3" oninput="this.value = this.value.toUpperCase();">
+            </div>
+            <div class="col-md-12">
+              <label class="form-label fw-bold">Din. Bagian</label>
+              <div class="d-flex align-items-center gap-2">
+                <input type="text" class="form-control border-success text-center fw-bold" name="gen_bag_awal" id="gen_bag_awal" value="A" maxlength="1" required placeholder="A" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '');">
+                <span class="fw-bold text-secondary px-2">s/d</span>
+                <input type="text" class="form-control border-success text-center fw-bold" name="gen_bag_akhir" id="gen_bag_akhir" value="J" maxlength="1" required placeholder="J" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '');">
+              </div>
+              <small class="text-muted d-block mt-1">Kolom kiri untuk bagian awal dan kolom kanan untuk bagian akhir (contoh: A s/d J).</small>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-2">
+            <button type="submit" class="btn btn-success w-100 py-2 fw-bold shadow-sm" id="btnSubmitGeneratorFormasi">
+              <i class="bi bi-lightning-charge-fill me-1"></i> Input Otomatis Kelas
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
