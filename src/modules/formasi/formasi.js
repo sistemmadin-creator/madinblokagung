@@ -722,13 +722,24 @@ let quickUploadTarget = { id: null, jenis: null };
 
 export function handleClickMenuFormasi(e) {
   if (e) e.preventDefault();
+  // Hanya buka halaman Formasi Kelas tanpa menutup sidebar & tanpa membuka/menutup sub-menu
+  window.showPage('formasi', loadFormasiData, true);
+  loadFormasiData();
+}
+
+export function toggleSubmenuFormasi(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
   const submenu = document.getElementById('submenu-desk-formasi');
   const arrow = document.getElementById('arrow-submenu-formasi');
   if (submenu) {
-    submenu.classList.toggle('open');
-    if (arrow) arrow.classList.toggle('rotated', submenu.classList.contains('open'));
+    const isNowOpen = submenu.classList.toggle('open');
+    if (arrow) arrow.classList.toggle('rotated', isNowOpen);
   }
-  window.showPage('formasi');
+  document.body.classList.remove('sidebar-collapsed');
+  document.getElementById('desktopSidebar')?.classList.remove('close');
 }
 
 export async function openFormasiGenderView(gender = 'PA') {
