@@ -21,10 +21,18 @@ export const store = {
     tree1: '',
     tree2: ''
   },
+  // State Khusus Modul Fan Pelajaran & Pengajar Fan
+  fanConfig: {},
+  fanPelajaranDetail: {
+    kelas: {},
+    item: {}
+  },
+  masterGrupAsal: [],
   currentUser: {
     username: 'admin',
     nama: 'Master Administrator',
-    role: 'Master Admin'
+    role: 'Master Admin',
+    canEdit: true
   }
 };
 
