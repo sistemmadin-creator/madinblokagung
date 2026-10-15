@@ -47,11 +47,11 @@ function getWaliKelasSyncInfo(f) {
   let waliKelasText = f.id_mustahiq || '-';
   let waliKelasHtml = f.id_mustahiq ? `<span class="fw-bold">${f.id_mustahiq}</span>` : '-';
 
-  if (matchedAsatidz.length > 0) {
+if (matchedAsatidz.length > 0) {
     waliKelasText = matchedAsatidz.map(a => a.nama_asatidz).join(', ');
     waliKelasHtml = matchedAsatidz.map(a => {
-      const niaBadge = a.nia ? `<span class="badge bg-secondary ms-1">${a.nia}</span>` : '';
-      const jahBadge = a.jah_asatidz ? `<span class="badge bg-success bg-opacity-10 text-success border border-success-subtle ms-1">${a.jah_asatidz}</span>` : '';
+      const niaBadge = a.nia ? `<span class="badge bg-secondary text-white ms-1">${a.nia}</span>` : '';
+      const jahBadge = a.jah_asatidz ? `<span class="badge bg-success text-white ms-1">${a.jah_asatidz}</span>` : '';
       return `<div class="fw-bold text-teal">${a.nama_asatidz} ${niaBadge} ${jahBadge}</div>`;
     }).join('');
   }
@@ -275,8 +275,7 @@ $('#dataTableFormasi').html(`
     const syncInfo = getWaliKelasSyncInfo(f);
     const jmlSantri = getSantriInFormasi(f).length;
     const kapasitasMaks = f.kapasitas_maksimal || 80;
-    const kapasitasBadge = `<span class="badge ${jmlSantri >= kapasitasMaks ? 'bg-danger' : 'bg-success bg-opacity-10 text-success border border-success-subtle'}">${jmlSantri} / ${kapasitasMaks} Santri</span>`;
-
+    const kapasitasBadge = `<span class="badge ${jmlSantri >= kapasitasMaks ? 'bg-danger text-white' : 'bg-success text-white'}">${jmlSantri} / ${kapasitasMaks} Santri</span>`;
     // Kolom Blok mandiri (tidak sinkron dengan Asatidz / Santri)
     const blokMandiri = f.blok || '-';
 
