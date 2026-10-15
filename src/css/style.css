@@ -29,7 +29,13 @@ body {
 .btn-outline-success { color: var(--primary-color); border-color: var(--primary-color); }
 .btn-outline-success:hover { background-color: var(--primary-color); border-color: var(--primary-color); color: #fff; }
 .text-success { color: var(--primary-color) !important; }
-.bg-success { background-color: var(--primary-color) !important; }
+.bg-success { background-color: var(--primary-color) !important; color: #ffffff !important; }
+.badge.bg-success,
+.badge.bg-success.text-success {
+  background-color: var(--primary-color) !important;
+  color: #ffffff !important;
+  border-color: var(--primary-color) !important;
+}
 
 /* Elemen Form Modern */
 .form-control, .form-select {
