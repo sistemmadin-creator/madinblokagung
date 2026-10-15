@@ -2155,7 +2155,7 @@ function applyItemCheck(el) {
 
     const targetRow = this;
     const $checkbox =$(targetRow).find(checkboxSelector);
-    if (!$checkbox.length \vert{}\vert{}$checkbox.prop('disabled')) return;
+    if (!$checkbox.length || $checkbox.prop('disabled')) return;
 
     startTouchCoord = { x: e.clientX, y: e.clientY };
     isDragConfirmed = false;
