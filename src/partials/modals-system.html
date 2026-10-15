@@ -11,13 +11,13 @@
           <!-- KOLOM KIRI: 1. Builder Tree 1 (Blok -> Kamar) -->
           <div class="col-lg-6">
             <div class="bg-white p-3 rounded border shadow-sm h-100">
-              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <label class="form-label fw-bold text-success mb-0">1. Blok &gt; Asrama &gt; Kode &gt; Kamar</label>
-                <div class="d-flex align-items-center gap-2 ms-auto">
-                  <!-- Tombol Filter Blok & Asrama (Di Sebelah Kiri Pencarian) -->
+              <div class="d-flex flex-nowrap justify-content-between align-items-center gap-2 mb-3">
+                <label class="form-label fw-bold text-success mb-0 text-nowrap" style="font-size: 0.82rem;">1. Blok &gt; Asrama &gt; Kode &gt; Kamar</label>
+                <div class="d-flex align-items-center gap-1 ms-auto flex-nowrap">
+                  <!-- Tombol Filter Blok & Asrama -->
                   <div class="dropdown">
-                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm fw-semibold text-nowrap" data-bs-toggle="dropdown" data-bs-auto-close="outside" onclick="window.populateTreeFilterDropdown('tree1')">
-                      <i class="bi bi-funnel me-1"></i> Filter
+                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm fw-semibold text-nowrap px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside" onclick="window.populateTreeFilterDropdown('tree1')">
+                      <i class="bi bi-funnel"></i> Filter
                     </button>
                     <div class="dropdown-menu p-3 shadow border-0" style="min-width: 230px; z-index: 1080;">
                       <div class="mb-2">
@@ -39,14 +39,14 @@
                   </div>
 
                   <!-- Kotak Pencarian -->
-                  <div class="input-group input-group-sm shadow-sm" style="width: 165px;">
-                    <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
-                    <input type="text" id="search_tree1" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree1', this.value)">
+                  <div class="input-group input-group-sm shadow-sm" style="width: 135px;">
+                    <span class="input-group-text bg-light text-muted border-secondary border-opacity-25 px-2"><i class="bi bi-search"></i></span>
+                    <input type="text" id="search_tree1" class="form-control border-secondary border-opacity-25 px-2" placeholder="Cari aturan..." onkeyup="window.filterRules('tree1', this.value)">
                   </div>
 
-                  <!-- Tombol Tambah -->
-                  <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree1')">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah
+                  <!-- Tombol Tambah (Ikon +) -->
+                  <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-2 text-nowrap" title="Tambah Aturan" onclick="window.addRuleRow('tree1')">
+                    <i class="bi bi-plus-lg"></i>
                   </button>
                 </div>
               </div>
@@ -57,13 +57,13 @@
           <!-- KOLOM KANAN: 2. Builder Tree 2 (Unit -> Bagian) -->
           <div class="col-lg-6">
             <div class="bg-white p-3 rounded border shadow-sm h-100">
-              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-                <label class="form-label fw-bold text-success mb-0">2. Unit &gt; Jurusan &gt; Sem &gt; Kelas &gt; Bag</label>
-                <div class="d-flex align-items-center gap-2 ms-auto">
-                  <!-- Tombol Filter Unit & Jurusan (Di Sebelah Kiri Pencarian) -->
+              <div class="d-flex flex-nowrap justify-content-between align-items-center gap-2 mb-3">
+                <label class="form-label fw-bold text-success mb-0 text-nowrap" style="font-size: 0.82rem;">2. Unit &gt; Jurusan &gt; Sem &gt; Kelas &gt; Bag</label>
+                <div class="d-flex align-items-center gap-1 ms-auto flex-nowrap">
+                  <!-- Tombol Filter Unit & Jurusan -->
                   <div class="dropdown">
-                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm fw-semibold text-nowrap" data-bs-toggle="dropdown" data-bs-auto-close="outside" onclick="window.populateTreeFilterDropdown('tree2')">
-                      <i class="bi bi-funnel me-1"></i> Filter
+                    <button type="button" class="btn btn-sm btn-outline-primary shadow-sm fw-semibold text-nowrap px-2" data-bs-toggle="dropdown" data-bs-auto-close="outside" onclick="window.populateTreeFilterDropdown('tree2')">
+                      <i class="bi bi-funnel"></i> Filter
                     </button>
                     <div class="dropdown-menu p-3 shadow border-0" style="min-width: 230px; z-index: 1080;">
                       <div class="mb-2">
@@ -85,14 +85,14 @@
                   </div>
 
                   <!-- Kotak Pencarian -->
-                  <div class="input-group input-group-sm shadow-sm" style="width: 165px;">
-                    <span class="input-group-text bg-light text-muted border-secondary border-opacity-25"><i class="bi bi-search"></i></span>
-                    <input type="text" id="search_tree2" class="form-control border-secondary border-opacity-25" placeholder="Cari aturan..." onkeyup="window.filterRules('tree2', this.value)">
+                  <div class="input-group input-group-sm shadow-sm" style="width: 135px;">
+                    <span class="input-group-text bg-light text-muted border-secondary border-opacity-25 px-2"><i class="bi bi-search"></i></span>
+                    <input type="text" id="search_tree2" class="form-control border-secondary border-opacity-25 px-2" placeholder="Cari aturan..." onkeyup="window.filterRules('tree2', this.value)">
                   </div>
 
-                  <!-- Tombol Tambah -->
-                  <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-3 text-nowrap" onclick="window.addRuleRow('tree2')">
-                    <i class="bi bi-plus-lg me-1"></i> Tambah
+                  <!-- Tombol Tambah (Ikon +) -->
+                  <button type="button" class="btn btn-sm btn-success shadow-sm fw-bold px-2 text-nowrap" title="Tambah Aturan" onclick="window.addRuleRow('tree2')">
+                    <i class="bi bi-plus-lg"></i>
                   </button>
                 </div>
               </div>
