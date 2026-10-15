@@ -14,9 +14,23 @@
     <a class="nav-link" id="nav-desk-asatidz" onclick="window.showPage('asatidz')">
       <i class="bi bi-people"></i> <span>Data Asatidz</span>
     </a>
-    <a class="nav-link" id="nav-desk-formasi" onclick="window.showPage('formasi')">
-      <i class="bi bi-building"></i> <span>Formasi Kelas</span>
+
+    <!-- MENU INDUK FORMASI KELAS + SUB MENU PUTRA & PUTRI -->
+    <a class="nav-link d-flex align-items-center justify-content-between" id="nav-desk-formasi" onclick="window.handleClickMenuFormasi(event)">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-building"></i> <span>Formasi Kelas</span>
+      </div>
+      <i class="bi bi-chevron-down small submenu-arrow" id="arrow-submenu-formasi"></i>
     </a>
+    <div class="sidebar-submenu" id="submenu-desk-formasi">
+      <a class="nav-link submenu-item" id="nav-desk-formasi-pa" onclick="window.showPage('formasi-pa')">
+        <i class="bi bi-gender-male"></i> <span>Kelas Putra</span>
+      </a>
+      <a class="nav-link submenu-item" id="nav-desk-formasi-pi" onclick="window.showPage('formasi-pi')">
+        <i class="bi bi-gender-female"></i> <span>Kelas Putri</span>
+      </a>
+    </div>
+
     <a class="nav-link" onclick="jQuery('#settingsModal').modal('show')">
       <i class="bi bi-diagram-3"></i> <span>Hierarki Dropdown</span>
     </a>
@@ -34,9 +48,17 @@
   <a class="nav-link" id="nav-mob-asatidz" onclick="window.showPage('asatidz')">
     <i class="bi bi-people"></i><span>Asatidz</span>
   </a>
-  <a class="nav-link" id="nav-mob-formasi" onclick="window.showPage('formasi')">
-    <i class="bi bi-building"></i><span>Formasi</span>
-  </a>
+  <div class="dropup">
+    <a class="nav-link dropdown-toggle" id="nav-mob-formasi" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-building"></i><span>Formasi</span>
+    </a>
+    <ul class="dropdown-menu shadow border-0 mb-2">
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('formasi'); return false;"><i class="bi bi-gear me-2 text-warning"></i>Master Blueprint</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('formasi-pa'); return false;"><i class="bi bi-gender-male me-2 text-primary"></i>Kelas Putra</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('formasi-pi'); return false;"><i class="bi bi-gender-female me-2 text-danger"></i>Kelas Putri</a></li>
+    </ul>
+  </div>
   <a class="nav-link" onclick="jQuery('#settingsModal').modal('show')">
     <i class="bi bi-diagram-3"></i><span>Hierarki</span>
   </a>
