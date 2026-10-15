@@ -1,0 +1,265 @@
+<!-- ===================================================================== -->
+<!-- 1. MODAL PENGATURAN ITEM FAN / MATA PELAJARAN (#modalPengaturanFan)   -->
+<!-- ===================================================================== -->
+<div class="modal fade" id="modalPengaturanFan" tabindex="-1" aria-hidden="true" style="z-index: 1065;">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <h5 class="modal-title fw-bold"><i class="bi bi-ui-checks-grid me-2"></i> Pengaturan Item Fan (Mata Pelajaran)</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <div class="alert alert-secondary py-2 mb-3 small border-0 text-dark">
+          <i class="bi bi-info-circle-fill text-success me-1"></i> Pisahkan setiap nama Fan / Mata Pelajaran dengan <b>tanda koma (,)</b>.<br>
+          <small class="text-muted">*Contoh format: <b>(Fiqih) Mabadi Fiqih Juz I II III, (Tajwid) Panduan Tajwid + Juz Amma</b>. Daftar kelas di bawah otomatis menyesuaikan Tingkat &amp; Din. Kls yang ada pada master data Formasi &amp; Asatidz.</small>
+        </div>
+        <!-- Kontainer otomatis input kelas reguler & sub-kelas unggulan -->
+        <div id="containerDynamicFanClasses" class="row g-3" style="max-height: 460px; overflow-y: auto;">
+          <!-- Diisi otomatis oleh JavaScript -->
+        </div>
+      </div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-success px-4 fw-bold shadow-sm" id="btnSimpanPengaturanFan" onclick="window.simpanPengaturanFan()">
+          <i class="bi bi-save-fill me-1"></i> Simpan Konfigurasi
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- 2. MODAL ATUR FAN MS - BATCH SETUP MUSTAHIQ (#modalAturFanMS)         -->
+<!-- ===================================================================== -->
+<div class="modal fade" id="modalAturFanMS" tabindex="-1" aria-hidden="true" style="z-index: 1066;">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <h5 class="modal-title fw-bold"><i class="bi bi-person-check-fill me-2"></i> Atur Fan Khusus MS (Mustahiq)</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <div class="alert alert-secondary py-2 mb-3 small border-0 text-dark">
+          <i class="bi bi-info-circle-fill text-success me-1"></i>
+          Pilih <b>Tingkat</b> dan <b>Din. Kls</b>, lalu centang Fan yang <b>WAJIB diajar oleh MS (Mustahiq)</b>.
+          Pengaturan ini otomatis diterapkan ke <b>SEMUA Din. Bag</b> (bagian/lokal kelas: A, B, C, dst.) pada jenjang &amp; tingkat tersebut.
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label fw-bold small">1. Tingkat</label>
+            <select class="form-select form-select-sm border-secondary" id="afms_tingkat" onchange="window.renderChecklistFanMS()">
+              <option value="ULA">ULA</option>
+              <option value="WUSTHO">WUSTHO</option>
+              <option value="ULYA">ULYA</option>
+              <option value="ISTI'DAD">ISTI'DAD</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label class="form-label fw-bold small">2. Din. Kls</label>
+            <select class="form-select form-select-sm border-secondary" id="afms_kelas" onchange="window.renderChecklistFanMS()">
+              <option value="1">Kelas 1</option>
+              <option value="2">Kelas 2</option>
+              <option value="3">Kelas 3</option>
+              <option value="4">Kelas 4</option>
+            </select>
+          </div>
+        </div>
+        <div class="card border-0 shadow-sm bg-white rounded-3">
+          <div class="p-2 px-3 border-bottom bg-light rounded-top d-flex justify-content-between align-items-center">
+            <span class="small fw-bold text-muted">3. Pilih Fan yang Wajib Diajar MS</span>
+            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25" id="afms_count_badge">0 Fan Dipilih</span>
+          </div>
+          <div class="p-2" id="afms_checklist_container" style="max-height:320px; overflow-y:auto;">
+            <!-- Diisi otomatis oleh renderChecklistFanMS() -->
+          </div>
+        </div>
+        <small class="text-muted fst-italic d-block mt-2">
+          *Fan yang sudah tercentang berarti statusnya <b>MS</b> di SEMUA bagian kelas pada kombinasi Tingkat + Kelas ini.
+        </small>
+      </div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-success px-4 fw-bold shadow-sm" onclick="window.simpanPengaturanFanMS()">
+          <i class="bi bi-save-fill me-1"></i> Simpan &amp; Terapkan ke Semua Bagian
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- 3. MODAL PILIH ASATIDZ PENGAJAR FAN (#modalPilihAsatidzFan)           -->
+<!-- ===================================================================== -->
+<div class="modal fade" id="modalPilihAsatidzFan" tabindex="-1" aria-hidden="true" style="z-index: 1085;">
+  <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <div>
+          <h5 class="modal-title fw-bold m-0"><i class="bi bi-person-check-fill me-2"></i> Pilih Asatidz Pengajar</h5>
+          <small class="text-white-50" id="modalFanSubtitle">Pilih asatidz untuk mata pelajaran ini</small>
+        </div>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3 bg-light">
+        <input type="hidden" id="modal_fan_target_itemkey">
+
+        <!-- Filter Checkbox MS & MB -->
+        <div class="card border-0 shadow-sm p-3 mb-3 bg-white rounded-3">
+          <label class="form-label fw-bold small text-dark mb-2">Kategori Asatidz (Pilih Salah Satu / Keduanya):</label>
+          <div class="d-flex align-items-center gap-3">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="chkFilterMS" onchange="window.filterAsatidzFanModal()">
+              <label class="form-check-label fw-bold text-success small" for="chkFilterMS">
+                <i class="bi bi-shield-fill-check me-1"></i> MS (Mustahiq)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="chkFilterMB" onchange="window.filterAsatidzFanModal()">
+              <label class="form-check-label fw-bold text-primary small" for="chkFilterMB">
+                <i class="bi bi-person-badge-fill me-1"></i> MB (Munawib)
+              </label>
+            </div>
+          </div>
+          <small class="text-muted mt-2 fst-italic" style="font-size: 11px;">
+            *MS: Mustahiq, Mustahiqoh, MS &amp; Koor, ISTI'DAD<br>
+            *MB: Munawib, Munawibah, MB &amp; TOP, MB &amp; Media, TM &amp; MB, TU &amp; MB
+          </small>
+        </div>
+
+        <!-- Input Pencarian Nama Asatidz -->
+        <div class="input-group input-group-sm mb-2 shadow-xs">
+          <span class="input-group-text bg-white border-secondary"><i class="bi bi-search text-success"></i></span>
+          <input type="text" class="form-control border-secondary" id="searchAsatidzFanModal" placeholder="Ketik nama Asatidz / NIA..." oninput="window.filterAsatidzFanModal()">
+          <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('searchAsatidzFanModal').value=''; window.filterAsatidzFanModal();">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <!-- Kontainer Daftar Asatidz yang Bisa Dipilih -->
+        <div class="card border-0 shadow-sm bg-white rounded-3">
+          <div class="d-flex justify-content-between align-items-center p-2 px-3 border-bottom bg-light rounded-top">
+            <span class="small fw-bold text-muted" id="countTerpilihAsatidzFan">0 Asatidz Dipilih</span>
+            <div class="form-check m-0">
+              <input class="form-check-input" type="checkbox" id="chkAllAsatidzFan" onchange="window.toggleSelectAllAsatidzFan(this)">
+              <label class="form-check-label small fw-semibold" for="chkAllAsatidzFan">Pilih Semua</label>
+            </div>
+          </div>
+          <div class="p-2" id="boxListAsatidzFanModal" style="max-height: 260px; overflow-y: auto;">
+            <!-- Diisi otomatis oleh JavaScript -->
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-light border px-3" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-success fw-bold px-4 shadow-sm" id="btnSimpanPilihanAsatidzFan" onclick="window.simpanPilihanAsatidzFan()">
+          <i class="bi bi-check2-circle me-1"></i> Simpan &amp; Tetapkan
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- 4. MODAL PENGATURAN GRUP ASAL ASATIDZ (#modalGrupAsal)                -->
+<!-- ===================================================================== -->
+<div class="modal fade" id="modalGrupAsal" tabindex="-1" aria-hidden="true" style="z-index: 1080;">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <h5 class="modal-title fw-bold"><i class="bi bi-diagram-3-fill me-2"></i> Pengaturan Grup Asal Asatidz</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <div class="row g-3">
+          <!-- Kolom Kiri: Form Buat / Edit Grup Asal -->
+          <div class="col-md-7">
+            <div class="card border-0 shadow-sm p-3 bg-white rounded-3 h-100">
+              <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+                <i class="bi bi-plus-circle-fill me-1"></i> Buat / Edit Grup Asal
+              </h6>
+
+              <div class="mb-2">
+                <label class="form-label small fw-bold text-dark mb-1">1. Nama Grup Asal (Tampil Vertikal di Kolom ASAL)</label>
+                <input type="text" class="form-control form-control-sm border-secondary text-uppercase fw-bold" id="inputNamaGrupAsal" placeholder="Contoh: PONDOK INDUK / BLOK A / SENIOR">
+              </div>
+
+              <!-- Pilih Cepat Berdasarkan Awalan Huruf NIA (A-E) -->
+              <div class="mb-2 p-2 bg-light rounded border" id="wrapQuickSelectHurufGrup">
+                <label class="form-label small fw-bold text-muted mb-1 d-block" style="font-size: 11px;">
+                  <i class="bi bi-lightning-charge-fill text-warning me-1"></i>Pilih Cepat Asatidz Bebas Berdasarkan Awalan NIA:
+                </label>
+                <div class="d-flex flex-wrap gap-3">
+                  <div class="form-check form-check-inline m-0">
+                    <input class="form-check-input quick-huruf-grup" type="checkbox" id="q_nia_a" onchange="window.toggleQuickSelectHurufGrup('A', this.checked)">
+                    <label class="form-check-label small fw-bold" for="q_nia_a">Kode A</label>
+                  </div>
+                  <div class="form-check form-check-inline m-0">
+                    <input class="form-check-input quick-huruf-grup" type="checkbox" id="q_nia_b" onchange="window.toggleQuickSelectHurufGrup('B', this.checked)">
+                    <label class="form-check-label small fw-bold" for="q_nia_b">Kode B</label>
+                  </div>
+                  <div class="form-check form-check-inline m-0">
+                    <input class="form-check-input quick-huruf-grup" type="checkbox" id="q_nia_c" onchange="window.toggleQuickSelectHurufGrup('C', this.checked)">
+                    <label class="form-check-label small fw-bold" for="q_nia_c">Kode C</label>
+                  </div>
+                  <div class="form-check form-check-inline m-0">
+                    <input class="form-check-input quick-huruf-grup" type="checkbox" id="q_nia_d" onchange="window.toggleQuickSelectHurufGrup('D', this.checked)">
+                    <label class="form-check-label small fw-bold" for="q_nia_d">Kode D</label>
+                  </div>
+                  <div class="form-check form-check-inline m-0">
+                    <input class="form-check-input quick-huruf-grup" type="checkbox" id="q_nia_e" onchange="window.toggleQuickSelectHurufGrup('E', this.checked)">
+                    <label class="form-check-label small fw-bold" for="q_nia_e">Kode E</label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pencarian & Checklist Asatidz -->
+              <div class="mb-2">
+                <label class="form-label small fw-bold text-dark mb-1">2. Pilih Anggota Asatidz</label>
+                <div class="input-group input-group-sm mb-2">
+                  <span class="input-group-text bg-white border-secondary"><i class="bi bi-search text-success"></i></span>
+                  <input type="text" class="form-control border-secondary" id="cariAsatidzGrup" placeholder="Cari Nama / NIA / Jah..." oninput="window.filterChecklistGrupAsatidz()">
+                  <button class="btn btn-outline-secondary" type="button" onclick="document.getElementById('cariAsatidzGrup').value=''; window.filterChecklistGrupAsatidz();">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+                <div id="boxListAsatidzGrup" class="border rounded p-2 bg-white" style="max-height: 230px; overflow-y: auto;">
+                  <!-- Diisi otomatis oleh renderChecklistAsatidzGrup() -->
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top">
+                <button type="button" class="btn btn-sm btn-light border" onclick="window.resetFormGrupAsal()">
+                  <i class="bi bi-arrow-counterclockwise me-1"></i> Bersihkan Form
+                </button>
+                <button type="button" class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="window.simpanGrupAsalBaru()">
+                  <i class="bi bi-save-fill me-1"></i> Simpan Grup
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kolom Kanan: Daftar Grup Asal Tersimpan (Drag & Drop Urutan) -->
+          <div class="col-md-5">
+            <div class="card border-0 shadow-sm p-3 bg-white rounded-3 h-100">
+              <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                <h6 class="fw-bold text-dark m-0">
+                  <i class="bi bi-list-ol text-success me-1"></i> Grup Tersimpan
+                </h6>
+                <span class="badge bg-light text-secondary border" style="font-size:10px;">Drag untuk urutkan</span>
+              </div>
+              <small class="text-muted mb-2 d-block" style="font-size:11px;">
+                *Tahan &amp; seret kartu di bawah untuk mengatur urutan grup pada tabel.
+              </small>
+              <div id="containerListGrupTersimpan" class="d-flex flex-column gap-2" style="max-height: 350px; overflow-y: auto;">
+                <!-- Diisi otomatis oleh renderDaftarGrupTersimpan() -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
