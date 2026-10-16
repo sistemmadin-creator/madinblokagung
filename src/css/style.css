@@ -1071,3 +1071,44 @@ body.printing-pengajar-fan #areaPrintPengajarFan,
   color: #0f766e;
   padding: 4px 8px 2px 8px;
 }
+
+/* =========================================================
+   MODUL HARI KBM (JADWAL HARIAN ASATIDZ - KARTU & CETAK RESMI)
+========================================================= */
+.asatidz-card-item {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: 1.5px solid #e2e8f0 !important;
+  background-color: #ffffff;
+}
+.asatidz-card-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(15, 118, 110, 0.12) !important;
+  border-color: #0f766e !important;
+}
+
+#areaPrintHariKBM {
+  width: 100%;
+}
+
+@media print {
+  body.printing-hari-kbm * {
+    visibility: hidden;
+  }
+  body.printing-hari-kbm #areaPrintHariKBM,
+  body.printing-hari-kbm #areaPrintHariKBM * {
+    visibility: visible !important;
+  }
+  body.printing-hari-kbm #areaPrintHariKBM {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 5mm !important;
+    box-shadow: none !important;
+  }
+  body.printing-hari-kbm .no-print-kbm {
+    display: none !important;
+  }
+}
