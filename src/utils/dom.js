@@ -142,6 +142,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pageAsatidz = document.getElementById('page-asatidz');
   const pageFanPelajaran = document.getElementById('page-fan-pelajaran');
   const pagePengajarFan = document.getElementById('page-pengajar-fan');
+  const pageJadwalKbm = document.getElementById('page-jadwal-kbm');
 
   if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
   if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
@@ -149,6 +150,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   if (pageAsatidz) pageAsatidz.style.display = (page === 'asatidz') ? 'block' : 'none';
   if (pageFanPelajaran) pageFanPelajaran.style.display = (page === 'fan-pelajaran') ? 'block' : 'none';
   if (pagePengajarFan) pagePengajarFan.style.display = (page === 'pengajar-fan') ? 'block' : 'none';
+  if (pageJadwalKbm) pageJadwalKbm.style.display = (page === 'jadwal-kbm') ? 'block' : 'none';
 
   document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-link').forEach(el => el.classList.remove('active'));
 
@@ -191,6 +193,10 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
         onShowFormasi();
       } else if (typeof window.loadFormasiData === 'function') {
         window.loadFormasiData();
+      }
+    } else if (page === 'jadwal-kbm') {
+      if (typeof window.renderJadwalKBM === 'function') {
+        window.renderJadwalKBM();
       }
     }
   }
