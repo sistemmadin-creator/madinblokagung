@@ -680,6 +680,11 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+.tabel-daftar-pendidik th.sub-th {
+  font-size: 0.72rem !important;
+  padding: 4px 2px !important;
+  font-weight: 700;
+}
 .tabel-daftar-pendidik td.nama-pendidik {
   text-align: left;
   font-weight: 600;
@@ -691,6 +696,26 @@ body {
 }
 .tabel-daftar-pendidik td.nama-pendidik-click:hover {
   color: #115e59;
+  text-decoration: underline;
+}
+.tabel-daftar-pendidik td.jah-pendidik {
+  text-align: left;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+.tabel-daftar-pendidik td.cell-x-jam {
+  font-family: monospace;
+  font-weight: 700;
+  color: #0f766e;
+}
+.tabel-daftar-pendidik td.cell-x-jam.cell-x-jam-klik {
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+.tabel-daftar-pendidik td.cell-x-jam.cell-x-jam-klik:hover {
+  background-color: #ecfdf5 !important;
+  color: #115e59 !important;
   text-decoration: underline;
 }
 .tabel-daftar-pendidik td.cell-asal-grup {
@@ -1109,6 +1134,27 @@ body.printing-pengajar-fan #areaPrintPengajarFan,
     box-shadow: none !important;
   }
   body.printing-hari-kbm .no-print-kbm {
+    display: none !important;
+  }
+
+  /* Format Cetak Khusus Daftar Tenaga Pendidik (Landscape Terisolasi) */
+  body.printing-daftar-pendidik * {
+    visibility: hidden;
+  }
+  body.printing-daftar-pendidik #areaPrintDaftarPendidik,
+  body.printing-daftar-pendidik #areaPrintDaftarPendidik * {
+    visibility: visible !important;
+  }
+  body.printing-daftar-pendidik #areaPrintDaftarPendidik {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  body.printing-daftar-pendidik .no-print-pendidik {
     display: none !important;
   }
 }
