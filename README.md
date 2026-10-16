@@ -18,15 +18,16 @@ Aplikasi web manajemen database terpadu untuk **Data Santri**, **Data Asatidz**,
 ```bash
 diperbarui
 - menjadikan satu tombol hierarki dropdown dan log aktivitas menjadi satu dalam menu pengaturan
+- fitur import pada input data asatidz
 
 diperbaiki
 - klik menu utama tidak akan menutup, kalau ingin melihat menu dibawahnya cukup klik panahnya
 - layout HP
 
 menu baru:
-- absensi bermasalah
+- absensi bermasalah / kasus absensi
   - penanganan absen asatidz apakah sudah sowan apa belum serta bikin suratnya juga
-- muhafadzoh bermasalah
+- muhafadzoh bermasalah / kasus hafalan
   - Rekap bermasalah berdasarkan kelas
 
 menu baru selanjutnya
