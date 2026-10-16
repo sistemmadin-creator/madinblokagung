@@ -203,11 +203,84 @@
           <!-- Diisi otomatis: Bila kosong -> tombol Simpan; Bila terisi -> tombol Ganti dan Simpan -->
         </div>
       </div>
-      <div class="modal-footer bg-white border-top-0 pt-0" id="akg_modal_footer">
+     <div class="modal-footer bg-white border-top-0 pt-0" id="akg_modal_footer">
         <button type="button" class="btn btn-light border px-3" data-bs-dismiss="modal">Batal</button>
         <button type="button" class="btn btn-success fw-bold px-4" id="akg_btn_submit" onclick="window.eksekusiAksiKlikKananKG()">
           Simpan
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL 4: DETAIL SEL JADWAL KBM DARI TABEL DAFTAR PENDIDIK (#modalDetailSelJadwalKBM) ============ -->
+<div class="modal fade" id="modalDetailSelJadwalKBM" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-calendar2-check-fill fs-5"></i>
+          <div>
+            <h5 class="modal-title fw-bold m-0" id="selKbm_title">Detail Jadwal Mengajar</h5>
+            <small class="text-white-50">Rincian Sesi &amp; Jadwal Mingguan Asatidz</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-4 bg-light">
+        <!-- Kartu Rincian Sesi Terpilih -->
+        <div class="card border-0 shadow-sm rounded-3 mb-3">
+          <div class="card-body p-3">
+            <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+              <i class="bi bi-person-workspace me-1"></i> Rincian Sesi Mengajar Terpilih
+            </h6>
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <small class="text-muted d-block">Nama Tenaga Pendidik (Asatidz):</small>
+                <div class="fw-bold fs-6 text-dark" id="selKbm_nama">-</div>
+              </div>
+              <div class="col-sm-6">
+                <small class="text-muted d-block">Fan / Mata Pelajaran:</small>
+                <div class="fw-bold fs-6 text-success" id="selKbm_fan">-</div>
+              </div>
+              <div class="col-sm-6">
+                <small class="text-muted d-block">Kelas Diniyyah:</small>
+                <span class="badge bg-light text-dark border px-3 py-1 fw-bold" id="selKbm_kelas">-</span>
+              </div>
+              <div class="col-sm-6">
+                <small class="text-muted d-block">Lokasi / Ruang Diniyyah:</small>
+                <div class="fw-semibold text-secondary" id="selKbm_lokasi">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kartu Ringkasan Jadwal Lengkap Mingguan (Sabtu s/d Kamis) -->
+        <div class="card border-0 shadow-sm rounded-3">
+          <div class="card-body p-3">
+            <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+              <i class="bi bi-calendar-week me-1"></i> Ringkasan Jadwal Mengajar Mingguan (Sabtu s/d Kamis)
+            </h6>
+            <div class="table-responsive">
+              <table class="table table-bordered table-sm align-middle m-0 bg-white" style="font-size: 0.82rem;">
+                <thead class="table-light text-center">
+                  <tr>
+                    <th style="width: 90px;">HARI</th>
+                    <th>RINCIAN JAM, FAN &amp; KELAS MENGAJAR</th>
+                  </tr>
+                </thead>
+                <tbody id="selKbm_body_mingguan">
+                  <!-- Diisi otomatis oleh bukaModalDetailSelJadwalKBM() -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Tutup</button>
       </div>
     </div>
   </div>
