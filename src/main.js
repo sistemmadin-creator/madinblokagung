@@ -18,6 +18,7 @@ import * as santri from './modules/santri/santri.js';
 import * as asatidz from './modules/asatidz/asatidz.js';
 import * as formasi from './modules/formasi/formasi.js';
 import * as fan from './modules/fan/fan.js';
+import * as jadwalKbm from './modules/jadwal-kbm/jadwal-kbm.js';
 
 // Import Komponen Navigasi dari folder src/partials/
 import navbarHtml from './partials/navbar.html?raw';
@@ -28,6 +29,7 @@ import pageSantri from './pages/santri.html?raw';
 import pageFormasi from './pages/formasi.html?raw';
 import pageAsatidz from './pages/asatidz.html?raw';
 import pageFan from './pages/fan.html?raw';
+import pageJadwalKbm from './pages/jadwal-kbm.html?raw';
 
 // Import Komponen HTML Modal dari folder src/partials/
 import modalsSantri from './partials/modals-santri.html?raw';
@@ -35,6 +37,7 @@ import modalsSystem from './partials/modals-system.html?raw';
 import modalsFormasi from './partials/modals-formasi.html?raw';
 import modalsAsatidz from './partials/modals-asatidz.html?raw';
 import modalsFan from './partials/modals-fan.html?raw';
+import modalsJadwalKbm from './partials/modals-jadwal-kbm.html?raw';
 
 export { supabase };
 
@@ -56,7 +59,8 @@ Object.assign(window, {
   ...santri,
   ...asatidz,
   ...formasi,
-  ...fan
+  ...fan,
+  ...jadwalKbm
 });
 
 // =========================================================
@@ -73,13 +77,14 @@ document.addEventListener('DOMContentLoaded', async function () {
   // 0B. Render seluruh halaman dari src/pages/ ke dalam #pages-container
   const pagesContainer = document.getElementById('pages-container');
   if (pagesContainer) {
-    pagesContainer.innerHTML = pageSantri + pageFormasi + pageAsatidz + pageFan;
+    pagesContainer.innerHTML = pageSantri + pageFormasi + pageAsatidz + pageFan + pageJadwalKbm;
   }
 
   // 0C. Render seluruh komponen modal dari src/partials/ ke dalam #modals-container
   const modalsContainer = document.getElementById('modals-container');
   if (modalsContainer) {
-    modalsContainer.innerHTML = modalsSantri + modalsSystem + modalsFormasi + modalsAsatidz + modalsFan;
+    modalsContainer.innerHTML =
+      modalsSantri + modalsSystem + modalsFormasi + modalsAsatidz + modalsFan + modalsJadwalKbm;
   }
 
   // Pasang Observer Layout, Resize Tabel & Hover Sidebar
@@ -90,6 +95,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   formasi.initHideFilterFormasi();
   asatidz.initAsatidzUI();
   fan.initFanUI();
+  jadwalKbm.initJadwalKbmUI();
 
   // Muat daftar Provinsi dari API Emsifa & pasang listener cascading wilayah
   loadInitialProvinces();
@@ -115,6 +121,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     await fan.loadFanSettingsFromSupabase();
   } catch (err) {
     console.error('Gagal memuat pengaturan Fan Pelajaran:', err.message);
+  }
+
+  // Muat data Jadwal Mengajar Asatidz (untuk Jadwal KBM Per Kelas) dari `app_settings`
+  try {
+    await jadwalKbm.loadJadwalKbmFromSupabase();
+  } catch (err) {
+    console.error('Gagal memuat Jadwal KBM dari Supabase:', err.message);
   }
 
   // Background Fetch Data Santri, Asatidz & Formasi Kelas
