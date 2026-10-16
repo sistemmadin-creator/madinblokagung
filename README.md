@@ -23,6 +23,12 @@ diperbaiki
 - klik menu utama tidak akan menutup, kalau ingin melihat menu dibawahnya cukup klik panahnya
 - layout HP
 
+menu baru:
+- absensi bermasalah
+  - penanganan absen asatidz apakah sudah sowan apa belum serta bikin suratnya juga
+- muhafadzoh bermasalah
+  - Rekap bermasalah berdasarkan kelas
+
 menu baru selanjutnya
 - fan pelajaran (diberi garis batas bahwa ini Kurkulum)
 - Pengajar Fan
