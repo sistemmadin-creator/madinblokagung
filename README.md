@@ -47,3 +47,11 @@ isinya yakni
 - Kurikulum
 - Muhafadzoh
 - TOP
+
+Ide:
+- Halaman Absensi Asatidz Tabelnya diganti dengan buku absen berikut
+NO | Kelas | Jam | Hari & Tanggal | Total Hadir | Tempat
+
+- Absensi Talamidz disamakan dengan absen cepat dan sesuai dengan buku absen
+
+- Absen cepat diberi fitur pagejing dan dibatasi dengan 3 kolom supaya muat banyak didekstop
