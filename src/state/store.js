@@ -28,6 +28,9 @@ export const store = {
     item: {}
   },
   masterGrupAsal: [],
+  // State Khusus Modul Jadwal KBM Per Kelas
+  jadwalMengajarMap: {},
+  masterStrukturKelasKBM: [],
   currentUser: {
     username: 'admin',
     nama: 'Master Administrator',
