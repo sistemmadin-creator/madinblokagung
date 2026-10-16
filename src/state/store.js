@@ -31,6 +31,11 @@ export const store = {
   // State Khusus Modul Jadwal KBM Per Kelas
   jadwalMengajarMap: {},
   masterStrukturKelasKBM: [],
+  // State Khusus Modul Hari KBM (Jadwal Harian Asatidz)
+  activeHariKBM: 'Sabtu',
+  allHariKBMData: [],
+  dataHariKBMFiltered: [],
+  hariKBMViewMode: 'table',
   currentUser: {
     username: 'admin',
     nama: 'Master Administrator',
