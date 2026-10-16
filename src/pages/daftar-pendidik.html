@@ -1,0 +1,105 @@
+<!-- ===== HALAMAN DAFTAR PENDIDIK (DAFTAR TENAGA PENDIDIK) ===== -->
+<div id="page-daftar-pendidik" style="display:none;">
+  <!-- Header, Tombol Aksi & Pencarian -->
+  <div class="card-panel mb-4 border-0 no-print-pendidik">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom pb-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="p-2 rounded-3 bg-white border shadow-sm text-success fs-3 d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+          <i class="bi bi-file-earmark-person text-success"></i>
+        </div>
+        <div>
+          <h2 class="header-title fw-bold m-0">Daftar Tenaga Pendidik</h2>
+          <p class="text-muted small m-0 mt-1">Madrasah Diniyyah Al Amiriyyah</p>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.bukaModalGrupAsal()">
+          <i class="bi bi-diagram-3-fill me-1"></i> Grup Asal
+        </button>
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.muatUlangDaftarPendidik()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Segarkan Data
+        </button>
+        <button type="button" class="btn btn-light border fw-semibold shadow-sm" onclick="window.exportDaftarPendidikExcel()">
+          <i class="bi bi-file-earmark-excel-fill text-success me-1"></i> Export Excel
+        </button>
+        <button type="button" class="btn btn-success fw-bold shadow-sm px-3" onclick="window.cetakDaftarPendidik()">
+          <i class="bi bi-printer-fill me-1"></i> Print / Cetak Dokumen
+        </button>
+      </div>
+    </div>
+
+    <!-- Bar Pencarian Daftar Pendidik -->
+    <div class="row g-2 align-items-center mt-2 pt-3 border-top">
+      <div class="col-12 col-md-7 col-lg-5">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white border-secondary">
+            <i class="bi bi-search text-success"></i>
+          </span>
+          <input type="text" class="form-control border-secondary" id="inputCariPendidik"
+                 placeholder="Cari Kode / Nama / Asal (Grup) / Jah..."
+                 oninput="window.cariDaftarPendidikDebounce(this.value)" autocomplete="off">
+          <button class="btn btn-outline-secondary d-none" type="button" id="btnHapusCariPendidik"
+                  onclick="window.resetCariDaftarPendidik()" title="Bersihkan pencarian">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-12 col-md-auto">
+        <small class="text-muted" id="infoHasilCariPendidik"></small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Area Tabel Dokumen Resmi yang Dicetak / Ditampilkan -->
+  <div class="card-panel border-0 p-3 p-md-4 shadow-sm" id="areaPrintDaftarPendidik">
+    <div class="text-center mb-3">
+      <h5 class="fw-bold m-0 text-uppercase" style="letter-spacing:0.5px;">Daftar Tenaga Pendidik</h5>
+      <h6 class="fw-bold text-muted m-0 mt-1">Madrasah Diniyyah Al Amiriyyah</h6>
+    </div>
+
+    <div class="table-responsive">
+      <table class="tabel-daftar-pendidik" id="tableDaftarPendidik">
+        <thead>
+          <!-- Baris Header 1 -->
+          <tr>
+            <th rowspan="3" style="width:45px;">KODE</th>
+            <th rowspan="3" style="min-width:180px;">NAMA</th>
+            <th rowspan="3" style="width:40px;">ASAL</th>
+            <th rowspan="3" style="width:90px;">JAH</th>
+            <th colspan="12">HARI &amp; JAM</th>
+            <th colspan="8">TINGKAT dan KODE</th>
+            <th rowspan="3" style="width:45px;">JML</th>
+          </tr>
+          <!-- Baris Header 2 (Nama Hari & Jenjang) -->
+          <tr>
+            <th colspan="2">Sabtu</th>
+            <th colspan="2">Ahad</th>
+            <th colspan="2">Senin</th>
+            <th colspan="2">Selasa</th>
+            <th colspan="2">Rabu</th>
+            <th colspan="2">Kamis</th>
+            <th colspan="4">ULA</th>
+            <th colspan="2">WST</th>
+            <th colspan="2">ULYA</th>
+          </tr>
+          <!-- Baris Header 3 (Sub-Kolom I, II, III, IV) -->
+          <tr>
+            <th class="sub-th" style="width:28px;">I</th><th class="sub-th" style="width:28px;">II</th>
+            <th class="sub-th" style="width:28px;">I</th><th class="sub-th" style="width:28px;">II</th>
+            <th class="sub-th" style="width:28px;">I</th><th class="sub-th" style="width:28px;">II</th>
+            <th class="sub-th" style="width:28px;">I</th><th class="sub-th" style="width:28px;">II</th>
+            <th class="sub-th" style="width:28px;">I</th><th class="sub-th" style="width:28px;">II</th>
+            <th class="sub-th" style="width:28px;">I</th><th class="sub-th" style="width:28px;">II</th>
+            <th class="sub-th" style="width:28px;">I</th><th class="sub-th" style="width:28px;">II</th><th class="sub-th" style="width:28px;">III</th><th class="sub-th" style="width:28px;">IV</th>
+            <th class="sub-th" style="width:28px;">I</th><th class="sub-th" style="width:28px;">II</th>
+            <th class="sub-th" style="width:28px;">I</th><th class="sub-th" style="width:28px;">II</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyDaftarPendidik">
+          <!-- Di-generate otomatis oleh JavaScript (renderTabelDaftarPendidik) -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
