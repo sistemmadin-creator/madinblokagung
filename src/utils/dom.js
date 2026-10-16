@@ -91,6 +91,28 @@ export function toggleSidebar() {
   document.getElementById('desktopSidebar')?.classList.toggle('close');
 }
 
+export function handleClickMenuJadwal(e) {
+  if (e) e.preventDefault();
+  // Menuju halaman Jadwal KBM Per Kelas tanpa menutup sidebar & tanpa mengubah status dropdown
+  window.showPage('jadwal-kbm', null, true);
+}
+
+export function toggleSubmenuJadwal(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const submenu = document.getElementById('submenu-desk-jadwal');
+  const arrow = document.getElementById('arrow-submenu-jadwal');
+  if (submenu) {
+    const isNowOpen = submenu.classList.toggle('open');
+    if (arrow) arrow.classList.toggle('rotated', isNowOpen);
+  }
+  // Pastikan sidebar tetap terbuka saat panah diklik
+  document.body.classList.remove('sidebar-collapsed');
+  document.getElementById('desktopSidebar')?.classList.remove('close');
+}
+
 export function handleClickMenuFan(e) {
   if (e) e.preventDefault();
   // Menuju halaman Daftar Fan Pelajaran tanpa menutup sidebar & tanpa mengubah status dropdown
@@ -143,6 +165,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pageFanPelajaran = document.getElementById('page-fan-pelajaran');
   const pagePengajarFan = document.getElementById('page-pengajar-fan');
   const pageJadwalKbm = document.getElementById('page-jadwal-kbm');
+  const pageHariKbm = document.getElementById('page-hari-kbm');
 
   if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
   if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
@@ -151,6 +174,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   if (pageFanPelajaran) pageFanPelajaran.style.display = (page === 'fan-pelajaran') ? 'block' : 'none';
   if (pagePengajarFan) pagePengajarFan.style.display = (page === 'pengajar-fan') ? 'block' : 'none';
   if (pageJadwalKbm) pageJadwalKbm.style.display = (page === 'jadwal-kbm') ? 'block' : 'none';
+  if (pageHariKbm) pageHariKbm.style.display = (page === 'hari-kbm') ? 'block' : 'none';
 
   document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-link').forEach(el => el.classList.remove('active'));
 
@@ -158,6 +182,8 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const arrowFormasi = document.getElementById('arrow-submenu-formasi');
   const submenuFan = document.getElementById('submenu-desk-fan');
   const arrowFan = document.getElementById('arrow-submenu-fan');
+  const submenuJadwal = document.getElementById('submenu-desk-jadwal');
+  const arrowJadwal = document.getElementById('arrow-submenu-jadwal');
 
   if (page === 'formasi-pa' || page === 'formasi-pi') {
     document.getElementById('nav-desk-formasi')?.classList.add('active');
@@ -182,6 +208,19 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
     } else if (page === 'pengajar-fan' && typeof window.renderTabelPengajarFan === 'function') {
       window.renderTabelPengajarFan();
     }
+  } else if (page === 'jadwal-kbm' || page === 'hari-kbm') {
+    document.getElementById('nav-desk-jadwal')?.classList.add('active');
+    document.getElementById('nav-desk-' + page)?.classList.add('active');
+    document.getElementById('nav-mob-jadwal')?.classList.add('active');
+    if (!keepSidebarOpen) {
+      if (submenuJadwal) submenuJadwal.classList.add('open');
+      if (arrowJadwal) arrowJadwal.classList.add('rotated');
+    }
+    if (page === 'jadwal-kbm' && typeof window.renderJadwalKBM === 'function') {
+      window.renderJadwalKBM();
+    } else if (page === 'hari-kbm' && typeof window.inisialisasiHalamanHariKBM === 'function') {
+      window.inisialisasiHalamanHariKBM();
+    }
   } else {
     const deskActive = document.getElementById('nav-desk-' + page);
     const mobActive = document.getElementById('nav-mob-' + page);
@@ -193,10 +232,6 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
         onShowFormasi();
       } else if (typeof window.loadFormasiData === 'function') {
         window.loadFormasiData();
-      }
-    } else if (page === 'jadwal-kbm') {
-      if (typeof window.renderJadwalKBM === 'function') {
-        window.renderJadwalKBM();
       }
     }
   }
