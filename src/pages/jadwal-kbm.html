@@ -1,0 +1,121 @@
+<!-- ===== HALAMAN JADWAL KBM PER KELAS ===== -->
+<div id="page-jadwal-kbm" style="display:none;">
+  <!-- Header Menu, Filter & Tombol Aksi -->
+  <div class="card-panel mb-4 border-0 no-print-kbm">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom pb-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="p-2 rounded-3 bg-white border shadow-sm text-success fs-3 d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+          <i class="bi bi-calendar3 text-success"></i>
+        </div>
+        <div>
+          <h2 class="header-title fw-bold m-0">Jadwal KBM Per Kelas</h2>
+          <p class="text-muted small m-0 mt-1">Struktur jadwal pembelajaran terintegrasi berbasis kelas Diniyyah</p>
+        </div>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.muatUlangJadwalKBM()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Segarkan Data
+        </button>
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.exportJadwalKBMExcel()" title="Download Format Excel">
+          <i class="bi bi-file-earmark-excel-fill text-success me-1"></i> Export Excel
+        </button>
+        <button type="button" class="btn btn-success fw-bold shadow-sm px-3" onclick="window.cetakJadwalKBM()">
+          <i class="bi bi-printer-fill me-1"></i> Cetak / Print Jadwal
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Pencarian Cepat -->
+    <div class="row g-2 mt-2 align-items-center">
+      <div class="col-md-3">
+        <label class="form-label small text-muted fw-bold m-0">Tingkat Diniyyah:</label>
+        <select class="form-select form-select-sm border-secondary" id="flt_kbm_tingkat" onchange="window.filterTabelKBM()">
+          <option value="">Semua Tingkat</option>
+          <option value="ULA">ULA</option>
+          <option value="WUSTHO">WUSTHO</option>
+          <option value="ULYA">ULYA</option>
+          <option value="ISTI'DAD">ISTI'DAD</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small text-muted fw-bold m-0">Putra / Putri (PA/PI):</label>
+        <select class="form-select form-select-sm border-secondary" id="flt_kbm_gender" onchange="window.filterTabelKBM()">
+          <option value="">Semua (PA &amp; PI)</option>
+          <option value="PA">Putra (PA)</option>
+          <option value="PI">Putri (PI)</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label small text-muted fw-bold m-0">Pencarian:</label>
+        <input type="text" class="form-control form-control-sm border-secondary" id="flt_kbm_search" oninput="window.filterTabelKBM()" placeholder="Cari Kelas / Nama / Jah...">
+      </div>
+      <div class="col-md-3 text-md-end pt-3 pt-md-0">
+        <small class="text-muted fst-italic">*Arahkan kursor ke kode <b>KG</b> untuk lihat nama.</small>
+      </div>
+    </div>
+
+    <!-- Tombol Switch Kategori Jadwal KBM -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3 pt-2 border-top">
+      <div class="btn-group btn-group-sm shadow-xs" role="group" aria-label="Switch Jadwal KBM">
+        <button type="button" class="btn btn-success fw-bold px-3 py-1" id="btnSwitchKbmSemua" onclick="window.setSwitchJadwalKBM('semua')">
+          <i class="bi bi-grid-fill me-1"></i> Jadwal KBM Semua
+        </button>
+        <button type="button" class="btn btn-outline-success fw-bold px-3 py-1" id="btnSwitchKbmReguler" onclick="window.setSwitchJadwalKBM('reguler')">
+          <i class="bi bi-book-half me-1"></i> Jadwal KBM Reguler
+        </button>
+        <button type="button" class="btn btn-outline-success fw-bold px-3 py-1" id="btnSwitchKbmUnggulan" onclick="window.setSwitchJadwalKBM('unggulan')">
+          <i class="bi bi-star-fill text-warning me-1"></i> Jadwal KBM Unggulan
+        </button>
+      </div>
+      <span class="badge bg-light text-dark border px-3 py-2" id="badgeStatusKbmFilter">
+        Kategori: <b>Semua Kelas</b>
+      </span>
+    </div>
+  </div>
+
+  <!-- Area Tabel yang Dicetak / Ditampilkan -->
+  <div class="card-panel border-0 p-3 p-md-4 shadow-sm" id="areaPrintKBM">
+    <!-- Judul Header Dokumen -->
+    <div class="text-center mb-3">
+      <h5 class="fw-bold m-0 text-uppercase" style="letter-spacing: 0.5px;">JADWAL KBM MADRASAH DINIYYAH AL AMIRIYYAH</h5>
+      <h6 class="fw-bold text-muted m-0 mt-1" id="kbmTahunAjaran">TAHUN AJARAN 2024-2025 M / 1445-1446 H</h6>
+    </div>
+
+    <div class="table-responsive">
+      <table class="tabel-kbm-resmi" id="tableJadwalKBM">
+        <thead>
+          <!-- Baris Header 1 -->
+          <tr>
+            <th rowspan="2" style="width: 38px;">NO</th>
+            <th rowspan="2" style="width: 55px;">KLS</th>
+            <th rowspan="2" style="width: 45px;">PI/PA</th>
+            <th rowspan="2" style="width: 70px;">TINGKAT</th>
+            <th rowspan="2" style="width: 35px;">JAM</th>
+            <th colspan="12" class="text-center bg-subhead">HARI</th>
+            <th rowspan="2" style="min-width: 170px;">MUSTAHIQ</th>
+            <th rowspan="2" style="width: 55px;">KG</th>
+            <th rowspan="2" style="min-width: 160px;">LOKAL</th>
+          </tr>
+          <!-- Baris Header 2 (Sub-Kolom Hari) -->
+          <tr class="bg-subhead">
+            <th style="width: 45px;">KG</th>
+            <th>SABTU</th>
+            <th style="width: 45px;">KG</th>
+            <th>AHAD</th>
+            <th style="width: 45px;">KG</th>
+            <th>SENIN</th>
+            <th style="width: 45px;">KG</th>
+            <th>SELASA</th>
+            <th style="width: 45px;">KG</th>
+            <th>RABU</th>
+            <th style="width: 45px;">KG</th>
+            <th>KAMIS</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyJadwalKBM">
+          <!-- Di-generate secara otomatis oleh JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
