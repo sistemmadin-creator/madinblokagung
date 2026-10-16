@@ -162,6 +162,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pageFormasi = document.getElementById('page-formasi');
   const pageFormasiGender = document.getElementById('page-formasi-gender');
   const pageAsatidz = document.getElementById('page-asatidz');
+  const pageDaftarPendidik = document.getElementById('page-daftar-pendidik');
   const pageFanPelajaran = document.getElementById('page-fan-pelajaran');
   const pagePengajarFan = document.getElementById('page-pengajar-fan');
   const pageJadwalKbm = document.getElementById('page-jadwal-kbm');
@@ -171,6 +172,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
   if (pageFormasiGender) pageFormasiGender.style.display = (page === 'formasi-pa' || page === 'formasi-pi') ? 'block' : 'none';
   if (pageAsatidz) pageAsatidz.style.display = (page === 'asatidz') ? 'block' : 'none';
+  if (pageDaftarPendidik) pageDaftarPendidik.style.display = (page === 'daftar-pendidik') ? 'block' : 'none';
   if (pageFanPelajaran) pageFanPelajaran.style.display = (page === 'fan-pelajaran') ? 'block' : 'none';
   if (pagePengajarFan) pagePengajarFan.style.display = (page === 'pengajar-fan') ? 'block' : 'none';
   if (pageJadwalKbm) pageJadwalKbm.style.display = (page === 'jadwal-kbm') ? 'block' : 'none';
@@ -232,6 +234,10 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
         onShowFormasi();
       } else if (typeof window.loadFormasiData === 'function') {
         window.loadFormasiData();
+      }
+    } else if (page === 'daftar-pendidik') {
+      if (typeof window.renderTabelDaftarPendidik === 'function') {
+        window.renderTabelDaftarPendidik();
       }
     }
   }
