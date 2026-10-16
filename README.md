@@ -34,7 +34,7 @@ menu baru selanjutnya
 - fan pelajaran (diberi garis batas bahwa ini Kurkulum) ☑
 - Pengajar Fan ☑
 - Jadwal KBM ☑
-- Hari KBM
+- Hari KBM (proses)
 - Daftar Pendidik
 - Absensi Asatidz (diberi garis batas bahwa ini TOP)
 - Rekap Absensi
