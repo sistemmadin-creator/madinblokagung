@@ -5,6 +5,8 @@ import {
   toggleSidebar,
   showPage,
   actionLogout,
+  handleClickMenuJadwal,
+  toggleSubmenuJadwal,
   handleClickMenuFan,
   toggleSubmenuFan,
   handleClickMenuFormasi,
@@ -19,6 +21,7 @@ import * as asatidz from './modules/asatidz/asatidz.js';
 import * as formasi from './modules/formasi/formasi.js';
 import * as fan from './modules/fan/fan.js';
 import * as jadwalKbm from './modules/jadwal-kbm/jadwal-kbm.js';
+import * as hariKbm from './modules/hari-kbm/hari-kbm.js';
 
 // Import Komponen Navigasi dari folder src/partials/
 import navbarHtml from './partials/navbar.html?raw';
@@ -30,6 +33,7 @@ import pageFormasi from './pages/formasi.html?raw';
 import pageAsatidz from './pages/asatidz.html?raw';
 import pageFan from './pages/fan.html?raw';
 import pageJadwalKbm from './pages/jadwal-kbm.html?raw';
+import pageHariKbm from './pages/hari-kbm.html?raw';
 
 // Import Komponen HTML Modal dari folder src/partials/
 import modalsSantri from './partials/modals-santri.html?raw';
@@ -49,6 +53,8 @@ Object.assign(window, {
   showPage: (page, onShowFormasi, keepSidebarOpen) =>
     showPage(page, onShowFormasi || formasi.loadFormasiData, keepSidebarOpen),
   actionLogout,
+  handleClickMenuJadwal,
+  toggleSubmenuJadwal,
   handleClickMenuFan,
   toggleSubmenuFan,
   handleClickMenuFormasi,
@@ -60,7 +66,8 @@ Object.assign(window, {
   ...asatidz,
   ...formasi,
   ...fan,
-  ...jadwalKbm
+  ...jadwalKbm,
+  ...hariKbm
 });
 
 // =========================================================
@@ -77,7 +84,8 @@ document.addEventListener('DOMContentLoaded', async function () {
   // 0B. Render seluruh halaman dari src/pages/ ke dalam #pages-container
   const pagesContainer = document.getElementById('pages-container');
   if (pagesContainer) {
-    pagesContainer.innerHTML = pageSantri + pageFormasi + pageAsatidz + pageFan + pageJadwalKbm;
+    pagesContainer.innerHTML =
+      pageSantri + pageFormasi + pageAsatidz + pageFan + pageJadwalKbm + pageHariKbm;
   }
 
   // 0C. Render seluruh komponen modal dari src/partials/ ke dalam #modals-container
