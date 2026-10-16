@@ -1640,6 +1640,62 @@ export async function simpanGrupAsalBaru() {
   renderDaftarGrupTersimpan();
   resetFormGrupAsal();
   renderTabelPengajarFan(true);
+  if (typeof window.renderTabelDaftarPendidik === 'function' && $('#page-daftar-pendidik').is(':visible')) {
+    window.renderTabelDaftarPendidik(true);
+  }
+
+  Swal.fire({
+    icon: 'success',
+    title: 'Tersimpan!',
+    text: `Grup ${namaGrup} berhasil disimpan.`,
+    timer: 1300,
+    showConfirmButton: false
+  });
+}
+
+export function hapusGrupAsal(idx) {
+  Swal.fire({
+    title: 'Hapus Grup Ini?',
+    text: 'Asatidz yang ada di dalam grup akan kembali menjadi Asatidz tanpa Grup Asal.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc2626',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'Ya, Hapus',
+    cancelButtonText: 'Batal'
+  }).then(async (r) => {
+    if (!r.isConfirmed) return;
+    const master = getMasterGrupAsal();
+    master.splice(idx, 1);
+    await simpanGrupAsalKeServer(master);
+    renderDaftarGrupTersimpan();
+    resetFormGrupAsal();
+    renderTabelPengajarFan(true);
+    if (typeof window.renderTabelDaftarPendidik === 'function' && $('#page-daftar-pendidik').is(':visible')) {
+      window.renderTabelDaftarPendidik(true);
+    }
+  });
+}
+
+export async function handleDropGrup(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  e.currentTarget.classList.remove('drag-over-target');
+  const targetIdx = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
+  if (dragSrcIdxGrup === null || dragSrcIdxGrup === targetIdx) return false;
+
+  const master = getMasterGrupAsal();
+  const movedItem = master.splice(dragSrcIdxGrup, 1)[0];
+  master.splice(targetIdx, 0, movedItem);
+  await simpanGrupAsalKeServer(master);
+
+  renderDaftarGrupTersimpan();
+  renderTabelPengajarFan(true);
+  if (typeof window.renderTabelDaftarPendidik === 'function' && $('#page-daftar-pendidik').is(':visible')) {
+    window.renderTabelDaftarPendidik(true);
+  }
+  return false;
+}
 
   Swal.fire({
     icon: 'success',
