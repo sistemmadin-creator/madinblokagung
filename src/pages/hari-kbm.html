@@ -1,0 +1,134 @@
+<!-- ===== HALAMAN HARI KBM (JADWAL HARIAN ASATIDZ) ===== -->
+<div id="page-hari-kbm" style="display:none;">
+  <!-- Header Menu, Switch Hari, Filter & Tombol Aksi -->
+  <div class="card-panel mb-4 border-0 no-print-kbm">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 border-bottom pb-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="p-2 rounded-3 bg-white border shadow-sm text-success fs-3 d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+          <i class="bi bi-calendar2-day-fill text-success"></i>
+        </div>
+        <div>
+          <h2 class="header-title fw-bold m-0">Hari KBM (Jadwal Harian Asatidz)</h2>
+          <p class="text-muted small m-0 mt-1">Daftar asatidz yang aktif mengajar beserta penugasan kelas dan jam pada hari yang dipilih</p>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap align-items-center" id="wrapAksiHariKBM">
+        <!-- Toggle Tampilan Tabel <-> Kartu Hari KBM -->
+        <div class="btn-group btn-group-sm" role="group" aria-label="Toggle Tampilan Hari KBM">
+          <button type="button" class="btn btn-success fw-semibold" id="btnViewTabelHariKBM" onclick="window.setHariKBMViewMode('table')">
+            <i class="bi bi-table me-1"></i> Tabel
+          </button>
+          <button type="button" class="btn btn-outline-success fw-semibold" id="btnViewKartuHariKBM" onclick="window.setHariKBMViewMode('card')">
+            <i class="bi bi-grid-3x3-gap-fill me-1"></i> Kartu
+          </button>
+        </div>
+
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" onclick="window.muatUlangHariKBM()">
+          <i class="bi bi-arrow-clockwise me-1"></i> Segarkan Data
+        </button>
+        <button type="button" class="btn btn-outline-success fw-semibold shadow-sm" id="btnExportHariKBM" onclick="window.exportHariKBMExcel()" title="Download Format Excel">
+          <i class="bi bi-file-earmark-excel-fill text-success me-1"></i> Export Excel
+        </button>
+        <button type="button" class="btn btn-success fw-bold shadow-sm px-3" id="btnCetakHariKBM" onclick="window.cetakHariKBM()">
+          <i class="bi bi-printer-fill me-1"></i> Cetak / Print
+        </button>
+      </div>
+    </div>
+
+    <!-- Toolbar Switch Hari (Sabtu s/d Kamis) -->
+    <div class="d-flex align-items-center flex-wrap gap-2 mt-3 pb-2 border-bottom">
+      <span class="small fw-bold text-muted me-2">
+        <i class="bi bi-calendar-week me-1 text-success"></i>Pilih Hari KBM:
+      </span>
+      <div class="btn-group btn-group-sm shadow-xs" role="group" id="btnGroupHariKBM" aria-label="Switch Hari KBM">
+        <button type="button" class="btn btn-success text-white fw-bold px-3 py-1 btn-switch-hari" data-hari="Sabtu" onclick="window.setHariAktifKBM('Sabtu')">Sabtu</button>
+        <button type="button" class="btn btn-outline-success fw-bold px-3 py-1 btn-switch-hari" data-hari="Ahad" onclick="window.setHariAktifKBM('Ahad')">Ahad</button>
+        <button type="button" class="btn btn-outline-success fw-bold px-3 py-1 btn-switch-hari" data-hari="Senin" onclick="window.setHariAktifKBM('Senin')">Senin</button>
+        <button type="button" class="btn btn-outline-success fw-bold px-3 py-1 btn-switch-hari" data-hari="Selasa" onclick="window.setHariAktifKBM('Selasa')">Selasa</button>
+        <button type="button" class="btn btn-outline-success fw-bold px-3 py-1 btn-switch-hari" data-hari="Rabu" onclick="window.setHariAktifKBM('Rabu')">Rabu</button>
+        <button type="button" class="btn btn-outline-success fw-bold px-3 py-1 btn-switch-hari" data-hari="Kamis" onclick="window.setHariAktifKBM('Kamis')">Kamis</button>
+      </div>
+      <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-3 py-2 ms-auto" id="badgeStatusHariAktif">
+        Hari Aktif: <b>Sabtu</b>
+      </span>
+    </div>
+
+    <!-- Filter Pencarian & Kriteria Cepat -->
+    <div class="row g-2 mt-2 align-items-center">
+      <div class="col-12 col-md-5 col-lg-4">
+        <div class="input-group input-group-sm">
+          <span class="input-group-text bg-white border-secondary">
+            <i class="bi bi-search text-success"></i>
+          </span>
+          <input type="text" class="form-control border-secondary" id="flt_hkbm_search" oninput="window.filterTabelHariKBM()" placeholder="Cari Nama / NIA / Fan / Kelas / Lokasi..." autocomplete="off">
+          <button class="btn btn-outline-secondary d-none" type="button" id="btnHapusSearchHKBM" onclick="window.resetSearchHariKBM()" title="Bersihkan Pencarian">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <select class="form-select form-select-sm border-secondary" id="flt_hkbm_tingkat" onchange="window.filterTabelHariKBM()">
+          <option value="">Semua Tingkat</option>
+          <option value="ULA">ULA</option>
+          <option value="WUSTHO">WUSTHO</option>
+          <option value="ULYA">ULYA</option>
+          <option value="ISTI'DAD">ISTI'DAD</option>
+        </select>
+      </div>
+
+      <div class="col-6 col-md-3 col-lg-2">
+        <select class="form-select form-select-sm border-secondary" id="flt_hkbm_jam" onchange="window.filterTabelHariKBM()">
+          <option value="">Semua Jam</option>
+          <option value="1">Hanya Jam 1</option>
+          <option value="2">Hanya Jam 2</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-auto ms-auto d-flex gap-2 flex-wrap">
+        <span class="badge bg-light text-dark border px-3 py-2" id="infoTotalAsatidzHariKBM">0 Asatidz Mengajar</span>
+        <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-3 py-2" id="infoTotalJamHariKBM">0 Total Jam (Jam 1 &amp; 2)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Area Tabel & Kartu Resmi Hari KBM -->
+  <div class="card-panel border-0 p-3 p-md-4 shadow-sm" id="areaPrintHariKBM">
+    <div class="text-center mb-3">
+      <h5 class="fw-bold m-0 text-uppercase" style="letter-spacing: 0.5px;">
+        JADWAL HARIAN MENGAJAR ASATIDZ - HARI <span id="labelCetakHariKBM">SABTU</span>
+      </h5>
+      <h6 class="fw-bold text-muted m-0 mt-1">MADRASAH DINIYYAH AL AMIRIYYAH</h6>
+    </div>
+
+    <!-- Wrapper Mode Tabel Hari KBM -->
+    <div id="tableHariKBMWrapper">
+      <div class="table-responsive">
+        <table class="tabel-kbm-resmi table-hover align-middle" id="tableHariKBM">
+          <thead>
+            <tr>
+              <th style="width: 40px;" class="text-center">NO</th>
+              <th style="width: 70px;" class="text-center">KODE</th>
+              <th style="min-width: 190px;">ASATIDZ</th>
+              <th style="width: 110px;" class="text-center">JAH</th>
+              <th style="min-width: 220px;">MENGAJAR (JAM &amp; FAN)</th>
+              <th style="min-width: 240px;">KELAS &amp; MUSTAHIQ</th>
+              <th style="min-width: 190px;">LOKASI DINIYYAH</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyHariKBM">
+            <tr>
+              <td colspan="7" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm text-success me-2"></div>Memuat data jadwal hari KBM...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Wrapper Mode Kartu Hari KBM -->
+    <div id="cardHariKBMWrapper" class="row g-3" style="display:none;"></div>
+  </div>
+</div>
