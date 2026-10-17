@@ -51,6 +51,9 @@ export function selaraskanSemuaTabel() {
   if (store.dataTableRiwayatAbsensi && $('#page-absensi').is(':visible') && $('#pills-riwayat').is(':visible')) {
     store.dataTableRiwayatAbsensi.columns.adjust();
   }
+  if (store.dataTableRekapAbsensi && $('#page-rekap-absensi').is(':visible')) {
+    store.dataTableRekapAbsensi.columns.adjust();
+  }
 }
 
 export function initLayoutObservers() {
@@ -175,6 +178,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pageFormasiGender = document.getElementById('page-formasi-gender');
   const pageAsatidz = document.getElementById('page-asatidz');
   const pageAbsensi = document.getElementById('page-absensi');
+  const pageRekapAbsensi = document.getElementById('page-rekap-absensi');
   const pageDaftarPendidik = document.getElementById('page-daftar-pendidik');
   const pageFanPelajaran = document.getElementById('page-fan-pelajaran');
   const pagePengajarFan = document.getElementById('page-pengajar-fan');
@@ -186,6 +190,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   if (pageFormasiGender) pageFormasiGender.style.display = (page === 'formasi-pa' || page === 'formasi-pi') ? 'block' : 'none';
   if (pageAsatidz) pageAsatidz.style.display = (page === 'asatidz') ? 'block' : 'none';
   if (pageAbsensi) pageAbsensi.style.display = (page === 'absensi') ? 'block' : 'none';
+  if (pageRekapAbsensi) pageRekapAbsensi.style.display = (page === 'rekap-absensi') ? 'block' : 'none';
   if (pageDaftarPendidik) pageDaftarPendidik.style.display = (page === 'daftar-pendidik') ? 'block' : 'none';
   if (pageFanPelajaran) pageFanPelajaran.style.display = (page === 'fan-pelajaran') ? 'block' : 'none';
   if (pagePengajarFan) pagePengajarFan.style.display = (page === 'pengajar-fan') ? 'block' : 'none';
@@ -253,6 +258,10 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
       if (typeof window.inisialisasiHalamanAbsensi === 'function') {
         window.inisialisasiHalamanAbsensi();
       }
+    } else if (page === 'rekap-absensi') {
+      if (typeof window.inisialisasiHalamanRekapAbsensi === 'function') {
+        window.inisialisasiHalamanRekapAbsensi();
+      }
     } else if (page === 'daftar-pendidik') {
       if (typeof window.renderTabelDaftarPendidik === 'function') {
         window.renderTabelDaftarPendidik();
@@ -278,6 +287,9 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
     }
     if (page === 'absensi' && store.dataTableRiwayatAbsensi && $('#pills-riwayat').is(':visible')) {
       store.dataTableRiwayatAbsensi.columns.adjust().draw(false);
+    }
+    if (page === 'rekap-absensi' && store.dataTableRekapAbsensi) {
+      store.dataTableRekapAbsensi.columns.adjust().draw(false);
     }
   }, 250);
 }
