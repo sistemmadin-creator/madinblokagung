@@ -1346,3 +1346,56 @@ body.printing-pengajar-fan #areaPrintPengajarFan,
   font-weight: 600;
   padding: 5px 10px;
 }
+
+/* =========================================================
+   MODUL REKAP ABSENSI ASATIDZ (CETAK RESMI, TTD & DRILL-DOWN)
+========================================================= */
+.rk-link-nama {
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+.rk-link-nama:hover {
+  color: var(--primary-color) !important;
+  text-decoration: underline;
+}
+#dataTableRekapAbsensi tbody tr {
+  cursor: pointer;
+}
+
+#areaCetakRekapResmi {
+  display: none;
+}
+
+@media print {
+  body.printing-rekap-resmi * {
+    visibility: hidden;
+  }
+  body.printing-rekap-resmi #areaCetakRekapResmi,
+  body.printing-rekap-resmi #areaCetakRekapResmi * {
+    visibility: visible !important;
+  }
+  body.printing-rekap-resmi #areaCetakRekapResmi {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 10mm;
+  }
+  body.printing-rekap-resmi .tabel-cetak-resmi th,
+  body.printing-rekap-resmi .tabel-cetak-resmi td {
+    border: 1px solid #334155 !important;
+    padding: 4px 6px !important;
+    font-size: 10px !important;
+  }
+}
+
+.ttd-area-resmi {
+  margin-top: 60px;
+}
+.ttd-area-resmi .garis-ttd {
+  margin-top: 70px;
+  border-top: 1px solid #0f172a;
+  display: inline-block;
+  min-width: 220px;
+}
