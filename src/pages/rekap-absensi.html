@@ -1,0 +1,166 @@
+<!-- ===== HALAMAN REKAP ABSENSI ASATIDZ ===== -->
+<div id="page-rekap-absensi" style="display:none;">
+
+  <!-- Header -->
+  <div class="card-panel mb-4 border-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="p-2 rounded-3 bg-white border shadow-sm text-success fs-3 d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+          <i class="bi bi-bar-chart-steps text-success"></i>
+        </div>
+        <div>
+          <h2 class="header-title m-0">Rekap Absensi Asatidz</h2>
+          <p class="text-muted small m-0 mt-1">Ringkasan kinerja kehadiran mengajar per periode</p>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap" id="rekapActionButtons">
+        <button class="btn btn-sm btn-outline-success fw-semibold shadow-sm" onclick="window.muatDataRekapAbsensi(true)">
+          <i class="bi bi-arrow-clockwise me-1"></i> Segarkan
+        </button>
+        <button class="btn btn-sm btn-outline-success fw-semibold shadow-sm" onclick="window.exportRekapAbsensiExcel()" id="btnExportRekap">
+          <i class="bi bi-file-earmark-excel-fill text-success me-1"></i> Export Excel
+        </button>
+        <button class="btn btn-sm btn-success fw-bold shadow-sm" onclick="window.cetakRekapResmi()" id="btnCetakRekap">
+          <i class="bi bi-printer-fill me-1"></i> Cetak Rekap Resmi
+        </button>
+
+        <!-- DROPDOWN UNDUH / CETAK TOP 10 ALFA TERBANYAK -->
+        <div class="dropdown d-inline-block" id="wrapTop10Alfa">
+          <button class="btn btn-sm btn-outline-danger fw-bold shadow-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="btnTop10Alfa">
+            <i class="bi bi-trophy-fill me-1"></i> Top 10 Alfa
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="border-radius: 12px; min-width: 220px;">
+            <li><h6 class="dropdown-header text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>TOP 10 ALFA TERBANYAK</h6></li>
+            <li><a class="dropdown-item py-2 fw-semibold" href="javascript:void(0)" onclick="window.cetakTop10Alfa()"><i class="bi bi-printer-fill text-danger me-2"></i>Cetak Dokumen Resmi</a></li>
+            <li><a class="dropdown-item py-2 fw-semibold" href="javascript:void(0)" onclick="window.exportTop10AlfaExcel()"><i class="bi bi-file-earmark-excel-fill text-success me-2"></i>Unduh Berkas Excel</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Periode & Kriteria -->
+  <div class="card-panel border-0 mb-4 bg-light">
+    <h6 class="fw-bold text-success mb-3"><i class="bi bi-funnel-fill me-1"></i> Filter Periode &amp; Kriteria</h6>
+    <div class="row g-2 align-items-end">
+      <div class="col-6 col-md-2">
+        <label class="form-label small text-muted fw-bold">Dari Tanggal</label>
+        <input type="date" class="form-control form-control-sm" id="rk_tgl_dari" onchange="window.muatDataRekapAbsensi()">
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small text-muted fw-bold">Sampai Tanggal</label>
+        <input type="date" class="form-control form-control-sm" id="rk_tgl_sampai" onchange="window.muatDataRekapAbsensi()">
+      </div>
+      <div class="col-12 col-md-4">
+        <label class="form-label small text-muted fw-bold d-block">Pintasan Periode</label>
+        <div class="btn-group btn-group-sm w-100" role="group">
+          <button type="button" class="btn btn-outline-success" onclick="window.setRentangCepatRekap('minggu')">Minggu Ini</button>
+          <button type="button" class="btn btn-outline-success" onclick="window.setRentangCepatRekap('bulan')">Bulan Ini</button>
+          <button type="button" class="btn btn-outline-success" onclick="window.setRentangCepatRekap('lalu')">Bulan Lalu</button>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small text-muted fw-bold">Blok</label>
+        <select class="form-select form-select-sm" id="rk_flt_blok" onchange="window.muatDataRekapAbsensi()">
+          <option value="">Semua Blok</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-2">
+        <label class="form-label small text-muted fw-bold">Tingkat</label>
+        <select class="form-select form-select-sm" id="rk_flt_tingkat" onchange="window.muatDataRekapAbsensi()">
+          <option value="">Semua</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="row g-2 align-items-end mt-1">
+      <div class="col-6 col-md-2">
+        <label class="form-label small text-muted fw-bold">Jah</label>
+        <select class="form-select form-select-sm" id="rk_flt_jah" onchange="window.muatDataRekapAbsensi()">
+          <option value="">Semua</option>
+        </select>
+      </div>
+      <div class="col-12 col-md-3">
+        <label class="form-label small text-muted fw-bold">Cari Nama Asatidz</label>
+        <input type="text" class="form-control form-control-sm" id="rk_flt_nama" placeholder="Ketik nama..." oninput="window.muatDataRekapAbsensi()">
+      </div>
+      <div class="col-6 col-md-2">
+        <button class="btn btn-sm btn-light border w-100 mt-4" onclick="window.resetFilterRekapAbsensi()">
+          <i class="bi bi-arrow-counterclockwise"></i> Reset Filter
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4 Kartu KPI Ringkasan -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="kpi-card h-100">
+        <div class="kpi-icon-wrapper" style="background:#ecfdf5;color:#0f766e;"><i class="bi bi-people-fill"></i></div>
+        <div>
+          <div class="kpi-title">Total Asatidz</div>
+          <div class="kpi-value" id="rk_kpi_total">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="kpi-card h-100">
+        <div class="kpi-icon-wrapper" style="background:#d1fae5;color:#059669;"><i class="bi bi-graph-up-arrow"></i></div>
+        <div>
+          <div class="kpi-title">Rata-rata % Kehadiran</div>
+          <div class="kpi-value text-success" id="rk_kpi_avg">0%</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="kpi-card h-100">
+        <div class="kpi-icon-wrapper" style="background:#fee2e2;color:#dc2626;"><i class="bi bi-x-octagon-fill"></i></div>
+        <div>
+          <div class="kpi-title">Sesi Tidak Terlaksana</div>
+          <div class="kpi-value text-danger" id="rk_kpi_tidak_terlaksana">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="kpi-card h-100">
+        <div class="kpi-icon-wrapper" style="background:#ffedd5;color:#ea580c;"><i class="bi bi-exclamation-triangle-fill"></i></div>
+        <div class="flex-grow-1" style="min-width:0;">
+          <div class="kpi-title">Kehadiran Terendah</div>
+          <div class="fw-bold text-dark text-truncate" style="font-size:1rem;" id="rk_kpi_terendah_nama">-</div>
+          <div class="kpi-subtext" id="rk_kpi_terendah_pct">0%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabel Utama -->
+  <div class="card-panel border-0">
+    <div class="table-responsive">
+      <table id="dataTableRekapAbsensi" class="table table-hover align-middle w-100">
+        <thead class="table-light">
+          <tr>
+            <th class="text-center">NO</th>
+            <th>ASATIDZ</th>
+            <th class="text-center">NIA</th>
+            <th class="text-center">BLOK</th>
+            <th class="text-center">JAH</th>
+            <th class="text-center">SESI TERJADWAL</th>
+            <th class="text-center">HADIR</th>
+            <th class="text-center">IZIN</th>
+            <th class="text-center">SAKIT</th>
+            <th class="text-center">ALFA</th>
+            <th class="text-center">TERLAMBAT</th>
+            <th class="text-center">DIGANTIKAN</th>
+            <th class="text-center">% KEHADIRAN</th>
+            <th class="text-center">PREDIKAT</th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyRekapAbsensi"></tbody>
+      </table>
+    </div>
+    <small class="text-muted fst-italic d-block mt-2">
+      <i class="bi bi-info-circle me-1"></i>Klik salah satu baris/nama Asatidz untuk melihat rincian harian.
+    </small>
+  </div>
+</div>
