@@ -218,3 +218,51 @@
     </div>
   </div>
 </div>
+<!-- ============ MODAL DRILL-DOWN RINCIAN HARIAN REKAP ABSENSI ASATIDZ ============ -->
+<div class="modal fade" id="modalDrilldownRekap" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white py-3">
+        <h5 class="modal-title fw-bold m-0" id="dd_rekap_title">
+          <i class="bi bi-person-badge me-2"></i> Rincian Kehadiran Asatidz
+        </h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <!-- 8 Kartu Ringkasan Performa Individu -->
+        <div class="row g-2 mb-3" id="dd_rekap_summary_cards">
+          <!-- Di-generate via JavaScript (bukaModalDrilldownRekap) -->
+        </div>
+
+        <!-- Tabel Rincian Sesi Harian -->
+        <div class="card border-0 shadow-sm rounded-3 bg-white p-3">
+          <h6 class="fw-bold text-success border-bottom pb-2 mb-3">
+            <i class="bi bi-calendar2-check me-1"></i> Rincian Kehadiran Mengajar Harian
+          </h6>
+          <div class="table-responsive">
+            <table id="dataTableDrilldownRekap" class="table table-hover align-middle w-100" style="font-size: 0.82rem;">
+              <thead class="table-light">
+                <tr>
+                  <th class="text-center">TANGGAL</th>
+                  <th class="text-center">HARI</th>
+                  <th class="text-center">JAM</th>
+                  <th>KELAS</th>
+                  <th>FAN</th>
+                  <th class="text-center">STATUS</th>
+                  <th>KETERANGAN</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyDrilldownRekap"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-secondary px-4 btn-sm fw-semibold" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ WADAH CETAK DOKUMEN RESMI REKAP ABSENSI & TOP 10 ALFA ============ -->
+<div id="areaCetakRekapResmi"></div>
