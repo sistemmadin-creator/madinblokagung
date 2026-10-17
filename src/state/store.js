@@ -46,7 +46,7 @@ export const store = {
   rawRiwayatAbsensi: [],
   lastRiwayatRowsFiltered: null,
   riwayatViewMode: 'table',
-  absensiState: {
+absensiState: {
     tanggal: '',
     hari: '',
     isLibur: false,
@@ -56,6 +56,13 @@ export const store = {
     pendingStatus: {},
     unlockedJams: { 1: true, 2: false, 3: false, 4: false },
     savedJams: { 1: false, 2: false, 3: false, 4: false }
+  },
+  // State Khusus Modul Rekap Absensi Asatidz
+  dataTableRekapAbsensi: null,
+  rekapAbsensiInitialized: false,
+  rekapAbsensiState: {
+    dataPerAsatidz: [],
+    dataPerAsatidzFiltered: []
   },
   currentUser: {
     username: 'admin',
