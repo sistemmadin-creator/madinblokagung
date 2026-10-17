@@ -24,6 +24,7 @@ import * as jadwalKbm from './modules/jadwal-kbm/jadwal-kbm.js';
 import * as hariKbm from './modules/hari-kbm/hari-kbm.js';
 import * as daftarPendidik from './modules/daftar-pendidik/daftar-pendidik.js';
 import * as absensi from './modules/absensi/absensi.js';
+import * as rekapAbsensi from './modules/rekap-absensi/rekap-absensi.js';
 
 // Import Komponen Navigasi dari folder src/partials/
 import navbarHtml from './partials/navbar.html?raw';
@@ -34,6 +35,7 @@ import pageSantri from './pages/santri.html?raw';
 import pageFormasi from './pages/formasi.html?raw';
 import pageAsatidz from './pages/asatidz.html?raw';
 import pageAbsensi from './pages/absensi.html?raw';
+import pageRekapAbsensi from './pages/rekap-absensi.html?raw';
 import pageFan from './pages/fan.html?raw';
 import pageJadwalKbm from './pages/jadwal-kbm.html?raw';
 import pageHariKbm from './pages/hari-kbm.html?raw';
@@ -74,7 +76,8 @@ Object.assign(window, {
   ...jadwalKbm,
   ...hariKbm,
   ...daftarPendidik,
-  ...absensi
+  ...absensi,
+  ...rekapAbsensi
 });
 
 // =========================================================
@@ -96,6 +99,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       pageFormasi +
       pageAsatidz +
       pageAbsensi +
+      pageRekapAbsensi +
       pageFan +
       pageJadwalKbm +
       pageHariKbm +
