@@ -1137,7 +1137,7 @@ body.printing-pengajar-fan #areaPrintPengajarFan,
     display: none !important;
   }
 
-  /* Format Cetak Khusus Daftar Tenaga Pendidik (Landscape Terisolasi) */
+ /* Format Cetak Khusus Daftar Tenaga Pendidik (Landscape Terisolasi) */
   body.printing-daftar-pendidik * {
     visibility: hidden;
   }
@@ -1157,4 +1157,192 @@ body.printing-pengajar-fan #areaPrintPengajarFan,
   body.printing-daftar-pendidik .no-print-pendidik {
     display: none !important;
   }
+
+  /* Format Cetak Khusus Riwayat & Rekap Absensi Asatidz (Terisolasi) */
+  body.printing-rekap-absensi * {
+    visibility: hidden;
+  }
+  body.printing-rekap-absensi #printRekapArea,
+  body.printing-rekap-absensi #printRekapArea * {
+    visibility: visible !important;
+  }
+  body.printing-rekap-absensi #printRekapArea {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  body.printing-rekap-absensi .no-print {
+    display: none !important;
+  }
+}
+
+/* =========================================================
+   MODUL ABSENSI ASATIDZ (KPI CARDS, BADGE STATUS & KARTU SESI JAM 1-4)
+========================================================= */
+.header-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+/* 5 Kartu KPI Ringkasan Interaktif */
+.kpi-card {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+}
+.kpi-icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.45rem;
+  flex-shrink: 0;
+}
+.kpi-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+.kpi-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.2;
+}
+.kpi-subtext {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* Badge Status Kehadiran Asatidz */
+.badge-status-hadir {
+  background-color: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.badge-status-izin {
+  background-color: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+.badge-status-sakit {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.badge-status-alfa {
+  background-color: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+.badge-status-terlambat {
+  background-color: #ffedd5;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+}
+.badge-status-tugaslain {
+  background-color: #e2e8f0;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+.badge-status-digantikan {
+  background-color: #ccfbf1;
+  color: #115e59;
+  border: 1px solid #99f6e4;
+}
+.badge-status-kosong,
+.badge-status-belumdiabsen {
+  background-color: #f1f5f9;
+  color: #64748b;
+  border: 1px dashed #94a3b8;
+}
+
+/* Header Blok Jam & Overlay Kunci Bertahap */
+.jam-card-header {
+  border-radius: 12px 12px 0 0;
+  padding: 14px 20px;
+  background: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+}
+.jam-locked-overlay {
+  background: rgba(248, 250, 252, 0.85);
+  backdrop-filter: blur(2px);
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+}
+
+/* Animasi Badge Bentrok & Kartu Sesi Pengajar */
+@keyframes pulseConflictBadge {
+  0% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(220, 38, 38, 0);
+    transform: scale(1.03);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    transform: scale(1);
+  }
+}
+.conflict-badge-pulse {
+  animation: pulseConflictBadge 1.7s infinite;
+  cursor: pointer !important;
+  user-select: none;
+  transition: filter 0.2s ease;
+}
+.conflict-badge-pulse:hover {
+  filter: brightness(1.15);
+}
+.card-conflict-border {
+  border: 2px solid #ef4444 !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.15) !important;
+}
+
+.sesi-card-item {
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+}
+.sesi-card-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  border-color: #cbd5e1;
+}
+.sesi-card-selected {
+  border: 2px solid var(--primary-color) !important;
+  background-color: #f0fdf4 !important;
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+.btn-status-sesi {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 5px 10px;
 }
