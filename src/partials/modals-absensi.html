@@ -1,0 +1,220 @@
+<!-- =========================================================================
+     KOMPONEN MODAL MODUL ABSENSI ASATIDZ
+========================================================================== -->
+
+<!-- Datalist Asatidz Pengganti Bersama -->
+<datalist id="dl_asatidz_pengganti"></datalist>
+
+<!-- ============ 1. MODAL TANDAI LIBUR / KEGIATAN KHUSUS (#modalAturLibur) ============ -->
+<div class="modal fade" id="modalAturLibur" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-danger text-white py-3">
+        <h5 class="modal-title fw-bold m-0"><i class="bi bi-calendar-x me-2"></i> Pengaturan Hari Libur / Kegiatan Khusus</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <form id="formStatusLibur" onsubmit="window.aksiSimpanStatusLibur(event)">
+          <div class="mb-3">
+            <label class="form-label fw-bold">Tanggal</label>
+            <input type="text" class="form-control bg-white fw-semibold" id="modal_libur_tgl" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Kategori Status</label>
+            <select class="form-select" id="modal_libur_kategori" required>
+              <option value="">-- Pilih Alasan --</option>
+              <option value="Libur Pondok">Libur Pondok</option>
+              <option value="Libur Nasional">Libur Nasional</option>
+              <option value="Ujian / Ikhtibar">Ujian / Ikhtibar</option>
+              <option value="Haflah Akhirussanah">Haflah Akhirussanah</option>
+              <option value="Rapat Asatidz">Rapat Asatidz</option>
+              <option value="Kegiatan Lainnya">Kegiatan Lainnya</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Catatan / Keterangan Tambahan</label>
+            <textarea class="form-control" id="modal_libur_keterangan" rows="2" placeholder="Tuliskan keterangan bila ada..."></textarea>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Tutup</button>
+            <button type="submit" class="btn btn-danger fw-bold" id="btnSimpanLibur">Simpan Status Libur</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 2. MODAL EDIT ABSENSI SATUAN DARI RIWAYAT (#modalEditAbsensi) ============ -->
+<div class="modal fade" id="modalEditAbsensi" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white py-3">
+        <h5 class="modal-title fw-bold m-0"><i class="bi bi-pencil-square me-2"></i> Edit Data Absensi</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <form id="formEditAbsensiSatuan" onsubmit="window.aksiSimpanEditAbsensiSatuan(event)">
+          <input type="hidden" id="edit_abs_id">
+          <div class="p-3 bg-white rounded border mb-3 shadow-xs">
+            <div class="fw-bold text-success fs-6" id="edit_abs_nama">-</div>
+            <div class="small text-muted mt-1" id="edit_abs_detail">-</div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Status Kehadiran</label>
+            <select class="form-select" id="edit_abs_status" onchange="window.toggleFormEditAdditionalFields()" required>
+              <option value="Hadir">Hadir</option>
+              <option value="Izin">Izin</option>
+              <option value="Sakit">Sakit</option>
+              <option value="Alfa">Alfa</option>
+              <option value="Terlambat">Terlambat</option>
+              <option value="Tugas Lain">Tugas Lain</option>
+              <option value="Digantikan">Digantikan</option>
+              <option value="Jadwal Kosong">Jadwal Kosong / Tidak Terlaksana</option>
+            </select>
+          </div>
+          <div class="mb-3 d-none" id="wrap_edit_terlambat">
+            <label class="form-label fw-bold">Jumlah Menit Terlambat</label>
+            <input type="number" class="form-control" id="edit_abs_menit" min="1" placeholder="Contoh: 15">
+          </div>
+          <div class="mb-3 d-none" id="wrap_edit_pengganti">
+            <label class="form-label fw-bold">Nama Asatidz Pengganti</label>
+            <input type="text" class="form-control" id="edit_abs_pengganti" list="dl_asatidz_pengganti" placeholder="Pilih/Ketik Pengganti...">
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold">Keterangan Tambahan</label>
+            <textarea class="form-control" id="edit_abs_keterangan" rows="2" placeholder="Catatan bila ada..."></textarea>
+          </div>
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-success fw-bold" id="btnSimpanEditAbs">Simpan Perubahan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 3. MODAL DETAIL DAFTAR ASATIDZ DARI KARTU KPI (#modalListStatusKPI) ============ -->
+<div class="modal fade" id="modalListStatusKPI" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white py-3">
+        <h5 class="modal-title fw-bold m-0" id="mdlKpiTitle"><i class="bi bi-people-fill me-2"></i> Daftar Asatidz</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-3 bg-light">
+        <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+          <span class="small text-muted" id="mdlKpiSub">Memuat rincian pengajar...</span>
+          <span class="badge bg-success rounded-pill px-3 py-1" id="mdlKpiBadgeCount">0 Sesi</span>
+        </div>
+        <div class="table-responsive bg-white rounded border shadow-sm">
+          <table class="table table-hover align-middle mb-0" style="font-size: 0.82rem;">
+            <thead class="table-light">
+              <tr>
+                <th class="text-center" style="width: 40px;">NO</th>
+                <th style="width: 75px;">JAM</th>
+                <th>ASATIDZ</th>
+                <th>KELAS &amp; FAN</th>
+                <th class="text-center">BLOK</th>
+                <th class="text-center">STATUS</th>
+                <th>KETERANGAN</th>
+              </tr>
+            </thead>
+            <tbody id="mdlKpiBody">
+              <!-- Render otomatis via JavaScript -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-secondary px-4 btn-sm fw-semibold" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 4. MODAL GENERATOR FORMAT LAPORAN CHAT WHATSAPP (#modalGeneratorWA) ============ -->
+<div class="modal fade" id="modalGeneratorWA" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white py-3">
+        <h5 class="modal-title fw-bold m-0"><i class="bi bi-whatsapp me-2"></i> Generator Laporan Absensi WhatsApp</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <!-- Pilihan Sesi Jam & Filter Gender -->
+        <div class="row g-3 mb-3">
+          <div class="col-md-7">
+            <div class="bg-white p-3 rounded border shadow-xs h-100">
+              <label class="form-label fw-bold text-dark small mb-2">
+                <i class="bi bi-clock-history text-success me-1"></i> 1. Pilih Sesi Jam Laporan:
+              </label>
+              <div class="d-flex flex-wrap gap-3">
+                <div class="form-check">
+                  <input class="form-check-input chk-pilih-jam-wa" type="checkbox" value="1,2" id="wa_jam_1_2" checked onchange="window.updatePreviewWA()">
+                  <label class="form-check-label small fw-semibold" for="wa_jam_1_2">Diniyyah (Jam 1 &amp; 2)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input chk-pilih-jam-wa" type="checkbox" value="3" id="wa_jam_3" onchange="window.updatePreviewWA()">
+                  <label class="form-check-label small fw-semibold" for="wa_jam_3">Bandongan &amp; Syawir (Jam 3)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input chk-pilih-jam-wa" type="checkbox" value="4" id="wa_jam_4" onchange="window.updatePreviewWA()">
+                  <label class="form-check-label small fw-semibold" for="wa_jam_4">Takror (Jam 4)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-5">
+            <div class="bg-white p-3 rounded border shadow-xs h-100">
+              <label class="form-label fw-bold text-dark small mb-2">
+                <i class="bi bi-gender-ambiguous text-success me-1"></i> 2. Kategori Putra / Putri:
+              </label>
+              <div class="d-flex flex-wrap gap-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="wa_filter_gender" id="wa_gen_all" value="SEMUA" checked onchange="window.updatePreviewWA()">
+                  <label class="form-check-label small fw-semibold" for="wa_gen_all">Semua</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="wa_filter_gender" id="wa_gen_pa" value="PA" onchange="window.updatePreviewWA()">
+                  <label class="form-check-label small fw-semibold text-primary" for="wa_gen_pa">Putra (PA)</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="wa_filter_gender" id="wa_gen_pi" value="PI" onchange="window.updatePreviewWA()">
+                  <label class="form-check-label small fw-semibold text-danger" for="wa_gen_pi">Putri (PI)</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Area Preview Teks WhatsApp -->
+        <div class="bg-white p-3 rounded border shadow-xs">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <label class="form-label fw-bold text-dark small m-0">
+              <i class="bi bi-chat-left-text-fill text-success me-1"></i> Pratinjau Teks Laporan WhatsApp:
+            </label>
+            <span class="badge bg-light text-secondary border font-monospace" id="waTextLength">0 Karakter</span>
+          </div>
+          <textarea class="form-control font-monospace small bg-light" id="txtPreviewWA" rows="12" style="font-size: 0.8rem; line-height: 1.45;"></textarea>
+          <small class="text-muted fst-italic d-block mt-2">
+            *Ket: ✅ Hadir &bull; 🅰️ Alfa/Kosong &bull; ℹ️ Izin &bull; 🤒 Sakit &bull; ⏳ Terlambat &bull; 🔄 Digantikan
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer bg-white border-top-0 pt-0 d-flex justify-content-between">
+        <button type="button" class="btn btn-light border px-3" data-bs-dismiss="modal">Tutup</button>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-success fw-bold" onclick="window.salinTeksWA()">
+            <i class="bi bi-clipboard-check me-1"></i> Salin Teks
+          </button>
+          <button type="button" class="btn btn-success fw-bold px-3 shadow-sm" onclick="window.kirimLangsungKeWA()">
+            <i class="bi bi-whatsapp me-1"></i> Kirim ke WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
