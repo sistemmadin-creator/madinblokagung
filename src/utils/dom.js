@@ -48,6 +48,9 @@ export function selaraskanSemuaTabel() {
   if (store.dataTableAsatidz && $('#page-asatidz').is(':visible')) {
     store.dataTableAsatidz.columns.adjust();
   }
+  if (store.dataTableRiwayatAbsensi && $('#page-absensi').is(':visible') && $('#pills-riwayat').is(':visible')) {
+    store.dataTableRiwayatAbsensi.columns.adjust();
+  }
 }
 
 export function initLayoutObservers() {
@@ -56,7 +59,16 @@ export function initLayoutObservers() {
     selaraskanSemuaTabel();
   });
 
-  // B. Auto-adjust mendeteksi perubahan lebar layar (buka/tutup/hover sidebar)
+  // B. Auto-adjust saat tab pill Bootstrap (seperti tab Riwayat & Rekap Data) ditampilkan
+  $(document).on('shown.bs.tab', 'button[data-bs-toggle="pill"], a[data-bs-toggle="pill"]', function () {
+    setTimeout(function () {
+      if (store.dataTableRiwayatAbsensi && $('#pills-riwayat').is(':visible')) {
+        store.dataTableRiwayatAbsensi.columns.adjust();
+      }
+    }, 150);
+  });
+
+  // C. Auto-adjust mendeteksi perubahan lebar layar (buka/tutup/hover sidebar)
   if (window.ResizeObserver) {
     const observerKonten = new ResizeObserver(() => {
       selaraskanSemuaTabel();
@@ -65,14 +77,14 @@ export function initLayoutObservers() {
     if (mainEl) observerKonten.observe(mainEl);
   }
 
-  // C. Pastikan penyesuaian sempurna setelah animasi transisi sidebar selesai
+  // D. Pastikan penyesuaian sempurna setelah animasi transisi sidebar selesai
   document.addEventListener('transitionend', function (e) {
     if (e.target && (e.target.classList.contains('main-content') || e.target.classList.contains('sidebar-overlay'))) {
       selaraskanSemuaTabel();
     }
   });
 
-  // D. Efek Hover Auto-Open & Auto-Close Sidebar Desktop beserta Animasi Geser Konten
+  // E. Efek Hover Auto-Open & Auto-Close Sidebar Desktop beserta Animasi Geser Konten
   const sidebarEl = document.getElementById('desktopSidebar');
   if (sidebarEl) {
     sidebarEl.addEventListener('mouseenter', function () {
