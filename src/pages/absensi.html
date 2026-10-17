@@ -1,0 +1,234 @@
+<!-- =========================================================================
+     HALAMAN ABSENSI ASATIDZ (FORM HARIAN JAM 1-4 & RIWAYAT REKAP DATA)
+========================================================================== -->
+<div id="page-absensi" style="display:none;">
+  <!-- Header & Filter Tanggal -->
+  <div class="card-panel mb-4 border-0">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="p-2 rounded-3 bg-white border shadow-sm text-success fs-3 d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+          <i class="bi bi-person-check-fill text-success"></i>
+        </div>
+        <div>
+          <h2 class="header-title m-0">Absensi Asatidz</h2>
+          <p class="text-muted small m-0 mt-1">Presensi berbasis integrasi jadwal harian (Sabtu s/d Kamis)</p>
+        </div>
+      </div>
+
+      <!-- Tombol Aksi Tanggal, Chat WA & Libur -->
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <!-- Tombol Chat WA di sebelah kiri tanggal -->
+        <button class="btn btn-sm btn-success fw-bold shadow-sm d-flex align-items-center gap-1" onclick="window.bukaModalGeneratorWA()" title="Generate Format Laporan WhatsApp">
+          <i class="bi bi-whatsapp"></i> <span>Chat WA</span>
+        </button>
+
+        <div class="input-group input-group-sm" style="width:230px;">
+          <span class="input-group-text bg-light text-dark fw-bold"><i class="bi bi-calendar-event me-1"></i></span>
+          <input type="date" class="form-control fw-semibold" id="inputTglAbsensi" onchange="window.muatAbsensiTanggalTerpilih()">
+        </div>
+        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 py-2 px-3 fw-bold" id="badgeNamaHari">-</span>
+
+        <button class="btn btn-sm btn-outline-danger" onclick="window.bukaModalPengaturanLibur()" id="btnAturLibur">
+          <i class="bi bi-slash-circle me-1"></i> Libur / Event
+        </button>
+        <button class="btn btn-sm btn-outline-success" onclick="window.muatAbsensiTanggalTerpilih(true)" title="Segarkan Data Jadwal">
+          <i class="bi bi-arrow-clockwise"></i> Segarkan
+        </button>
+      </div>
+    </div>
+
+    <!-- Alert Libur Aktif -->
+    <div id="boxAlertLibur" class="alert alert-danger d-none mt-3 mb-0 d-flex align-items-center justify-content-between">
+      <div>
+        <i class="bi bi-info-circle-fill me-2 fs-5"></i>
+        <span>Hari ini ditandai sebagai: <strong id="txtKategoriLibur">-</strong>. <span id="txtKetLibur" class="fst-italic text-muted"></span></span>
+      </div>
+      <button class="btn btn-sm btn-outline-danger" onclick="window.hapusStatusLibur()">Batalkan Status Libur</button>
+    </div>
+  </div>
+
+  <!-- Statistik Ringkasan 5 Kartu KPI (INTERAKTIF & BISA DIKLIK) -->
+  <div class="row g-3 mb-4">
+    <div class="col-6 col-md-3 col-xl">
+      <div class="kpi-card h-100" onclick="window.bukaModalListStatusKPI('SEMUA')" style="cursor:pointer;" title="Klik untuk lihat semua pengajar hari ini">
+        <div class="kpi-icon-wrapper" style="background:#ecfdf5;color:#0f766e;"><i class="bi bi-calendar-check"></i></div>
+        <div>
+          <div class="kpi-title">Total Sesi Hari Ini</div>
+          <div class="kpi-value" id="kpi_absen_total">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 col-xl">
+      <div class="kpi-card h-100" onclick="window.bukaModalListStatusKPI('Hadir')" style="cursor:pointer;" title="Klik untuk lihat daftar yang Hadir">
+        <div class="kpi-icon-wrapper" style="background:#d1fae5;color:#059669;"><i class="bi bi-check2-circle"></i></div>
+        <div>
+          <div class="kpi-title">Hadir</div>
+          <div class="kpi-value text-success" id="kpi_absen_hadir">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 col-xl">
+      <div class="kpi-card h-100" onclick="window.bukaModalListStatusKPI('IZIN_SAKIT')" style="cursor:pointer;" title="Klik untuk lihat yang Izin / Sakit">
+        <div class="kpi-icon-wrapper" style="background:#dbeafe;color:#2563eb;"><i class="bi bi-envelope-paper"></i></div>
+        <div>
+          <div class="kpi-title">Izin / Sakit</div>
+          <div class="kpi-value text-primary" id="kpi_absen_izin_sakit">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3 col-xl">
+      <div class="kpi-card h-100" onclick="window.bukaModalListStatusKPI('ALFA')" style="cursor:pointer;" title="Klik untuk lihat yang Alfa / Kosong">
+        <div class="kpi-icon-wrapper" style="background:#fee2e2;color:#dc2626;"><i class="bi bi-x-circle"></i></div>
+        <div>
+          <div class="kpi-title">Alfa / Kosong</div>
+          <div class="kpi-value text-danger" id="kpi_absen_alfa">0</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 col-md-12 col-xl">
+      <div class="kpi-card h-100" onclick="window.bukaModalListStatusKPI('TERLAMBAT_GANTI')" style="cursor:pointer;" title="Klik untuk lihat yang Terlambat / Digantikan">
+        <div class="kpi-icon-wrapper" style="background:#ffedd5;color:#ea580c;"><i class="bi bi-clock-history"></i></div>
+        <div>
+          <div class="kpi-title">Terlambat / Ganti</div>
+          <div class="kpi-value text-warning" id="kpi_absen_terlambat">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav Tabs: Form Harian vs Riwayat & Rekap -->
+  <ul class="nav nav-pills mb-3 bg-white p-2 rounded-3 border shadow-sm" id="pills-tab-absensi" role="tablist">
+    <li class="nav-item">
+      <button class="nav-link active fw-bold px-4" id="pills-input-tab" data-bs-toggle="pill" data-bs-target="#pills-input" type="button">
+        <i class="bi bi-input-cursor-text me-1"></i> Form Absensi Harian (Bertahap Jam 1 - 4)
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-bold px-4" id="pills-riwayat-tab" data-bs-toggle="pill" data-bs-target="#pills-riwayat" type="button" onclick="window.muatTabelRiwayatAbsensi()">
+        <i class="bi bi-clock-history me-1"></i> Riwayat &amp; Rekap Data
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content" id="pills-tabContentAbsensi">
+    <!-- TAB 1: FORM INPUT BERTAHAP JAM 1 S/D JAM 4 -->
+    <div class="tab-pane fade show active" id="pills-input">
+      <div id="containerJamBertahap" class="d-flex flex-column gap-4">
+        <!-- Render 4 Blok Jam: Jam Ke-1, Jam Ke-2, Jam Ke-3, Jam Ke-4 melalui JavaScript -->
+      </div>
+    </div>
+
+    <!-- TAB 2: RIWAYAT & REKAP TABEL -->
+    <div class="tab-pane fade" id="pills-riwayat">
+      <div class="card-panel border-0 mb-4 bg-light no-print">
+        <h6 class="fw-bold text-success mb-3"><i class="bi bi-funnel-fill me-1"></i> Filter Pencarian Riwayat</h6>
+        <!-- FILTER PENCARIAN RIWAYAT DENGAN FILTER BLOK -->
+        <div class="row g-2">
+          <div class="col-md-3">
+            <label class="form-label small text-muted">Rentang Tanggal</label>
+            <div class="input-group input-group-sm">
+              <input type="date" class="form-control" id="flt_rw_tgl_dari">
+              <span class="input-group-text">s/d</span>
+              <input type="date" class="form-control" id="flt_rw_tgl_sampai">
+            </div>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small text-muted">Hari</label>
+            <select class="form-select form-select-sm" id="flt_rw_hari">
+              <option value="">Semua Hari</option>
+              <option value="Sabtu">Sabtu</option>
+              <option value="Ahad">Ahad</option>
+              <option value="Senin">Senin</option>
+              <option value="Selasa">Selasa</option>
+              <option value="Rabu">Rabu</option>
+              <option value="Kamis">Kamis</option>
+            </select>
+          </div>
+          <div class="col-md-1">
+            <label class="form-label small text-muted">Jam Ke</label>
+            <select class="form-select form-select-sm" id="flt_rw_jam">
+              <option value="">Semua</option>
+              <option value="Jam 1">Jam 1</option>
+              <option value="Jam 2">Jam 2</option>
+              <option value="Jam 3">Jam 3</option>
+              <option value="Jam 4">Jam 4</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small text-muted fw-bold text-success"><i class="bi bi-building me-1"></i>Blok</label>
+            <select class="form-select form-select-sm border-success" id="flt_rw_blok">
+              <option value="">Semua Blok</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small text-muted">Status Kehadiran</label>
+            <select class="form-select form-select-sm" id="flt_rw_status">
+              <option value="">Semua Status</option>
+              <option value="Hadir">Hadir</option>
+              <option value="Izin">Izin</option>
+              <option value="Sakit">Sakit</option>
+              <option value="Alfa">Alfa</option>
+              <option value="Terlambat">Terlambat</option>
+              <option value="Digantikan">Digantikan</option>
+              <option value="Tugas Lain">Tugas Lain</option>
+              <option value="Jadwal Kosong">Jadwal Kosong</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small text-muted">Asatidz</label>
+            <input type="text" class="form-control form-control-sm" id="flt_rw_nama" placeholder="Ketik nama Asatidz..." oninput="window.terapkanFilterRiwayat()">
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-success" onclick="window.terapkanFilterRiwayat()"><i class="bi bi-filter"></i> Terapkan Filter</button>
+            <button class="btn btn-sm btn-light border" onclick="window.resetFilterRiwayat()"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-outline-success" onclick="window.exportRiwayatExcel()"><i class="bi bi-file-earmark-excel"></i> Export Excel</button>
+            <button class="btn btn-sm btn-outline-secondary" onclick="window.cetakRekapAbsensi()"><i class="bi bi-printer"></i> Cetak Rekap</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toggle Tampilan Tabel <-> Kartu -->
+      <div class="d-flex justify-content-end mb-3 no-print">
+        <div class="btn-group btn-group-sm" role="group" aria-label="Toggle Tampilan Riwayat">
+          <button type="button" class="btn btn-success fw-semibold" id="btnViewTabelRiwayat" onclick="window.setRiwayatViewMode('table')">
+            <i class="bi bi-table me-1"></i> Tabel
+          </button>
+          <button type="button" class="btn btn-outline-success fw-semibold" id="btnViewKartuRiwayat" onclick="window.setRiwayatViewMode('card')">
+            <i class="bi bi-grid-3x3-gap-fill me-1"></i> Kartu
+          </button>
+        </div>
+      </div>
+
+      <div class="card-panel border-0" id="printRekapArea">
+        <div id="tableRiwayatWrapper">
+          <table class="table table-hover align-middle w-100" id="dataTableRiwayatAbsensi">
+            <thead class="table-light">
+              <tr>
+                <th class="text-center">NO</th>
+                <th>TANGGAL &amp; HARI</th>
+                <th class="text-center">JAM</th>
+                <th>ASATIDZ</th>
+                <th class="text-center">BLOK</th>
+                <th class="text-center">TINGKAT/KLS</th>
+                <th>FAN</th>
+                <th>LOKASI</th>
+                <th class="text-center">STATUS</th>
+                <th>KETERANGAN / PENGGANTI</th>
+                <th class="text-center">PETUGAS</th>
+                <th class="text-center no-print">AKSI</th>
+              </tr>
+            </thead>
+            <tbody id="tableBodyRiwayatAbsensi"></tbody>
+          </table>
+        </div>
+
+        <!-- Kontainer Tampilan Kartu Riwayat Absensi -->
+        <div id="cardRiwayatWrapper" class="row g-3" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+</div>
