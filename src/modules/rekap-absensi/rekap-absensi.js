@@ -489,7 +489,9 @@ export function hitungRekapAbsensi() {
  * Memuat data dari Supabase (bila diperlukan), menghitung rekap, menerapkan filter UI, & merender Tabel + KPI
  */
 export async function muatDataRekapAbsensi(forceRefresh = false) {
-  if (!$('#rk_tgl_dari').val() \vert{}\vert{} !$('#rk_tgl_sampai').val()) return;
+  const tglDariCheck = document.getElementById('rk_tgl_dari')?.value;
+  const tglSampaiCheck = document.getElementById('rk_tgl_sampai')?.value;
+  if (!tglDariCheck || !tglSampaiCheck) return;
 
   if (forceRefresh) {
     Swal.fire({
