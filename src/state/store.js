@@ -39,6 +39,24 @@ export const store = {
   // State Khusus Modul Daftar Pendidik (Daftar Tenaga Pendidik)
   keywordCariPendidik: '',
   barisTampilDaftarPendidik: [],
+  // State Khusus Modul Absensi Asatidz & Riwayat Presensi
+  dataTableRiwayatAbsensi: null,
+  absensiMapByDate: {},
+  liburMapByDate: {},
+  rawRiwayatAbsensi: [],
+  lastRiwayatRowsFiltered: null,
+  riwayatViewMode: 'table',
+  absensiState: {
+    tanggal: '',
+    hari: '',
+    isLibur: false,
+    infoLibur: null,
+    sesiHariIni: { 1: [], 2: [], 3: [], 4: [] },
+    savedRecords: {},
+    pendingStatus: {},
+    unlockedJams: { 1: true, 2: false, 3: false, 4: false },
+    savedJams: { 1: false, 2: false, 3: false, 4: false }
+  },
   currentUser: {
     username: 'admin',
     nama: 'Master Administrator',
