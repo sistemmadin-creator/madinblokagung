@@ -49,6 +49,7 @@ isinya yakni
 - TOP
 
 Ide:
+- fitur undo rudo pada setiap halaman
 - Halaman Absensi Asatidz Tabelnya diganti dengan buku absen berikut
 NO | Kelas | Jam | Hari & Tanggal | Total Hadir | Tempat
 
