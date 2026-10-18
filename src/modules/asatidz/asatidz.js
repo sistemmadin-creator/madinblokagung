@@ -657,3 +657,278 @@ export async function hapusTerpilihAsatidz() {
     Swal.fire('Gagal Menghapus', err.message, 'error');
   }
 }
+// =========================================================
+// FITUR IMPORT MASSAL DATABASE ASATIDZ (EXCEL / CSV)
+// =========================================================
+
+/**
+ * Membuka Pop-Up Modal Import Massal Database Asatidz (#modalImportExcelAsatidz)
+ */
+export function bukaModalImportAsatidz() {
+  const fileInput = document.getElementById('inputFileExcelAsatidz');
+  if (fileInput) fileInput.value = '';
+
+  // Tutup modal Form Data Asatidz terlebih dahulu agar pop-up Import tampil bersih seperti Gambar 2
+  $('#inputModalAsatidz').modal('hide');
+  setTimeout(() => {
+    $('#modalImportExcelAsatidz').modal('show');
+  }, 220);
+}
+
+/**
+ * Mengunduh berkas Template Excel standar untuk Import Massal Database Asatidz
+ */
+export function unduhTemplateExcelAsatidz() {
+  if (typeof XLSX === 'undefined') {
+    Swal.fire('Error', 'Pustaka XLSX belum termuat di halaman ini.', 'error');
+    return;
+  }
+
+  const headers = [
+    'NIS',
+    'NIA',
+    'Nama Lengkap',
+    'PA/PI',
+    'Tingkat',
+    'Din. Kls',
+    'Din. Bag',
+    'Jah',
+    'Lokasi Diniyyah',
+    'Lokasi Takror',
+    'Tempat Lahir',
+    'Tgl Lahir',
+    'Bln Lahir',
+    'Thn Lahir',
+    'Dusun',
+    'Desa',
+    'Kecamatan',
+    'Kabupaten',
+    'Provinsi',
+    'Blok',
+    'Asrama',
+    'Kode',
+    'Kamar'
+  ];
+
+  const contohBaris1 = [
+    '201901',
+    'A1',
+    'UST. AHMAD FAUZI',
+    'PA',
+    'ULA',
+    '1',
+    'A',
+    'Mustahiq',
+    'Gedung Al-Falah R.01',
+    'Masjid Lt. 1',
+    'BANYUWANGI',
+    '12',
+    '05',
+    '1998',
+    'Krajan',
+    'Karangdoro',
+    'Tegalsari',
+    'Banyuwangi',
+    'Jawa Timur',
+    'Induk',
+    'Al-Falah',
+    'A',
+    '01'
+  ];
+
+  const contohBaris2 = [
+    '202015',
+    'B1',
+    'USTZ. SITI AISYAH',
+    'PI',
+    'WUSTHO',
+    '1',
+    'A',
+    'Mustahiqoh',
+    'Gedung Al-Munawwaroh R.02',
+    'Aula Putri',
+    'JEMBER',
+    '24',
+    '08',
+    '2000',
+    'Sumberjati',
+    'Kalisat',
+    'Kalisat',
+    'Jember',
+    'Jawa Timur',
+    'Putri',
+    'Al-Munawwaroh',
+    'B',
+    '03'
+  ];
+
+  const ws = XLSX.utils.aoa_to_sheet([headers, contohBaris1, contohBaris2]);
+  ws['!cols'] = headers.map(h => ({ wch: Math.max(h.length + 6, 15) }));
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Template_Asatidz');
+  XLSX.writeFile(wb, 'Template_Import_Data_Asatidz.xlsx');
+}
+
+/**
+ * Helper mencocokkan nilai kolom dari objek baris Excel secara fleksibel (Case-Insensitive & Multi-Alias)
+ */
+function ambilNilaiKolomExcelAsatidz(rowObj, daftarAlias) {
+  const keys = Object.keys(rowObj || {});
+  for (const alias of daftarAlias) {
+    const target = alias.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const foundKey = keys.find(
+      k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === target
+    );
+    if (foundKey !== undefined && rowObj[foundKey] !== null && rowObj[foundKey] !== undefined) {
+      return String(rowObj[foundKey]).trim();
+    }
+  }
+  return '';
+}
+
+/**
+ * Memproses file Excel (.xlsx / .xls / .csv) dan mengimpor massal ke tabel `asatidz` di Supabase
+ */
+export async function prosesImportExcelAsatidz() {
+  const fileInput = document.getElementById('inputFileExcelAsatidz');
+  const file = fileInput?.files?.[0];
+
+  if (!file) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'File Belum Dipilih',
+      text: 'Silakan pilih file Excel (.xlsx / .xls / .csv) terlebih dahulu!'
+    });
+    return;
+  }
+
+  const btn = document.getElementById('btnProsesImportAsatidz');
+  const oriHtml = btn ? btn.innerHTML : '';
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Memproses...';
+  }
+
+  const reader = new FileReader();
+  reader.onload = async function (e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: 'array' });
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const jsonRows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+
+      if (!jsonRows || jsonRows.length === 0) {
+        throw new Error('File Excel kosong atau format tidak terbaca.');
+      }
+
+      const recordsToInsert = [];
+
+      jsonRows.forEach(row => {
+        const nama = ambilNilaiKolomExcelAsatidz(row, [
+          'nama_asatidz',
+          'Nama Lengkap',
+          'Nama Lengkap Asatidz',
+          'Nama Asatidz',
+          'Asatidz',
+          'Nama'
+        ]).toUpperCase();
+
+        // Lewati baris kosong yang tidak memiliki Nama Asatidz
+        if (!nama) return;
+
+        let papi = ambilNilaiKolomExcelAsatidz(row, ['pa_pi', 'PA/PI', 'Gender', 'JK', 'L/P']).toUpperCase();
+        if (papi === 'L' || papi === 'PUTRA') papi = 'PA';
+        if (papi === 'P' || papi === 'PUTRI') papi = 'PI';
+
+        const blnRaw = ambilNilaiKolomExcelAsatidz(row, ['bln_lahir', 'Bln Lahir', 'Bulan Lahir', 'Bulan']);
+        const blnFormatted = blnRaw ? blnRaw.padStart(2, '0') : '';
+
+        recordsToInsert.push({
+          nis: ambilNilaiKolomExcelAsatidz(row, ['nis', 'NIS', 'No Induk Santri']),
+          nia: ambilNilaiKolomExcelAsatidz(row, ['nia', 'NIA', 'Kode', 'Kode Guru']).toUpperCase(),
+          nama_asatidz: nama,
+          pa_pi: papi,
+          tempat_lahir: ambilNilaiKolomExcelAsatidz(row, ['tempat_lahir', 'Tempat Lahir', 'Tmp Lahir']),
+          tgl_lahir: ambilNilaiKolomExcelAsatidz(row, ['tgl_lahir', 'Tgl Lahir', 'Tanggal Lahir', 'Tanggal']),
+          bln_lahir: blnFormatted,
+          thn_lahir: ambilNilaiKolomExcelAsatidz(row, ['thn_lahir', 'Thn Lahir', 'Tahun Lahir', 'Tahun']),
+          dusun: ambilNilaiKolomExcelAsatidz(row, ['dusun', 'Dusun', 'Jalan', 'Alamat']),
+          desa: ambilNilaiKolomExcelAsatidz(row, ['desa', 'Desa', 'Kelurahan']),
+          kecamatan: ambilNilaiKolomExcelAsatidz(row, ['kecamatan', 'Kecamatan', 'Kec']),
+          kabupaten: ambilNilaiKolomExcelAsatidz(row, ['kabupaten', 'Kabupaten', 'Kota', 'Kab']),
+          provinsi: ambilNilaiKolomExcelAsatidz(row, ['provinsi', 'Provinsi', 'Prov']),
+          blok: ambilNilaiKolomExcelAsatidz(row, ['blok', 'Blok']),
+          asrama: ambilNilaiKolomExcelAsatidz(row, ['asrama', 'Asrama']),
+          kode: ambilNilaiKolomExcelAsatidz(row, ['kode', 'Kode Kamar', 'Kode Asrama']),
+          kamar: ambilNilaiKolomExcelAsatidz(row, ['kamar', 'Kamar', 'No Kamar']),
+          tingkat_asatidz: ambilNilaiKolomExcelAsatidz(row, ['tingkat_asatidz', 'Tingkat', 'Jenjang']).toUpperCase(),
+          din_kls_asatidz: ambilNilaiKolomExcelAsatidz(row, ['din_kls_asatidz', 'Din. Kls', 'Din Kls', 'Kelas']),
+          din_bag_asatidz: ambilNilaiKolomExcelAsatidz(row, ['din_bag_asatidz', 'Din. Bag', 'Din Bag', 'Bagian', 'Bag']).toUpperCase(),
+          jah_asatidz: ambilNilaiKolomExcelAsatidz(row, ['jah_asatidz', 'Jah', 'Jabatan']),
+          lokasi_diniyyah: ambilNilaiKolomExcelAsatidz(row, ['lokasi_diniyyah', 'Lokasi Diniyyah', 'Ruang Diniyyah']),
+          lokasi_takror: ambilNilaiKolomExcelAsatidz(row, ['lokasi_takror', 'Lokasi Takror', 'Ruang Takror']),
+          foto_asatidz: ambilNilaiKolomExcelAsatidz(row, ['foto_asatidz', 'Foto', 'URL Foto'])
+        });
+      });
+
+      if (recordsToInsert.length === 0) {
+        throw new Error(
+          'Tidak ditemukan baris data valid. Pastikan terdapat kolom "Nama Lengkap" (atau "nama_asatidz").'
+        );
+      }
+
+      Swal.fire({
+        title: 'Mengimpor Data Asatidz...',
+        html: `Menyimpan <b>${recordsToInsert.length}</b> data Asatidz ke database...`,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      // Batch insert per 100 baris agar stabil untuk ratusan data sekaligus
+      const CHUNK_SIZE = 100;
+      for (let i = 0; i < recordsToInsert.length; i += CHUNK_SIZE) {
+        const chunk = recordsToInsert.slice(i, i + CHUNK_SIZE);
+        const { error } = await supabase.from('asatidz').insert(chunk);
+        if (error) throw error;
+      }
+
+      await logActivity(
+        'IMPORT EXCEL ASATIDZ',
+        `Mengimpor massal ${recordsToInsert.length} data Asatidz dari file ${file.name}`
+      );
+
+      $('#modalImportExcelAsatidz').modal('hide');
+      if (fileInput) fileInput.value = '';
+
+      // Muat ulang data Asatidz & perbarui tabel
+      store.globalDataAsatidz = await fetchAllAsatidzFromSupabase();
+      populateFilterDatalistsAsatidz();
+      if (document.getElementById('tableAsatidzWrapper')?.style.display !== 'none') {
+        renderTableAsatidz(store.globalDataAsatidz);
+      }
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Import Berhasil!',
+        text: `${recordsToInsert.length} data Asatidz berhasil ditambahkan ke database.`,
+        confirmButtonColor: '#0f766e'
+      });
+    } catch (err) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Mengimpor Data',
+        text: err.message,
+        confirmButtonColor: '#0f766e'
+      });
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = oriHtml;
+      }
+    }
+  };
+
+  reader.readAsArrayBuffer(file);
+}
