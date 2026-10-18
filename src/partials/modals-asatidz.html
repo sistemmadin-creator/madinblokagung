@@ -4,7 +4,12 @@
     <div class="modal-content border-0 shadow-lg">
       <div class="modal-header bg-success text-white border-0 py-3">
         <h5 class="modal-title fw-bold m-0"><i class="bi bi-person-plus-fill me-2"></i> Form Data Asatidz</h5>
-        <button type="button" class="btn-close btn-close-white shadow-none ms-2" data-bs-dismiss="modal"></button>
+        <div class="ms-auto d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-sm btn-light text-success fw-bold shadow-sm" id="btnOpenImportAsatidz" onclick="window.bukaModalImportAsatidz()" title="Impor Data Asatidz dari Excel">
+            <i class="bi bi-file-earmark-excel-fill me-1"></i> Impor Excel
+          </button>
+          <button type="button" class="btn-close btn-close-white shadow-none ms-2" data-bs-dismiss="modal"></button>
+        </div>
       </div>
       <div class="modal-body bg-light p-4">
         <form id="inputFormAsatidz" class="bg-white p-4 rounded shadow-sm border" onsubmit="window.submitAsatidzData(event)">
@@ -254,6 +259,66 @@
       </div>
       <div class="modal-footer border-0">
         <button type="button" class="btn btn-secondary px-4" onclick="window.applyHideColumnsAsatidz()" data-bs-dismiss="modal">Simpan Tampilan</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 13. Modal Pop-Up Import Massal Database Asatidz (#modalImportExcelAsatidz - Persis Gambar 2) -->
+<div class="modal fade" id="modalImportExcelAsatidz" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered" style="max-width: 560px;">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 14px; overflow: hidden;">
+      <!-- Header Hijau Teal -->
+      <div class="modal-header bg-success text-white border-0 py-3 px-4 d-flex justify-content-between align-items-start">
+        <div>
+          <h5 class="modal-title fw-bold m-0 d-flex align-items-center gap-2">
+            <i class="bi bi-file-earmark-spreadsheet-fill fs-5"></i>
+            <span>Import Massal Database Asatidz</span>
+          </h5>
+          <div class="small text-white text-opacity-75 mt-1" style="font-size: 0.8rem;">
+            Unggah file Excel (.xlsx / .xls / .csv) untuk menambahkan ratusan asatidz sekaligus
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white shadow-none mt-1" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body p-4 bg-white">
+        <!-- Kotak Info Format Kolom Wajib & Unduh Template -->
+        <div class="p-3 rounded-3 border mb-4" style="background-color: #f8fafc; border-color: #e2e8f0 !important;">
+          <div class="fw-bold text-dark small mb-1 d-flex align-items-center gap-1">
+            <i class="bi bi-info-circle-fill text-success"></i>
+            <span>Format Kolom Wajib:</span>
+          </div>
+          <p class="small text-muted mb-3" style="line-height: 1.5; font-size: 0.82rem;">
+            Pastikan baris pertama Excel memiliki kolom:
+            <code class="text-danger fw-semibold">Nama Lengkap</code> (atau <code class="text-danger fw-semibold">nama_asatidz</code>),
+            <code class="text-danger fw-semibold">PA/PI</code> (<span class="fw-bold text-dark">PA</span> atau <span class="fw-bold text-dark">PI</span>),
+            <code class="text-danger fw-semibold">NIA</code>, <code class="text-danger fw-semibold">Tingkat</code>,
+            <code class="text-danger fw-semibold">Din. Kls</code>, <code class="text-danger fw-semibold">Din. Bag</code>, dan
+            <code class="text-danger fw-semibold">Jah</code>.
+          </p>
+          <button type="button" class="btn btn-sm btn-outline-success fw-semibold px-3 py-1 shadow-xs" onclick="window.unduhTemplateExcelAsatidz()">
+            <i class="bi bi-download me-1"></i> Unduh Template Excel
+          </button>
+        </div>
+
+        <!-- Input Pilih File Excel -->
+        <div class="mb-2">
+          <label class="form-label fw-bold text-dark small mb-2">
+            Pilih File Excel <span class="text-danger">*</span>
+          </label>
+          <input type="file" class="form-control" id="inputFileExcelAsatidz" accept=".xlsx, .xls, .csv">
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer bg-white border-top-0 pt-0 pb-4 px-4 d-flex justify-content-end gap-2">
+        <button type="button" class="btn btn-secondary fw-semibold px-3" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-outline-secondary fw-bold px-3 d-flex align-items-center gap-2" id="btnProsesImportAsatidz" onclick="window.prosesImportExcelAsatidz()">
+          <i class="bi bi-cloud-arrow-up-fill"></i>
+          <span>Import ke Database</span>
+        </button>
       </div>
     </div>
   </div>
