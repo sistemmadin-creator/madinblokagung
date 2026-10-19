@@ -166,6 +166,12 @@ export function toggleSubmenuFormasi(e) {
   if (submenu) {
     const isNowOpen = submenu.classList.toggle('open');
     if (arrow) arrow.classList.toggle('rotated', isNowOpen);
+    if (isNowOpen) {
+      setTimeout(() => {
+        const navContainer = document.querySelector('.sidebar-overlay nav.nav');
+        if (navContainer) navContainer.scrollTo({ top: navContainer.scrollHeight, behavior: 'smooth' });
+      }, 150);
+    }
   }
   // Pastikan sidebar tetap terbuka saat panah diklik
   document.body.classList.remove('sidebar-collapsed');
@@ -214,6 +220,10 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
     document.getElementById('nav-mob-formasi')?.classList.add('active');
     if (submenuFormasi) submenuFormasi.classList.add('open');
     if (arrowFormasi) arrowFormasi.classList.add('rotated');
+    setTimeout(() => {
+      const navContainer = document.querySelector('.sidebar-overlay nav.nav');
+      if (navContainer) navContainer.scrollTo({ top: navContainer.scrollHeight, behavior: 'smooth' });
+    }, 150);
     const gender = page === 'formasi-pa' ? 'PA' : 'PI';
     if (typeof window.openFormasiGenderView === 'function') {
       window.openFormasiGenderView(gender);
