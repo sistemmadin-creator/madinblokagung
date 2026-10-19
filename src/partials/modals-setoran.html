@@ -1,0 +1,106 @@
+<!-- ======================================================= -->
+<!-- MODAL PENGATURAN ITEM HAFALAN & AKSES (#settingsHafalanModal) -->
+<!-- ======================================================= -->
+<div class="modal fade" id="settingsHafalanModal" tabindex="-1" style="z-index: 1060;">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-dark text-white border-0 py-3">
+        <h5 class="modal-title fw-bold"><i class="bi bi-ui-checks-grid me-2"></i> Pengaturan Item Hafalan &amp; Akses</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body bg-light p-0" style="min-height: 450px;">
+        <ul class="nav nav-tabs bg-white pt-2 px-3 border-bottom-0" role="tablist">
+          <li class="nav-item"><button class="nav-link active fw-bold text-dark" data-bs-toggle="tab" data-bs-target="#tabWajib" type="button">Hafalan Wajib</button></li>
+          <li class="nav-item"><button class="nav-link fw-bold text-muted" data-bs-toggle="tab" data-bs-target="#tabSunnah" type="button">Hafalan Sunnah</button></li>
+          <li class="nav-item"><button class="nav-link fw-bold text-muted" data-bs-toggle="tab" data-bs-target="#tabKitab" type="button">Hafalan Kitab</button></li>
+          <li class="nav-item"><button class="nav-link fw-bold text-primary" data-bs-toggle="tab" data-bs-target="#tabPenjaga" type="button">Akses Penjaga</button></li>
+        </ul>
+        <div class="tab-content p-4">
+          <div class="tab-pane fade show active" id="tabWajib">
+            <div class="alert alert-secondary py-2 mb-4 small border-0"><i class="bi bi-info-circle me-1"></i> Pisahkan setiap item hafalan dengan tanda koma (,).</div>
+            <div id="containerHafalanWajib" class="row g-3"></div>
+          </div>
+          <div class="tab-pane fade" id="tabSunnah">
+            <div class="alert alert-secondary py-2 mb-4 small border-0"><i class="bi bi-info-circle me-1"></i> Pisahkan setiap item hafalan dengan tanda koma (,).</div>
+            <div id="containerHafalanSunnah" class="row g-3"></div>
+          </div>
+          <div class="tab-pane fade" id="tabKitab">
+            <div class="alert alert-secondary py-2 mb-4 small border-0"><i class="bi bi-info-circle me-1"></i> Pisahkan setiap item kitab dengan tanda koma (,).</div>
+            <div id="containerHafalanKitab" class="row g-3"></div>
+          </div>
+          <div class="tab-pane fade" id="tabPenjaga">
+            <div class="alert alert-warning py-2 mb-4 small border-0 text-dark">
+              <b>Info:</b> Secara default, Penjaga hanya bisa menjaga Santri dengan <b>Tingkat dan PA/PI yang sama</b>. <br>Ketik nama Asatidz di bawah ini jika Anda ingin memberikan hak spesial agar Asatidz tersebut bisa menjaga <b>semua tingkat dan gender</b>.
+            </div>
+            <label class="form-label text-success fw-bold">Nama Asatidz (Akses Bebas)</label>
+            <div class="position-relative">
+              <div id="penjagaBebasContainer" class="form-control bg-white d-flex flex-wrap gap-2 align-items-center border-success" style="min-height: 48px; height: auto; cursor: text;" onclick="document.getElementById('inputPenjagaBebas').focus()">
+                <div id="penjagaBebasChips" class="d-flex flex-wrap gap-1"></div>
+                <input type="text" id="inputPenjagaBebas" class="border-0 shadow-none p-0 flex-grow-1" style="min-width: 200px; outline: none; background: transparent;" placeholder="Ketik dan pilih Asatidz...">
+              </div>
+              <ul id="dropdownPenjagaBebas" class="list-group position-absolute w-100 shadow-sm border-0 mt-1" style="display: none; z-index: 1060; max-height: 250px; overflow-y: auto;"></ul>
+              <input type="hidden" id="configPenjagaBebas">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-white border-top-0 pt-0">
+        <button type="button" class="btn btn-dark px-4 fw-bold" id="btnSaveHafalanSettings" onclick="window.saveHafalanSettingsData()">Simpan Konfigurasi</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================= -->
+<!-- MODAL DETAIL RIWAYAT MUHAFADZOH SANTRI (#detailRiwayatModal) -->
+<!-- ======================================================= -->
+<div class="modal fade" id="detailRiwayatModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <h5 class="modal-title fw-bold"><i class="bi bi-clock-history me-2"></i> Detail Muhafadzoh Santri</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <div class="card border-0 shadow-sm mb-4 bg-white">
+          <div class="card-body">
+            <div class="row text-center text-md-start">
+              <div class="col-md-4 mb-2 mb-md-0 border-end">
+                <p class="text-muted mb-1 small">Nama Santri</p>
+                <h6 class="fw-bold text-dark mb-0" id="detMuhNama">-</h6>
+              </div>
+              <div class="col-md-4 mb-2 mb-md-0 border-end">
+                <p class="text-muted mb-1 small">Kelas Diniyyah</p>
+                <h6 class="fw-bold text-dark mb-0" id="detMuhKelas">-</h6>
+              </div>
+              <div class="col-md-4">
+                <p class="text-muted mb-1 small">Asatidz</p>
+                <h6 class="fw-bold text-dark mb-0" id="detMuhMustahiq">-</h6>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h6 class="fw-bold text-success mb-3"><i class="bi bi-box-arrow-in-down-right me-1"></i> Setoran Terpilih</h6>
+        <div class="table-responsive bg-white shadow-sm rounded border-0 mb-4">
+          <table class="table table-hover mb-0 align-middle text-center">
+            <thead class="table-light">
+              <tr><th>Tgl Setor</th><th>Hafalan</th><th>Kategori</th><th>Penjaga</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="detMuhTbodyCurrent"></tbody>
+          </table>
+        </div>
+
+        <h6 class="fw-bold text-muted mb-3"><i class="bi bi-clock-history me-1"></i> Riwayat Keseluruhan Setoran</h6>
+        <div class="table-responsive bg-white shadow-sm rounded border-0" style="max-height: 250px; overflow-y: auto;">
+          <table class="table table-hover mb-0 align-middle text-center">
+            <thead class="table-light" style="position: sticky; top: 0; z-index: 1;">
+              <tr><th>Tgl Setor</th><th>Hafalan</th><th>Kategori</th><th>Penjaga</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="detMuhTbodyAll"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
