@@ -19,8 +19,19 @@ export const store = {
   hiddenColumnsGlobalAsatidz: [],
   appSettingsGlobal: {
     tree1: '',
-    tree2: ''
+    tree2: '',
+    tree3: '',
+    hafWajib: {},
+    hafSunnah: {},
+    hafKitab: {},
+    penjagaBebas: ''
   },
+  // State Khusus Modul Setoran (Muhafadzoh Madin)
+  dataTableMuhafadzoh: null,
+  globalDataMuhafadzoh: [],
+  muhafadzohIndexMap: new Map(),
+  editMuhDataOld: null,
+  selectedPenjagaBebasArray: [],
   // State Khusus Modul Fan Pelajaran & Pengajar Fan
   fanConfig: {},
   fanPelajaranDetail: {
