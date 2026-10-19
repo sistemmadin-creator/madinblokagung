@@ -183,8 +183,10 @@ export function toggleSubmenuFormasi(e) {
 
 export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   if (page === 'muhafadzoh') page = 'setoran';
+  if (page === 'rekap') page = 'rekap-hafalan';
 
   const pageSetoran = document.getElementById('page-setoran');
+  const pageRekapHafalan = document.getElementById('page-rekap-hafalan');
   const pageSantri = document.getElementById('page-santri');
   const pageFormasi = document.getElementById('page-formasi');
   const pageFormasiGender = document.getElementById('page-formasi-gender');
@@ -199,6 +201,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pageHariKbm = document.getElementById('page-hari-kbm');
 
   if (pageSetoran) pageSetoran.style.display = (page === 'setoran') ? 'block' : 'none';
+  if (pageRekapHafalan) pageRekapHafalan.style.display = (page === 'rekap-hafalan') ? 'block' : 'none';
   if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
   if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
   if (pageFormasiGender) pageFormasiGender.style.display = (page === 'formasi-pa' || page === 'formasi-pi') ? 'block' : 'none';
@@ -270,6 +273,10 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
     if (page === 'setoran') {
       if (typeof window.inisialisasiHalamanSetoran === 'function') {
         window.inisialisasiHalamanSetoran();
+      }
+    } else if (page === 'rekap-hafalan') {
+      if (typeof window.loadRekapData === 'function') {
+        window.loadRekapData();
       }
     } else if (page === 'formasi') {
       if (typeof onShowFormasi === 'function') {
