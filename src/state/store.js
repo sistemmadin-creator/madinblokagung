@@ -32,6 +32,10 @@ export const store = {
   muhafadzohIndexMap: new Map(),
   editMuhDataOld: null,
   selectedPenjagaBebasArray: [],
+  // State Khusus Modul Rekap Hafalan Pertingkatan
+  currentRekapData: null,
+  currentRekapTahfidzData: null,
+  rekapActiveMode: 'wajib',
   // State Khusus Modul Fan Pelajaran & Pengajar Fan
   fanConfig: {},
   fanPelajaranDetail: {
