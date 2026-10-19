@@ -64,6 +64,17 @@ absensiState: {
     dataPerAsatidz: [],
     dataPerAsatidzFiltered: []
   },
+  // State Khusus Modul Absen Cepat
+  absenCepatState: {
+    jamAktif: 1,
+    selectedKeys: new Set(),
+    search: '',
+    filterBlok: '',
+    sortBy: 'kelas_asc',
+    arahSwipe: null,
+    initializedForDate: null,
+    acModalStatus: 'Hadir'
+  },
   currentUser: {
     username: 'admin',
     nama: 'Master Administrator',
