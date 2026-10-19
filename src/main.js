@@ -26,12 +26,14 @@ import * as daftarPendidik from './modules/daftar-pendidik/daftar-pendidik.js';
 import * as absensi from './modules/absensi/absensi.js';
 import * as rekapAbsensi from './modules/rekap-absensi/rekap-absensi.js';
 import * as absenCepat from './modules/absen-cepat/absen-cepat.js';
+import * as setoran from './modules/setoran/setoran.js';
 
 // Import Komponen Navigasi dari folder src/partials/
 import navbarHtml from './partials/navbar.html?raw';
 import sidebarHtml from './partials/sidebar.html?raw';
 
 // Import Halaman dari folder src/pages/
+import pageSetoran from './pages/setoran.html?raw';
 import pageSantri from './pages/santri.html?raw';
 import pageFormasi from './pages/formasi.html?raw';
 import pageAsatidz from './pages/asatidz.html?raw';
@@ -44,6 +46,7 @@ import pageHariKbm from './pages/hari-kbm.html?raw';
 import pageDaftarPendidik from './pages/daftar-pendidik.html?raw';
 
 // Import Komponen HTML Modal dari folder src/partials/
+import modalsSetoran from './partials/modals-setoran.html?raw';
 import modalsSantri from './partials/modals-santri.html?raw';
 import modalsSystem from './partials/modals-system.html?raw';
 import modalsFormasi from './partials/modals-formasi.html?raw';
@@ -80,7 +83,8 @@ Object.assign(window, {
   ...daftarPendidik,
   ...absensi,
   ...rekapAbsensi,
-  ...absenCepat
+  ...absenCepat,
+  ...setoran
 });
 
 // =========================================================
@@ -98,6 +102,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const pagesContainer = document.getElementById('pages-container');
   if (pagesContainer) {
     pagesContainer.innerHTML =
+      pageSetoran +
       pageSantri +
       pageFormasi +
       pageAsatidz +
@@ -114,6 +119,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   const modalsContainer = document.getElementById('modals-container');
   if (modalsContainer) {
     modalsContainer.innerHTML =
+      modalsSetoran +
       modalsSantri +
       modalsSystem +
       modalsFormasi +
@@ -127,6 +133,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   initLayoutObservers();
 
   // Inisialisasi UI masing-masing modul
+  setoran.initSetoranUI();
   santri.initSantriUI();
   formasi.initHideFilterFormasi();
   asatidz.initAsatidzUI();
@@ -145,12 +152,23 @@ document.addEventListener('DOMContentLoaded', async function () {
 
   // Muat konfigurasi Hierarki Dropdown dari tabel `app_settings`
   try {
-    store.appSettingsGlobal = await hierarchy.fetchSettingsFromSupabase();
+    const loadedTreeSettings = await hierarchy.fetchSettingsFromSupabase();
+    store.appSettingsGlobal = {
+      ...store.appSettingsGlobal,
+      ...loadedTreeSettings
+    };
     hierarchy.renderBuilderUI('tree1', store.appSettingsGlobal.tree1);
     hierarchy.renderBuilderUI('tree2', store.appSettingsGlobal.tree2);
     hierarchy.applyTreeData(store.appSettingsGlobal);
   } catch (err) {
     console.error('Gagal memuat app_settings:', err.message);
+  }
+
+  // Muat data Riwayat Setoran & Konfigurasi Hafalan dari `app_settings`
+  try {
+    await setoran.loadSetoranFromSupabase();
+  } catch (err) {
+    console.error('Gagal memuat data Setoran dari Supabase:', err.message);
   }
 
   // Muat konfigurasi Fan Pelajaran (Item Fan, Detail Jam/MS/MB, & Grup Asal) dari `app_settings`
@@ -178,6 +196,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   try {
     store.globalDataSantri = await santri.fetchAllSantriFromSupabase();
     santri.populateFilterDatalists();
+    setoran.updateMuhafadzohDatalist();
   } catch (err) {
     console.error('Background fetch santri gagal:', err.message);
   }
@@ -192,6 +211,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   // Muat tabel Formasi Kelas setelah data Santri & Asatidz siap untuk disinkronkan
   try {
     await formasi.loadFormasiData();
+    setoran.generateHafalanConfigUI();
   } catch (err) {
     console.error('Background fetch formasi gagal:', err.message);
   }
