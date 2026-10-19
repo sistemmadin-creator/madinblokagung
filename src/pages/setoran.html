@@ -1,0 +1,237 @@
+<!-- ============================================== -->
+<!-- HALAMAN SETORAN (MUHAFADZOH MADIN) -->
+<!-- ============================================== -->
+<div id="page-setoran" style="display: none;">
+
+  <!-- Top Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3 border-bottom pb-3">
+    <div>
+      <h2 class="header-title m-0">Muhafadzoh Madin</h2>
+      <p class="text-muted small m-0 mt-1">Kelola data setoran hafalan santri Madrasah Diniyyah Al Amiriyyah.</p>
+    </div>
+    <div class="d-flex gap-2 align-items-center bg-white p-2 rounded-3 border">
+      <div class="me-2">
+        <label class="text-muted fw-bold d-block mb-1" style="font-size: 10px; line-height: 1;">Filter Gender</label>
+        <select class="form-select form-select-sm border-0 bg-light" id="m_filter_papi" style="width: 100px; box-shadow: none;" onchange="window.onFilterGenderSetoranChange()">
+          <option value="">Semua</option>
+          <option value="PA">Putra (PA)</option>
+          <option value="PI">Putri (PI)</option>
+        </select>
+      </div>
+      <div class="vr mx-1"></div>
+      <button class="btn btn-sm btn-outline-success border-0" onclick="window.printKartuSetoran()" title="Print Kartu"><i class="bi bi-printer fs-5"></i></button>
+      <button class="btn btn-sm btn-outline-primary border-0" onclick="window.downloadKartuJpg()" title="Unduh JPG"><i class="bi bi-image fs-5"></i></button>
+      <button class="btn btn-sm btn-outline-secondary border-0" data-bs-toggle="modal" data-bs-target="#settingsModal" title="Pengaturan App"><i class="bi bi-gear fs-5"></i></button>
+    </div>
+  </div>
+
+  <div class="row g-4 mb-4">
+    <!-- Kotak Kiri: INPUT HAFALAN -->
+    <div class="col-xl-6 col-lg-12">
+      <div class="card-panel h-100 border-top border-success border-3">
+        <!-- Header Panel -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h5 class="fw-bold text-dark m-0"><i class="bi bi-pencil-square text-success me-2"></i> Form Input Hafalan</h5>
+          <button type="button" class="btn btn-sm btn-light border" data-bs-toggle="modal" data-bs-target="#settingsHafalanModal" onclick="window.generateHafalanConfigUI()" title="Pengaturan Item Hafalan">
+            <i class="bi bi-sliders"></i> Opsi Hafalan
+          </button>
+        </div>
+
+        <form id="formMuhafadzoh" onsubmit="return false;">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label">Tgl &amp; Waktu Setor</label>
+              <input type="datetime-local" class="form-control form-control-sm bg-light border-0" id="m_tgl_setor" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-success">No. Induk (Ketik/Pilih)</label>
+              <input list="dl_m_induk" class="form-control form-control-sm border-success shadow-sm" id="m_induk" placeholder="Pencarian...">
+              <datalist id="dl_m_induk"></datalist>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-success">Nama Santri (Ketik/Pilih)</label>
+              <input list="dl_m_nama" class="form-control form-control-sm border-success shadow-sm" id="m_nama" placeholder="Pencarian...">
+              <datalist id="dl_m_nama"></datalist>
+            </div>
+
+            <!-- Info Otomatis -->
+            <div class="col-12"><hr class="text-muted opacity-25 my-1"></div>
+            <div class="col-md-3">
+              <label class="form-label text-muted">Tgl Lahir</label>
+              <input type="text" class="form-control form-control-sm bg-transparent border-0 px-0 fw-bold" id="m_tgl_lhr" readonly placeholder="-">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label text-muted">Bln Lahir</label>
+              <input type="text" class="form-control form-control-sm bg-transparent border-0 px-0 fw-bold" id="m_bln_lhr" readonly placeholder="-">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label text-muted">Thn Lahir</label>
+              <input type="text" class="form-control form-control-sm bg-transparent border-0 px-0 fw-bold" id="m_thn_lhr" readonly placeholder="-">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label text-muted">Asatidz</label>
+              <input type="text" class="form-control form-control-sm bg-transparent border-0 px-0 fw-bold text-primary" id="m_mustahiq" readonly placeholder="-">
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label text-muted">Tempat Lahir</label>
+              <input type="text" class="form-control form-control-sm bg-transparent border-0 px-0 fw-bold" id="m_tmpt_lhr" readonly placeholder="-">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label text-muted">Din. Kls</label>
+              <input type="text" class="form-control form-control-sm bg-transparent border-0 px-0 fw-bold" id="m_dinkls" readonly placeholder="-">
+            </div>
+            <div class="col-md-2">
+              <label class="form-label text-muted">Din. Bag</label>
+              <input type="text" class="form-control form-control-sm bg-transparent border-0 px-0 fw-bold" id="m_dinbag" readonly placeholder="-">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label text-muted">Tingkat</label>
+              <input type="text" class="form-control form-control-sm bg-transparent border-0 px-0 fw-bold" id="m_tingkat" readonly placeholder="-">
+            </div>
+
+            <!-- Hidden / Readonly Address Info -->
+            <div class="col-md-4 d-none">
+              <input type="text" id="m_kec">
+              <input type="text" id="m_kab">
+              <input type="text" id="m_prov">
+              <input type="text" id="m_bin">
+            </div>
+
+            <div class="col-12"><hr class="text-muted opacity-25 my-1"></div>
+
+            <!-- Input Hafalan Aktif -->
+            <div class="col-md-4">
+              <label class="form-label text-dark">Penjaga</label>
+              <input list="dl_m_penjaga" class="form-control form-control-sm border-secondary" id="m_penjaga" placeholder="Pilih Penjaga..." disabled>
+              <datalist id="dl_m_penjaga"></datalist>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label text-dark">Item Hafalan</label>
+              <input list="dl_m_hafalan" class="form-control form-control-sm border-secondary" id="m_hafalan" placeholder="Pilih hafalan disini...">
+              <datalist id="dl_m_hafalan"></datalist>
+            </div>
+
+            <!-- Radio Buttons Kat (Mode Toggle Tokens Berjejer) -->
+            <div class="col-md-12 mt-3">
+              <div class="d-flex flex-wrap gap-2 bg-light p-2 rounded border">
+                <div class="token-wrapper flex-fill w-auto">
+                  <input class="btn-check hafalan-kat" type="radio" name="m_kat" value="Wajib" id="katWajib">
+                  <label class="btn w-100 m-0" for="katWajib">Wajib</label>
+                </div>
+                <div class="token-wrapper flex-fill w-auto">
+                  <input class="btn-check hafalan-kat" type="radio" name="m_kat" value="Sunnah" id="katSunnah">
+                  <label class="btn w-100 m-0" for="katSunnah">Sunnah</label>
+                </div>
+                <div class="token-wrapper flex-fill w-auto">
+                  <input class="btn-check hafalan-kat" type="radio" name="m_kat" value="Tahfidz" id="katTahfidz">
+                  <label class="btn w-100 m-0" for="katTahfidz">Tahfidz</label>
+                </div>
+                <div class="token-wrapper flex-fill w-auto">
+                  <input class="btn-check hafalan-kat" type="radio" name="m_kat" value="Kitab" id="katKitab">
+                  <label class="btn w-100 m-0" for="katKitab">Kitab</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-light border text-secondary" onclick="window.resetFormMuhafadzoh()">Reset Form</button>
+              <button type="button" class="btn btn-success px-4" id="btnSimpanMuhafadzoh" onclick="window.simpanMuhafadzoh(event)"><i class="bi bi-save me-2"></i> Simpan Setoran</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Kotak Kanan: KARTU BUKTI SETORAN (Live Preview & Print Area) -->
+    <div class="col-xl-6 col-lg-12">
+      <div class="card-panel h-100 d-flex flex-column align-items-center justify-content-center bg-light border-0" style="background-image: radial-gradient(#cbd5e1 1px, transparent 1px); background-size: 20px 20px;">
+        <h6 class="fw-bold text-center text-muted mb-4 d-print-none bg-white px-3 py-1 rounded-pill border shadow-sm"><i class="bi bi-eye"></i> Live Preview Kartu</h6>
+
+        <div class="preview-scroll-wrapper w-100">
+          <div id="print-area">
+            <div class="kartu-container shadow-sm">
+              <div class="kartu-pkm">PKM MUHAFAZAH</div>
+              <div class="kartu-header">
+                <div class="kartu-logo">
+                  <div>LOGO<br>MADIN</div>
+                </div>
+                <div class="kartu-title">
+                  <h3 style="font-family: 'Traditional Arabic', serif;">المدرسة الأميرية الدينية</h3>
+                  <h3>MADRASAH DINIYYAH AL AMIRIYYAH</h3>
+                  <p>Pondok Pesantren Darussalam Blokagung Tegalsari Banyuwangi</p>
+                </div>
+              </div>
+
+              <div class="k-row">
+                <div class="k-label">NAMA</div>
+                <div class="k-input" id="c_nama"></div>
+                <div class="k-label ms-2" style="width:50px;">BIN/TI</div>
+                <div class="k-input" id="c_bin"></div>
+              </div>
+
+              <div class="k-row">
+                <div class="k-label">NIS</div>
+                <div class="k-input k-mid" id="c_nis"></div>
+                <div class="k-label ms-2" style="width:40px;">TTL</div>
+                <div class="k-input" id="c_ttl"></div>
+              </div>
+
+              <div class="k-row">
+                <div class="k-label">ASATIDZ</div>
+                <div class="k-input">Ust/Ustdz. <span id="c_mustahiq" class="ms-1 fw-bold"></span></div>
+                <div class="k-label ms-2" style="width:50px;">KELAS</div>
+                <div class="k-input" id="c_kelas"></div>
+              </div>
+
+              <div class="k-row">
+                <div class="k-label">ALAMAT</div>
+                <div class="k-input">Kec. <span id="c_kec" class="ms-1"></span></div>
+                <div class="k-input ms-2">Kab. <span id="c_kab" class="ms-1"></span></div>
+                <div class="k-input ms-2">Prov. <span id="c_prov" class="ms-1"></span></div>
+              </div>
+
+              <div class="k-row">
+                <div class="k-label">PENJAGA</div>
+                <div class="k-input">Ust/Ustdz. <span id="c_penjaga" class="ms-1 fw-bold"></span></div>
+                <div class="k-label ms-2" style="width:70px;">TTD PKM</div>
+                <div class="k-input k-mid"></div>
+              </div>
+
+              <div class="k-row">
+                <div class="k-label">HAFALAN</div>
+                <div class="k-input fw-bold" id="c_hafalan"></div>
+                <div class="k-label ms-2" style="width:80px;">TGL SETOR</div>
+                <div class="k-input k-mid" id="c_tglsetor"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kotak Bawah: RIWAYAT INPUT -->
+  <div class="card-panel border-0">
+    <h5 class="fw-bold mb-4 text-dark border-bottom pb-3"><i class="bi bi-table text-success me-2"></i> Tabel Riwayat Hafalan</h5>
+    <table id="dataTableMuhafadzoh" class="table w-100 table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th class="text-center" style="width: 40px;"><input type="checkbox" id="checkAllMuh" class="form-check-input"></th>
+          <th>No</th>
+          <th>No. Induk</th>
+          <th>Tgl Setor</th>
+          <th>Nama Santri</th>
+          <th>Tempat, Tgl Lahir</th>
+          <th>Penjaga</th>
+          <th>Asatidz</th>
+          <th>Kelas</th>
+          <th>Hafalan</th>
+          <th>Kategori</th>
+        </tr>
+      </thead>
+      <tbody id="tableBodyMuhafadzoh"></tbody>
+    </table>
+  </div>
+
+</div>
