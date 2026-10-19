@@ -54,6 +54,9 @@ export function selaraskanSemuaTabel() {
   if (store.dataTableRekapAbsensi && $('#page-rekap-absensi').is(':visible')) {
     store.dataTableRekapAbsensi.columns.adjust();
   }
+  if (store.dataTableMuhafadzoh && $('#page-setoran').is(':visible')) {
+    store.dataTableMuhafadzoh.columns.adjust();
+  }
 }
 
 export function initLayoutObservers() {
@@ -179,6 +182,9 @@ export function toggleSubmenuFormasi(e) {
 }
 
 export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
+  if (page === 'muhafadzoh') page = 'setoran';
+
+  const pageSetoran = document.getElementById('page-setoran');
   const pageSantri = document.getElementById('page-santri');
   const pageFormasi = document.getElementById('page-formasi');
   const pageFormasiGender = document.getElementById('page-formasi-gender');
@@ -192,6 +198,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pageJadwalKbm = document.getElementById('page-jadwal-kbm');
   const pageHariKbm = document.getElementById('page-hari-kbm');
 
+  if (pageSetoran) pageSetoran.style.display = (page === 'setoran') ? 'block' : 'none';
   if (pageSantri) pageSantri.style.display = (page === 'santri') ? 'block' : 'none';
   if (pageFormasi) pageFormasi.style.display = (page === 'formasi') ? 'block' : 'none';
   if (pageFormasiGender) pageFormasiGender.style.display = (page === 'formasi-pa' || page === 'formasi-pi') ? 'block' : 'none';
@@ -260,7 +267,11 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
     if (deskActive) deskActive.classList.add('active');
     if (mobActive) mobActive.classList.add('active');
 
-    if (page === 'formasi') {
+    if (page === 'setoran') {
+      if (typeof window.inisialisasiHalamanSetoran === 'function') {
+        window.inisialisasiHalamanSetoran();
+      }
+    } else if (page === 'formasi') {
       if (typeof onShowFormasi === 'function') {
         onShowFormasi();
       } else if (typeof window.loadFormasiData === 'function') {
@@ -292,6 +303,9 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   }
 
   setTimeout(() => {
+    if (page === 'setoran' && store.dataTableMuhafadzoh) {
+      store.dataTableMuhafadzoh.columns.adjust().draw(false);
+    }
     if (page === 'santri' && store.dataTable) {
       store.dataTable.columns.adjust().draw(false);
     }
