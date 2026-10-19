@@ -8,6 +8,11 @@
   </div>
 
   <nav class="nav flex-column w-100 mt-1">
+    <!-- MENU SETORAN (MUHAFADZOH MADIN) -->
+    <a class="nav-link" id="nav-desk-setoran" onclick="window.showPage('setoran')">
+      <i class="bi bi-grid"></i> <span>Setoran</span>
+    </a>
+
     <a class="nav-link active" id="nav-desk-santri" onclick="window.showPage('santri')">
       <i class="bi bi-person"></i> <span>Data Santri</span>
     </a>
@@ -100,6 +105,9 @@
 
 <!-- BOTTOM NAVIGATION (KHUSUS MOBILE < 768px) -->
 <div class="bottom-nav d-md-none">
+  <a class="nav-link" id="nav-mob-setoran" onclick="window.showPage('setoran')">
+    <i class="bi bi-grid"></i><span>Setoran</span>
+  </a>
   <a class="nav-link active" id="nav-mob-santri" onclick="window.showPage('santri')">
     <i class="bi bi-person"></i><span>Santri</span>
   </a>
