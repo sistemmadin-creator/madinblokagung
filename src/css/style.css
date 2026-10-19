@@ -125,67 +125,147 @@ body {
 }
 
 /* ==========================================
-   SIDEBAR COLLAPSIBLE DESKTOP
+   SIDEBAR COLLAPSIBLE DESKTOP (AUTO SCROLL & ANTI MELOMPAT KE SAMPING)
 ========================================== */
 .sidebar-overlay {
-  position: fixed; top: 0; left: 0;
-  width: 260px; height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
   background-color: var(--sidebar-bg);
-  z-index: 1050; padding: 20px 14px;
-  display: flex; flex-direction: column;
+  z-index: 1050;
+  padding: 16px 10px 10px 14px;
+  display: flex;
+  flex-direction: column;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 4px 0 20px rgba(0,0,0,0.1);
+  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+  overflow: visible !important; /* Agar tombol toggle bulat (< / >) tetap melayang di luar */
 }
-.sidebar-overlay.close { width: 88px; }
+.sidebar-overlay.close {
+  width: 88px;
+}
 .sidebar-overlay .header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 40px; padding: 0 10px; position: relative; height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding: 0 8px;
+  position: relative;
+  height: 40px;
+  flex-shrink: 0; /* Header tetap kokoh di posisi atas */
 }
 .sidebar-overlay .brand {
-  font-size: 1.25rem; font-weight: 700; color: #fff;
-  display: flex; align-items: center; white-space: nowrap;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
   transition: opacity 0.2s;
 }
-.sidebar-overlay.close .brand { opacity: 0; pointer-events: none; }
+.sidebar-overlay.close .brand {
+  opacity: 0;
+  pointer-events: none;
+}
 
 .toggle-btn {
-  position: absolute; right: -28px; top: 50%; transform: translateY(-50%);
-  width: 32px; height: 32px; background: #fff; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  color: #1e1e2f; transition: all 0.4s ease; z-index: 100;
+  position: absolute;
+  right: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  background: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: #1e1e2f;
+  transition: all 0.4s ease;
+  z-index: 100;
 }
-.toggle-btn i { font-size: 1.2rem; transition: transform 0.4s ease; }
-.sidebar-overlay.close .toggle-btn i { transform: rotate(180deg); }
+.toggle-btn i {
+  font-size: 1.2rem;
+  transition: transform 0.4s ease;
+}
+.sidebar-overlay.close .toggle-btn i {
+  transform: rotate(180deg);
+}
+
+/* KUNCI UTAMA: flex-wrap: nowrap MEMASTIKAN MENU TIDAK AKAN PERNAH MELOMPAT KE SAMPING & BISA DI-SCROLL */
+.sidebar-overlay nav.nav {
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: nowrap !important; /* Cegah wrapping ke kolom baru */
+  height: calc(100vh - 85px) !important; /* Batas tinggi presisi */
+  overflow-y: auto !important; /* Aktifkan scroll vertikal ke atas & bawah */
+  overflow-x: hidden !important; /* Kunci rapat agar tidak tembus ke kanan */
+  padding-right: 4px;
+  padding-bottom: 60px !important; /* Ruang lega ekstra agar menu paling bawah & sub-menu tidak mentok */
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent !important; /* Transparan pada browser Firefox */
+}
+
+/* SCROLLBAR HALUS & ELEGAN (GAGANG TRANSPARAN) */
+.sidebar-overlay nav.nav::-webkit-scrollbar {
+  width: 4px;
+}
+.sidebar-overlay nav.nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar-overlay nav.nav::-webkit-scrollbar-thumb {
+  background: transparent !important;
+  border-radius: 10px;
+}
+.sidebar-overlay nav.nav::-webkit-scrollbar-thumb:hover {
+  background: transparent !important;
+}
 
 .sidebar-overlay .nav-link {
   color: #ffffff !important;
   border-radius: 12px;
-  padding: 12px 14px;
-  margin-bottom: 8px;
+  padding: 11px 14px;
+  margin-bottom: 4px;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
   cursor: pointer;
   display: flex;
   align-items: center;
   white-space: nowrap;
+  flex-shrink: 0; /* Menu tidak akan menciut/gepeng saat di-scroll */
+  position: relative;
   overflow: hidden;
 }
 .sidebar-overlay .nav-link i {
   color: #ffffff !important;
-  font-size: 1.3rem;
-  min-width: 32px;
+  font-size: 1.25rem;
+  min-width: 30px;
   text-align: center;
-  margin-right: 14px;
+  margin-right: 12px;
+  flex-shrink: 0;
 }
 .sidebar-overlay.close .nav-link span {
-  opacity: 0; visibility: hidden; width: 0; transition: opacity 0.2s ease;
+  opacity: 0;
+  visibility: hidden;
+  width: 0;
+  transition: opacity 0.2s ease;
 }
 .sidebar-overlay .nav-link span {
-  opacity: 1; visibility: visible; transition: opacity 0.3s ease 0.1s;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.3s ease 0.1s;
 }
-.sidebar-overlay .nav-link:hover { background-color: rgba(255,255,255,0.1); color: #fff; }
-.sidebar-overlay .nav-link.active { background-color: rgba(255,255,255,0.2); color: #fff; }
+.sidebar-overlay .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.sidebar-overlay .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
 
 /* ==========================================
    BOTTOM NAVIGATION (KHUSUS MOBILE < 768px)
@@ -416,6 +496,7 @@ body {
 .sidebar-submenu {
   display: flex;
   flex-direction: column;
+  flex-shrink: 0;
   padding-left: 1.15rem;
   max-height: 0;
   opacity: 0;
