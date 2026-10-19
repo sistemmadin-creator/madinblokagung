@@ -179,6 +179,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pageAsatidz = document.getElementById('page-asatidz');
   const pageAbsensi = document.getElementById('page-absensi');
   const pageRekapAbsensi = document.getElementById('page-rekap-absensi');
+  const pageAbsenCepat = document.getElementById('page-absen-cepat');
   const pageDaftarPendidik = document.getElementById('page-daftar-pendidik');
   const pageFanPelajaran = document.getElementById('page-fan-pelajaran');
   const pagePengajarFan = document.getElementById('page-pengajar-fan');
@@ -191,6 +192,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   if (pageAsatidz) pageAsatidz.style.display = (page === 'asatidz') ? 'block' : 'none';
   if (pageAbsensi) pageAbsensi.style.display = (page === 'absensi') ? 'block' : 'none';
   if (pageRekapAbsensi) pageRekapAbsensi.style.display = (page === 'rekap-absensi') ? 'block' : 'none';
+  if (pageAbsenCepat) pageAbsenCepat.style.display = (page === 'absen-cepat') ? 'block' : 'none';
   if (pageDaftarPendidik) pageDaftarPendidik.style.display = (page === 'daftar-pendidik') ? 'block' : 'none';
   if (pageFanPelajaran) pageFanPelajaran.style.display = (page === 'fan-pelajaran') ? 'block' : 'none';
   if (pagePengajarFan) pagePengajarFan.style.display = (page === 'pengajar-fan') ? 'block' : 'none';
@@ -261,6 +263,10 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
     } else if (page === 'rekap-absensi') {
       if (typeof window.inisialisasiHalamanRekapAbsensi === 'function') {
         window.inisialisasiHalamanRekapAbsensi();
+      }
+    } else if (page === 'absen-cepat') {
+      if (typeof window.inisialisasiHalamanAbsenCepat === 'function') {
+        window.inisialisasiHalamanAbsenCepat();
       }
     } else if (page === 'daftar-pendidik') {
       if (typeof window.renderTabelDaftarPendidik === 'function') {
