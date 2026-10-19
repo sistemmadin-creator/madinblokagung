@@ -1399,3 +1399,105 @@ body.printing-pengajar-fan #areaPrintPengajarFan,
   display: inline-block;
   min-width: 220px;
 }
+
+/* =========================================================
+   MODUL ABSEN CEPAT (TAB JAM, SWIPE ANIMATION & DRAG-SELECT)
+========================================================= */
+@keyframes swipeGlidingNext {
+  0% {
+    opacity: 0;
+    transform: translate3d(48px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes swipeGlidingPrev {
+  0% {
+    opacity: 0;
+    transform: translate3d(-48px, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.ac-swipe-next {
+  animation: swipeGlidingNext 0.28s cubic-bezier(0.25, 1, 0.5, 1) both;
+  will-change: transform, opacity;
+}
+
+.ac-swipe-prev {
+  animation: swipeGlidingPrev 0.28s cubic-bezier(0.25, 1, 0.5, 1) both;
+  will-change: transform, opacity;
+}
+
+.ac-tab-jam {
+  border: 1.5px solid #e2e8f0;
+  background: #ffffff;
+  color: #64748b;
+  font-weight: 600;
+  border-radius: 50px !important;
+  padding: 8px 22px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.ac-tab-jam:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.ac-tab-jam.active {
+  background: var(--primary-color);
+  border-color: var(--primary-color);
+  color: #ffffff;
+  box-shadow: 0 4px 10px rgba(15, 118, 110, 0.25);
+}
+
+.ac-card-selected {
+  border: 2px solid var(--primary-color) !important;
+  background-color: #f0fdf4 !important;
+  box-shadow: 0 0 0 1px var(--primary-color);
+}
+
+/* Kunci total scroll halaman browser saat proses seret kartu berlangsung */
+body.is-ac-dragging {
+  touch-action: none !important;
+  overflow: hidden !important;
+  overscroll-behavior: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+#acCardsContainer {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+}
+
+#acCardsContainer .asatidz-card-item {
+  transition: transform 0.14s cubic-bezier(0.2, 0, 0, 1),
+              background-color 0.12s ease,
+              border-color 0.12s ease,
+              box-shadow 0.12s ease;
+  -webkit-touch-callout: none !important;
+  touch-action: pan-y;
+  cursor: pointer;
+}
+
+body.is-ac-dragging #acCardsContainer .asatidz-card-item {
+  touch-action: none !important;
+}
+
+#acCardsContainer .asatidz-card-item.ac-card-holding {
+  transform: scale(0.972);
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.35) !important;
+  background-color: #ecfdf5 !important;
+}
+
