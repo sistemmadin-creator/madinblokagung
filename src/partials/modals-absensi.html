@@ -264,5 +264,134 @@
   </div>
 </div>
 
+<!-- ============ 6. MODAL DETAIL ABSEN ASATIDZ (ABSEN CEPAT - #modalDetailAbsenCepat) ============ -->
+<div class="modal fade" id="modalDetailAbsenCepat" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white py-3">
+        <h5 class="modal-title fw-bold m-0"><i class="bi bi-person-check-fill me-2"></i> Detail Absen Asatidz</h5>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4 bg-light">
+        <input type="hidden" id="ac_modal_jam">
+        <input type="hidden" id="ac_modal_idx">
+
+        <div class="bg-white p-3 rounded border shadow-sm mb-3">
+          <div class="fw-bold text-success fs-6" id="ac_modal_nama">-</div>
+          <div class="small text-muted font-monospace" id="ac_modal_nia">NIA: -</div>
+          <hr class="my-2">
+          <div class="row g-2 small">
+            <div class="col-6"><span class="text-muted">Kelas Mengajar:</span><div class="fw-semibold" id="ac_modal_kelas">-</div></div>
+            <div class="col-6"><span class="text-muted">Fan / Mapel:</span><div class="fw-semibold" id="ac_modal_fan">-</div></div>
+            <div class="col-6"><span class="text-muted">Lokasi / Ruang:</span><div class="fw-semibold" id="ac_modal_lokasi">-</div></div>
+            <div class="col-6"><span class="text-muted">Blok:</span><div class="fw-semibold" id="ac_modal_blok">-</div></div>
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Status Kehadiran</label>
+          <div class="d-flex flex-wrap gap-2" id="ac_modal_status_group"></div>
+        </div>
+
+        <div class="mb-3 d-none" id="ac_wrap_menit">
+          <label class="form-label fw-bold">Jumlah Menit Terlambat</label>
+          <input type="number" class="form-control" id="ac_modal_menit" min="1" placeholder="Contoh: 15">
+        </div>
+
+        <div class="mb-3 d-none" id="ac_wrap_pengganti">
+          <label class="form-label fw-bold">Nama Asatidz Pengganti</label>
+          <input type="text" class="form-control" id="ac_modal_pengganti" list="dl_asatidz_pengganti" placeholder="Pilih/Ketik pengganti...">
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Keterangan Opsional</label>
+          <textarea class="form-control" id="ac_modal_keterangan" rows="2" placeholder="Catatan tambahan..."></textarea>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2">
+          <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+          <button type="button" class="btn btn-success fw-bold" onclick="window.terapkanPerubahanModalAbsenCepat()">
+            <i class="bi bi-check2-circle me-1"></i> Terapkan Perubahan
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 7. MODAL NOTIFIKASI STATUS ABSENSI BLOK PENGGUNA (#modalNotifAbsenBlok) ============ -->
+<div class="modal fade" id="modalNotifAbsenBlok" tabindex="-1" aria-hidden="true" style="z-index: 1085;">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+      <div class="modal-header bg-success text-white py-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-bell-fill fs-5 text-warning"></i>
+          <div>
+            <h5 class="modal-title fw-bold m-0">Status Penyelesaian Absensi Blok</h5>
+            <small class="text-white-50" id="notif_modal_sub">Memuat tanggal &amp; hari...</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-3 bg-light">
+        <!-- Kontrol Filter Pilihan User & Jam -->
+        <div class="card p-3 mb-3 border-0 shadow-xs bg-white rounded-3">
+          <div class="row g-2 align-items-center">
+            <!-- Filter Pilih User -->
+            <div class="col-12 col-md-7">
+              <label class="form-label small fw-bold text-dark m-0 mb-1">
+                <i class="bi bi-person-fill text-success me-1"></i>Pilih User yang Ditampilkan:
+              </label>
+              <select class="form-select form-select-sm border-secondary" id="notif_filter_user" onchange="window.renderDaftarNotifUser()">
+                <option value="">-- Tampilkan Semua Petugas / User --</option>
+              </select>
+            </div>
+            <!-- Filter Jam -->
+            <div class="col-12 col-md-5">
+              <label class="form-label small fw-bold text-dark m-0 mb-1">
+                <i class="bi bi-clock-history text-primary me-1"></i>Sesi Jam:
+              </label>
+              <select class="form-select form-select-sm border-secondary" id="notif_filter_jam" onchange="window.renderDaftarNotifUser()">
+                <option value="1">Jam Ke-1</option>
+                <option value="2">Jam Ke-2</option>
+                <option value="3">Jam Ke-3</option>
+                <option value="4">Jam Ke-4</option>
+                <option value="SEMUA">Semua Jam (1 Hari Penuh)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend Indikator Status -->
+        <div class="d-flex align-items-center gap-3 mb-2 px-1 small flex-wrap">
+          <span class="d-flex align-items-center gap-1">
+            <span class="badge bg-success rounded-circle p-1" style="width:10px;height:10px;"></span>
+            <b class="text-success">Hijau:</b> Selesai Diabsen
+          </span>
+          <span class="d-flex align-items-center gap-1">
+            <span class="badge bg-danger rounded-circle p-1" style="width:10px;height:10px;"></span>
+            <b class="text-danger">Merah:</b> Belum Selesai
+          </span>
+          <span class="d-flex align-items-center gap-1 text-muted">
+            <span class="badge bg-secondary rounded-circle p-1" style="width:10px;height:10px;"></span>
+            Tidak Ada Jadwal
+          </span>
+        </div>
+
+        <!-- Kontainer Daftar Kartu User -->
+        <div id="notif_user_list_container" style="max-height: 380px; overflow-y: auto;">
+          <!-- Diisi otomatis oleh JavaScript -->
+        </div>
+      </div>
+
+      <div class="modal-footer bg-white border-top-0 py-2">
+        <button type="button" class="btn btn-secondary btn-sm px-4 fw-semibold" data-bs-dismiss="modal">Tutup</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ============ WADAH CETAK DOKUMEN RESMI REKAP ABSENSI & TOP 10 ALFA ============ -->
 <div id="areaCetakRekapResmi"></div>
+
