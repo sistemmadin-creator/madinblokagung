@@ -282,6 +282,19 @@ export function populateDatalistPengganti() {
 }
 
 /**
+ * Sinkronisasi tanggal dari halaman Absen Cepat ke input tanggal utama Absensi Asatidz
+ */
+export function syncTanggalInputAbsensiUtama(tanggalYMD) {
+  if (!tanggalYMD) return;
+  store.absensiState.tanggal = tanggalYMD;
+  const inputTgl = document.getElementById('inputTglAbsensi');
+  if (inputTgl) inputTgl.value = tanggalYMD;
+  if (flatpickrAbsensiInstance) {
+    flatpickrAbsensiInstance.setDate(tanggalYMD, false);
+  }
+}
+
+/**
  * Inisialisasi halaman Absensi Asatidz saat menu dibuka
  */
 export async function inisialisasiHalamanAbsensi() {
@@ -315,8 +328,11 @@ export async function inisialisasiHalamanAbsensi() {
         muatAbsensiTanggalTerpilih();
       }
     });
-  } else if (!inputTgl.value) {
+  } else {
     inputTgl.value = defaultDateStr;
+    if (flatpickrAbsensiInstance) {
+      flatpickrAbsensiInstance.setDate(defaultDateStr, false);
+    }
   }
 
   populateDatalistPengganti();
@@ -415,6 +431,14 @@ export async function muatAbsensiTanggalTerpilih(silent = false) {
     ekstraksiSesiJadwalHariIni(hari);
     renderFormAbsensiBertahap();
     updateStatistikRingkas();
+
+    // 4. Sinkronkan tanggal & tampilan ke menu Absen Cepat
+    if (typeof window.syncTanggalInputAbsenCepat === 'function') {
+      window.syncTanggalInputAbsenCepat(tgl);
+    }
+    if (typeof window.renderAbsenCepat === 'function' && document.getElementById('page-absen-cepat')) {
+      window.renderAbsenCepat();
+    }
 
     if (!silent) {
       Swal.close();
@@ -730,6 +754,9 @@ export function setSesiStatusData(sesi, partial, silent = false) {
   });
   if (!silent) {
     updateStatistikRingkas();
+    if (typeof window.renderAbsenCepat === 'function' && document.getElementById('page-absen-cepat')) {
+      window.renderAbsenCepat();
+    }
   }
 }
 
@@ -1267,6 +1294,9 @@ export function terapkanStatusMassal(jam, status) {
 
   batalkanPilihanKartuJam(jam);
   updateStatistikRingkas();
+  if (typeof window.renderAbsenCepat === 'function' && document.getElementById('page-absen-cepat')) {
+    window.renderAbsenCepat();
+  }
 }
 
 /**
@@ -1289,6 +1319,9 @@ export function tandaiSemuaHadirJam(jam) {
     perbaruiVisualKartuSesi(jam, idx);
   });
   updateStatistikRingkas();
+  if (typeof window.renderAbsenCepat === 'function' && document.getElementById('page-absen-cepat')) {
+    window.renderAbsenCepat();
+  }
 
   Swal.fire({
     toast: true,
@@ -1516,6 +1549,9 @@ export async function doEksekusiSimpanJam(jam, records) {
 
     renderFormAbsensiBertahap();
     updateStatistikRingkas();
+    if (typeof window.renderAbsenCepat === 'function' && document.getElementById('page-absen-cepat')) {
+      window.renderAbsenCepat();
+    }
 
     Swal.fire({
       icon: 'success',
