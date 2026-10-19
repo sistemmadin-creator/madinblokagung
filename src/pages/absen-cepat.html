@@ -1,0 +1,41 @@
+<!-- =========================================================================
+     HALAMAN ABSEN CEPAT (MODE ABSENSI RINGKAS — 100% SINKRON DENGAN ABSENSI ASATIDZ)
+========================================================================== -->
+<div id="page-absen-cepat" style="display:none;">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2 border-bottom pb-3">
+    <div class="d-flex align-items-center gap-3">
+      <div class="p-2 rounded-3 bg-white border shadow-sm text-success fs-3 d-flex align-items-center justify-content-center" style="width:50px;height:50px;">
+        <i class="bi bi-lightning-charge-fill text-success"></i>
+      </div>
+      <div>
+        <h2 class="header-title m-0">Absen Cepat</h2>
+        <p class="text-muted small m-0 mt-1">Mode absensi ringkas — 100% sinkron dengan Absensi Asatidz</p>
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-2 flex-wrap">
+      <input type="text" class="form-control form-control-sm" id="inputTglAbsensiCepat" style="width:180px;" readonly>
+      <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 py-2 px-3 fw-bold" id="acBadgeHari">-</span>
+      <!-- Tombol Notif Absensi Blok -->
+      <button type="button" class="btn btn-sm btn-outline-success fw-bold shadow-xs d-flex align-items-center gap-1" onclick="window.bukaModalNotifAbsenBlok()" id="btnNotifAbsenBlok" title="Notifikasi Status Absen Blok Pengguna">
+        <i class="bi bi-bell-fill text-warning"></i> <span>Notif</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- A. Tab Sesi Jam (Dibuat Ringkas 1, 2, 3, 4 - Khusus HP Disembunyikan, Tetap Muncul di PC/Laptop) -->
+  <div class="mb-3 d-none d-md-flex flex-wrap" id="acTabJamGroup">
+    <button type="button" class="btn ac-tab-jam px-3" data-jam="1" onclick="window.gantiJamAktifAbsenCepat(1)">1</button>
+    <button type="button" class="btn ac-tab-jam px-3" data-jam="2" onclick="window.gantiJamAktifAbsenCepat(2)">2</button>
+    <button type="button" class="btn ac-tab-jam px-3" data-jam="3" onclick="window.gantiJamAktifAbsenCepat(3)">3</button>
+    <button type="button" class="btn ac-tab-jam px-3" data-jam="4" onclick="window.gantiJamAktifAbsenCepat(4)">4</button>
+  </div>
+
+  <!-- B. Header Kontrol & Aksi Massal (di-generate JS) -->
+  <div class="card-panel mb-3 border-0" id="acHeaderControls"></div>
+
+  <!-- C. Bar Filter & Pencarian (di-generate JS) -->
+  <div class="card-panel mb-3 border-0 py-2 px-3" id="acFilterBar"></div>
+
+  <!-- D. Grid Kartu Pengajar Berkelompok per Blok -->
+  <div class="row g-3" id="acCardsContainer"></div>
+</div>
