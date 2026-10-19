@@ -27,6 +27,7 @@ import * as absensi from './modules/absensi/absensi.js';
 import * as rekapAbsensi from './modules/rekap-absensi/rekap-absensi.js';
 import * as absenCepat from './modules/absen-cepat/absen-cepat.js';
 import * as setoran from './modules/setoran/setoran.js';
+import * as rekapHafalan from './modules/rekap-hafalan/rekap-hafalan.js';
 
 // Import Komponen Navigasi dari folder src/partials/
 import navbarHtml from './partials/navbar.html?raw';
@@ -34,6 +35,7 @@ import sidebarHtml from './partials/sidebar.html?raw';
 
 // Import Halaman dari folder src/pages/
 import pageSetoran from './pages/setoran.html?raw';
+import pageRekapHafalan from './pages/rekap-hafalan.html?raw';
 import pageSantri from './pages/santri.html?raw';
 import pageFormasi from './pages/formasi.html?raw';
 import pageAsatidz from './pages/asatidz.html?raw';
@@ -84,7 +86,8 @@ Object.assign(window, {
   ...absensi,
   ...rekapAbsensi,
   ...absenCepat,
-  ...setoran
+  ...setoran,
+  ...rekapHafalan
 });
 
 // =========================================================
@@ -103,6 +106,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   if (pagesContainer) {
     pagesContainer.innerHTML =
       pageSetoran +
+      pageRekapHafalan +
       pageSantri +
       pageFormasi +
       pageAsatidz +
