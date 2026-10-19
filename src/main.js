@@ -25,6 +25,7 @@ import * as hariKbm from './modules/hari-kbm/hari-kbm.js';
 import * as daftarPendidik from './modules/daftar-pendidik/daftar-pendidik.js';
 import * as absensi from './modules/absensi/absensi.js';
 import * as rekapAbsensi from './modules/rekap-absensi/rekap-absensi.js';
+import * as absenCepat from './modules/absen-cepat/absen-cepat.js';
 
 // Import Komponen Navigasi dari folder src/partials/
 import navbarHtml from './partials/navbar.html?raw';
@@ -36,6 +37,7 @@ import pageFormasi from './pages/formasi.html?raw';
 import pageAsatidz from './pages/asatidz.html?raw';
 import pageAbsensi from './pages/absensi.html?raw';
 import pageRekapAbsensi from './pages/rekap-absensi.html?raw';
+import pageAbsenCepat from './pages/absen-cepat.html?raw';
 import pageFan from './pages/fan.html?raw';
 import pageJadwalKbm from './pages/jadwal-kbm.html?raw';
 import pageHariKbm from './pages/hari-kbm.html?raw';
@@ -77,7 +79,8 @@ Object.assign(window, {
   ...hariKbm,
   ...daftarPendidik,
   ...absensi,
-  ...rekapAbsensi
+  ...rekapAbsensi,
+  ...absenCepat
 });
 
 // =========================================================
@@ -100,6 +103,7 @@ document.addEventListener('DOMContentLoaded', async function () {
       pageAsatidz +
       pageAbsensi +
       pageRekapAbsensi +
+      pageAbsenCepat +
       pageFan +
       pageJadwalKbm +
       pageHariKbm +
@@ -128,6 +132,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   asatidz.initAsatidzUI();
   fan.initFanUI();
   jadwalKbm.initJadwalKbmUI();
+  absenCepat.initAbsenCepatUI();
 
   // Muat daftar Provinsi dari API Emsifa & pasang listener cascading wilayah
   loadInitialProvinces();
