@@ -1818,3 +1818,139 @@ body.is-ac-dragging #acCardsContainer .asatidz-card-item {
     border-radius: 5px !important;
   }
 }
+
+/* =========================================================
+   MODUL REKAP HAFALAN PERTINGKATAN (PILL TOGGLE, TABEL & CETAK A4)
+========================================================= */
+.dash-pill-group {
+  background-color: #f1f5f9;
+  padding: 3px;
+  border-radius: 30px;
+  display: inline-flex;
+}
+.dash-pill-btn {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 14px;
+  border-radius: 20px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.dash-pill-btn.active {
+  background: #0f766e;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(15, 118, 110, 0.3);
+}
+
+/* Styling Tabel Rekap Persis Tampilan Muhafadzoh Madin */
+.table-rekap {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  background: #fff;
+  font-size: 13px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.table-rekap th,
+.table-rekap td {
+  border: 1px solid #2d3748 !important;
+  padding: 6px 10px;
+}
+.table-rekap th {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  vertical-align: middle;
+  font-weight: 700;
+}
+.table-rekap th.th-wajib {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+}
+.table-rekap .header-kls {
+  background-color: #f8fafc !important;
+  color: #475569 !important;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 8px 12px;
+  text-transform: uppercase;
+}
+.table-rekap td {
+  font-size: 0.85rem;
+  vertical-align: middle;
+  color: #334155;
+}
+.highlight-progress,
+.table-rekap tr.highlight-progress > td {
+  background-color: #86efac !important;
+  font-weight: 600;
+}
+
+/* CSS Cetak Khusus Rekap Hafalan (A4 Portrait) */
+@media print {
+  body.printing-rekap-hafalan {
+    background-color: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  body.printing-rekap-hafalan #navbar-container,
+  body.printing-rekap-hafalan #sidebar-container,
+  body.printing-rekap-hafalan .top-navbar,
+  body.printing-rekap-hafalan .sidebar-overlay,
+  body.printing-rekap-hafalan .bottom-nav,
+  body.printing-rekap-hafalan #page-rekap-hafalan .card-panel,
+  body.printing-rekap-hafalan #rekapLoading {
+    display: none !important;
+  }
+  body.printing-rekap-hafalan .main-content {
+    margin: 0 !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+  body.printing-rekap-hafalan #page-rekap-hafalan {
+    display: block !important;
+    padding: 0 !important;
+  }
+  body.printing-rekap-hafalan .table-rekap {
+    width: 100% !important;
+    font-size: 8.5pt !important;
+    border-collapse: collapse !important;
+    margin-bottom: 20px !important;
+    page-break-inside: auto;
+  }
+  body.printing-rekap-hafalan .table-rekap tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  body.printing-rekap-hafalan .table-rekap th,
+  body.printing-rekap-hafalan .table-rekap td {
+    padding: 3px 4px !important;
+    border: 1px solid #1e293b !important;
+    color: #000000 !important;
+  }
+  body.printing-rekap-hafalan .table-rekap th {
+    background-color: #f1f5f9 !important;
+    color: #000000 !important;
+    font-size: 8pt !important;
+  }
+  body.printing-rekap-hafalan .table-rekap .header-kls {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+    font-size: 9pt !important;
+    font-weight: bold;
+    text-align: center;
+  }
+  body.printing-rekap-hafalan .highlight-progress,
+  body.printing-rekap-hafalan .table-rekap tr.highlight-progress > td {
+    background-color: #bbf7d0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
