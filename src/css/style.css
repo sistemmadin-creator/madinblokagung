@@ -1582,3 +1582,239 @@ body.is-ac-dragging #acCardsContainer .asatidz-card-item {
   background-color: #ecfdf5 !important;
 }
 
+/* =========================================================
+   MODUL SETORAN (MUHAFADZOH MADIN) - KARTU BUKTI & RIWAYAT
+========================================================= */
+.preview-scroll-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 15px;
+}
+.preview-scroll-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.preview-scroll-wrapper::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+#print-area {
+  min-width: 600px;
+  padding: 5px;
+}
+.kartu-container {
+  width: 600px !important;
+  min-width: 600px !important;
+  aspect-ratio: 6 / 3;
+  margin: 0 auto;
+  border: 3px solid #333;
+  border-radius: 12px;
+  padding: 15px;
+  background-color: #fff;
+  position: relative;
+  font-family: 'Times New Roman', Times, serif;
+}
+.kartu-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  border-bottom: 4px solid #333;
+  padding-bottom: 5px;
+}
+.kartu-logo {
+  width: 70px;
+  height: 70px;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  text-align: center;
+  overflow: hidden;
+  background: #e8f5e9;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+.kartu-title {
+  text-align: center;
+  flex-grow: 1;
+}
+.kartu-title h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  color: #000;
+}
+.kartu-title p {
+  margin: 0;
+  font-size: 12px;
+  font-weight: bold;
+  background-color: #333;
+  color: white;
+  padding: 2px 5px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-top: 5px;
+}
+.kartu-pkm {
+  font-size: 12px;
+  font-weight: bold;
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  font-style: italic;
+  color: #000;
+}
+.k-row {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.k-label {
+  font-weight: bold;
+  font-size: 14px;
+  width: 110px;
+  flex-shrink: 0;
+  color: #000;
+}
+.k-input {
+  border: 2px solid #333;
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-height: 28px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  background-color: #fafafa;
+  color: #000;
+}
+.k-short {
+  width: 50px !important;
+}
+.k-mid {
+  width: 110px !important;
+  flex-grow: 0;
+}
+
+/* Tabel Riwayat Muhafadzoh (#dataTableMuhafadzoh) */
+#dataTableMuhafadzoh th,
+#dataTableMuhafadzoh td {
+  white-space: nowrap !important;
+  vertical-align: middle !important;
+  padding: 10px 14px !important;
+  font-size: 0.83rem !important;
+  box-sizing: border-box !important;
+}
+#dataTableMuhafadzoh {
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid #e2e8f0 !important;
+}
+#dataTableMuhafadzoh tbody tr:nth-of-type(odd) {
+  background-color: #ffffff;
+}
+#dataTableMuhafadzoh tbody tr:nth-of-type(even) {
+  background-color: #f8fafc;
+}
+#dataTableMuhafadzoh tbody tr:hover {
+  background-color: #f1f5f9 !important;
+  cursor: pointer;
+}
+#dataTableMuhafadzoh th {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #cbd5e1 !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+#dataTableMuhafadzoh td {
+  color: #334155;
+  border-bottom: 1px solid #e2e8f0 !important;
+  border-right: 1px solid #e2e8f0 !important;
+}
+
+@media (min-width: 768px) {
+  #dataTableMuhafadzoh_filter {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.5rem !important;
+  }
+}
+
+/* Aturan Cetak Khusus Kartu Bukti Setoran */
+@media print {
+  body.printing-kartu-setoran * {
+    visibility: hidden;
+  }
+  body.printing-kartu-setoran #print-area,
+  body.printing-kartu-setoran #print-area * {
+    visibility: visible !important;
+  }
+  body.printing-kartu-setoran #print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 10mm !important;
+    display: flex;
+    justify-content: center;
+  }
+  body.printing-kartu-setoran .kartu-container {
+    box-shadow: none !important;
+    border: 3px solid #000 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body.printing-kartu-setoran .kartu-header {
+    margin-bottom: 12px !important;
+    border-bottom: 4px solid #333 !important;
+    padding-bottom: 5px !important;
+  }
+  body.printing-kartu-setoran .kartu-logo {
+    width: 65px !important;
+    height: 65px !important;
+    font-size: 9px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body.printing-kartu-setoran .kartu-title h3 {
+    font-size: 18px !important;
+  }
+  body.printing-kartu-setoran .kartu-title p {
+    font-size: 11px !important;
+    padding: 2px 5px !important;
+    margin-top: 4px !important;
+    background-color: #333 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body.printing-kartu-setoran .kartu-pkm {
+    font-size: 11px !important;
+    top: 12px !important;
+    right: 12px !important;
+  }
+  body.printing-kartu-setoran .k-row {
+    margin-bottom: 8px !important;
+  }
+  body.printing-kartu-setoran .k-label {
+    font-size: 13px !important;
+    width: 100px !important;
+  }
+  body.printing-kartu-setoran .k-input {
+    border: 2px solid #333 !important;
+    padding: 3px 6px !important;
+    min-height: 24px !important;
+    font-size: 13px !important;
+    border-radius: 5px !important;
+  }
+}
