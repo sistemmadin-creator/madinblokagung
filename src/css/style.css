@@ -1954,3 +1954,210 @@ body.is-ac-dragging #acCardsContainer .asatidz-card-item {
   }
 }
 
+/* =========================================================
+   MODUL CETAK PIAGAM / SYAHADAH DINAMIS (LANDSCAPE & PORTRAIT)
+========================================================= */
+#piagamSettingsPanel {
+  height: calc(100vh - 180px);
+  min-height: 560px;
+  max-height: 860px;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  padding: 22px;
+  scroll-behavior: smooth;
+}
+
+#piagamSettingsPanel::-webkit-scrollbar {
+  width: 6px;
+}
+#piagamSettingsPanel::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 8px;
+}
+#piagamSettingsPanel::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+#piagamSettingsPanel::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+#piagamPreviewPanel {
+  height: calc(100vh - 180px);
+  min-height: 560px;
+  max-height: 860px;
+  display: flex;
+  flex-direction: column;
+}
+
+.piagam-preview-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow: auto;
+  background: #e2e8f0;
+  padding: 24px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  border: 1px dashed #cbd5e1;
+}
+
+/* Kanvas Utama Piagam */
+.piagam-canvas {
+  background-color: #ffffff;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.12);
+  transform-origin: top center;
+  overflow: hidden;
+  user-select: none;
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+/* Ukuran A4 Landscape: 297mm x 210mm */
+.piagam-canvas.piagam-landscape {
+  width: 297mm;
+  height: 210mm;
+  min-width: 297mm;
+  min-height: 210mm;
+}
+
+/* Ukuran A4 Portrait: 210mm x 297mm */
+.piagam-canvas.piagam-portrait {
+  width: 210mm;
+  height: 297mm;
+  min-width: 210mm;
+  min-height: 297mm;
+}
+
+/* Tag img gambar background khusus print */
+.piagam-bg-print {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Elemen Teks Piagam */
+.piagam-element {
+  position: absolute;
+  white-space: pre-wrap;
+  width: auto;
+  max-width: 92%;
+  z-index: 2;
+  line-height: 1.35;
+  cursor: pointer;
+  padding: 3px 6px;
+  border-radius: 4px;
+  transition: outline 0.15s ease, background-color 0.15s ease;
+}
+
+.piagam-element:hover {
+  outline: 1.5px dashed rgba(15, 118, 110, 0.5);
+  background-color: rgba(15, 118, 110, 0.04);
+}
+
+.piagam-element.piagam-element-active {
+  outline: 2px solid #0f766e !important;
+  background-color: rgba(15, 118, 110, 0.08) !important;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.2);
+}
+
+@media (min-width: 992px) {
+  #piagamSettingsPanel,
+  #piagamPreviewPanel {
+    position: sticky;
+    top: 85px;
+  }
+}
+
+@media (max-width: 991.98px) {
+  #piagamSettingsPanel,
+  #piagamPreviewPanel {
+    height: auto !important;
+    max-height: none !important;
+    position: static;
+  }
+  #piagamSettingsPanel {
+    height: 520px !important;
+  }
+}
+
+/* =========================================================
+   CSS CETAK MASSAL PIAGAM (@media print)
+========================================================= */
+@media print {
+  body.printing-piagam.print-landscape {
+    @page {
+      size: A4 landscape;
+      margin: 0;
+    }
+  }
+
+  body.printing-piagam.print-portrait {
+    @page {
+      size: A4 portrait;
+      margin: 0;
+    }
+  }
+
+  body.printing-piagam {
+    background: transparent !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body.printing-piagam * {
+    visibility: hidden;
+  }
+
+  body.printing-piagam .piagam-preview-wrapper,
+  body.printing-piagam .piagam-preview-wrapper * {
+    visibility: visible;
+  }
+
+  body.printing-piagam .piagam-preview-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    display: block;
+    overflow: visible;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  body.printing-piagam .piagam-canvas {
+    box-shadow: none !important;
+    transform: scale(1) !important;
+    page-break-after: always;
+    break-after: page;
+    position: relative !important;
+    margin: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body.printing-piagam .piagam-element {
+    outline: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
+
+
