@@ -10,7 +10,8 @@ import {
   handleClickMenuFan,
   toggleSubmenuFan,
   handleClickMenuFormasi,
-  toggleSubmenuFormasi
+  toggleSubmenuFormasi,
+  toggleSubmenuPengaturan
 } from './utils/dom.js';
 import { loadInitialProvinces, setupWilayahListeners, setupWilayahListenersAsatidz } from './utils/wilayah.js';
 import * as camera from './utils/camera.js';
@@ -76,6 +77,7 @@ Object.assign(window, {
   toggleSubmenuFan,
   handleClickMenuFormasi,
   toggleSubmenuFormasi,
+  toggleSubmenuPengaturan,
   ...camera,
   ...audit,
   ...hierarchy,
