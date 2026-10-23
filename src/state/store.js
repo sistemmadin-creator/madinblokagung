@@ -90,6 +90,55 @@ absensiState: {
     initializedForDate: null,
     acModalStatus: 'Hadir'
   },
+  // State Khusus Modul Cetak Piagam / Syahadah
+  piagamState: {
+    selectedPiagamSantri: [],
+    currentPreviewIndex: 0,
+    zoomScale: 0.45,
+    orientation: 'landscape',
+    bgType: 'drive',
+    driveLink: '',
+    customBgUrl: '',
+    activeElementId: null,
+    dtSantriPiagam: null,
+    columns: [
+      {
+        id: 'col_1',
+        title: 'Nama Penerima',
+        text: '<<NAMA>>',
+        x: 50,
+        y: 42,
+        size: 38,
+        color: '#0f172a',
+        fontFamily: "'Playfair Display', serif",
+        isBold: true,
+        align: 'center',
+        textTransform: 'uppercase',
+        show: true,
+        lockX: false,
+        lockY: false,
+        lockSize: false
+      },
+      {
+        id: 'col_2',
+        title: 'Keterangan Kelulusan',
+        text: 'Telah Menyelesaikan Setoran Hafalan:\n<<HAFALAN_GABUNG>>',
+        x: 50,
+        y: 56,
+        size: 18,
+        color: '#334155',
+        fontFamily: "'Inter', sans-serif",
+        isBold: false,
+        align: 'center',
+        textTransform: 'none',
+        show: true,
+        lockX: false,
+        lockY: false,
+        lockSize: false
+      }
+    ],
+    templates: {}
+  },
   currentUser: {
     username: 'admin',
     nama: 'Master Administrator',
