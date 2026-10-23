@@ -6,6 +6,16 @@ let currentUser = {
   role: 'Master Admin'
 };
 
+function escHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function getCurrentUser() {
   return currentUser;
 }
@@ -53,11 +63,11 @@ export async function loadAuditLogs() {
         : '-';
       return `
         <tr>
-          <td class="text-nowrap text-secondary">${waktuWIB}</td>
-          <td class="fw-bold">${item.username || '-'}</td>
-          <td>${item.nama || '-'}</td>
-          <td><span class="badge bg-secondary">${item.aktivitas || '-'}</span></td>
-          <td><small>${item.detail || '-'}</small></td>
+          <td class="text-nowrap text-secondary">${escHtml(waktuWIB)}</td>
+          <td class="fw-bold">${escHtml(item.username || '-')}</td>
+          <td>${escHtml(item.nama || '-')}</td>
+          <td><span class="badge bg-secondary">${escHtml(item.aktivitas || '-')}</span></td>
+          <td><small>${escHtml(item.detail || '-')}</small></td>
         </tr>
       `;
     }).join('');
