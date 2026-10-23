@@ -28,6 +28,7 @@ import * as rekapAbsensi from './modules/rekap-absensi/rekap-absensi.js';
 import * as absenCepat from './modules/absen-cepat/absen-cepat.js';
 import * as setoran from './modules/setoran/setoran.js';
 import * as rekapHafalan from './modules/rekap-hafalan/rekap-hafalan.js';
+import * as piagam from './modules/piagam/piagam.js';
 
 // Import Komponen Navigasi dari folder src/partials/
 import navbarHtml from './partials/navbar.html?raw';
@@ -46,6 +47,7 @@ import pageFan from './pages/fan.html?raw';
 import pageJadwalKbm from './pages/jadwal-kbm.html?raw';
 import pageHariKbm from './pages/hari-kbm.html?raw';
 import pageDaftarPendidik from './pages/daftar-pendidik.html?raw';
+import pagePiagam from './pages/piagam.html?raw';
 
 // Import Komponen HTML Modal dari folder src/partials/
 import modalsSetoran from './partials/modals-setoran.html?raw';
@@ -56,6 +58,7 @@ import modalsAsatidz from './partials/modals-asatidz.html?raw';
 import modalsFan from './partials/modals-fan.html?raw';
 import modalsJadwalKbm from './partials/modals-jadwal-kbm.html?raw';
 import modalsAbsensi from './partials/modals-absensi.html?raw';
+import modalsPiagam from './partials/modals-piagam.html?raw';
 
 export { supabase };
 
@@ -87,7 +90,8 @@ Object.assign(window, {
   ...rekapAbsensi,
   ...absenCepat,
   ...setoran,
-  ...rekapHafalan
+  ...rekapHafalan,
+  ...piagam
 });
 
 // =========================================================
@@ -116,7 +120,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       pageFan +
       pageJadwalKbm +
       pageHariKbm +
-      pageDaftarPendidik;
+      pageDaftarPendidik +
+      pagePiagam;
   }
 
   // 0C. Render seluruh komponen modal dari src/partials/ ke dalam #modals-container
@@ -130,7 +135,8 @@ document.addEventListener('DOMContentLoaded', async function () {
       modalsAsatidz +
       modalsFan +
       modalsJadwalKbm +
-      modalsAbsensi;
+      modalsAbsensi +
+      modalsPiagam;
   }
 
   // Pasang Observer Layout, Resize Tabel & Hover Sidebar
@@ -144,6 +150,7 @@ document.addEventListener('DOMContentLoaded', async function () {
   fan.initFanUI();
   jadwalKbm.initJadwalKbmUI();
   absenCepat.initAbsenCepatUI();
+  piagam.initPiagamUI();
 
   // Muat daftar Provinsi dari API Emsifa & pasang listener cascading wilayah
   loadInitialProvinces();
@@ -194,6 +201,13 @@ document.addEventListener('DOMContentLoaded', async function () {
     await absensi.loadAbsensiFromSupabase();
   } catch (err) {
     console.error('Gagal memuat data Absensi dari Supabase:', err.message);
+  }
+
+  // Muat data Template Piagam dari Supabase `app_settings`
+  try {
+    await piagam.loadPiagamTemplatesFromSupabase();
+  } catch (err) {
+    console.error('Gagal memuat template piagam dari Supabase:', err.message);
   }
 
   // Background Fetch Data Santri, Asatidz & Formasi Kelas
