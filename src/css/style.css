@@ -11,6 +11,16 @@
   --card-border: #e2e8f0;
 }
 
+html, body {
+  scrollbar-width: none !important; /* Sembunyikan gagang scrollbar di Firefox */
+  -ms-overflow-style: none !important; /* IE dan Edge */
+}
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none !important; /* Sembunyikan gagang scrollbar di Chrome, Safari, Edge */
+  width: 0 !important;
+  height: 0 !important;
+}
+
 body {
   background-color: var(--bg-body);
   font-family: 'Inter', sans-serif;
@@ -222,6 +232,42 @@ body {
 }
 .sidebar-overlay nav.nav::-webkit-scrollbar-thumb:hover {
   background: transparent !important;
+}
+
+/* ==========================================
+   JUDUL GRUP MENU SIDEBAR
+========================================== */
+.sidebar-group-title {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.9px;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 12px 14px 4px 14px;
+  margin-top: 4px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  transition: opacity 0.2s ease, max-height 0.2s ease, margin 0.2s ease;
+  user-select: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.sidebar-group-title:first-of-type {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 2px;
+}
+
+/* Sembunyikan judul grup saat sidebar tertutup (collapsed) */
+.sidebar-overlay.close .sidebar-group-title {
+  opacity: 0;
+  visibility: hidden;
+  max-height: 0;
+  padding: 0;
+  margin: 6px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .sidebar-overlay .nav-link {
@@ -1958,21 +2004,22 @@ body.is-ac-dragging #acCardsContainer .asatidz-card-item {
    MODUL CETAK PIAGAM / SYAHADAH DINAMIS (LANDSCAPE & PORTRAIT)
 ========================================================= */
 #piagamSettingsPanel {
-  height: calc(100vh - 180px);
-  min-height: 560px;
-  max-height: 860px;
+  height: calc(100vh - 200px);
+  min-height: 480px;
+  max-height: 840px;
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  padding: 22px;
+  padding: 20px;
   scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
 }
 
 #piagamSettingsPanel::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 #piagamSettingsPanel::-webkit-scrollbar-track {
-  background: #f1f5f9;
-  border-radius: 8px;
+  background: transparent;
 }
 #piagamSettingsPanel::-webkit-scrollbar-thumb {
   background: #cbd5e1;
@@ -1983,9 +2030,9 @@ body.is-ac-dragging #acCardsContainer .asatidz-card-item {
 }
 
 #piagamPreviewPanel {
-  height: calc(100vh - 180px);
-  min-height: 560px;
-  max-height: 860px;
+  height: calc(100vh - 200px);
+  min-height: 480px;
+  max-height: 840px;
   display: flex;
   flex-direction: column;
 }
@@ -1996,12 +2043,29 @@ body.is-ac-dragging #acCardsContainer .asatidz-card-item {
   width: 100%;
   overflow: auto;
   background: #e2e8f0;
-  padding: 24px;
+  padding: 20px;
   border-radius: 12px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   border: 1px dashed #cbd5e1;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.piagam-preview-wrapper::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.piagam-preview-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+.piagam-preview-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+.piagam-preview-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 /* Kanvas Utama Piagam */
