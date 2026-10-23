@@ -199,6 +199,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   const pagePengajarFan = document.getElementById('page-pengajar-fan');
   const pageJadwalKbm = document.getElementById('page-jadwal-kbm');
   const pageHariKbm = document.getElementById('page-hari-kbm');
+  const pagePiagam = document.getElementById('page-piagam');
 
   if (pageSetoran) pageSetoran.style.display = (page === 'setoran') ? 'block' : 'none';
   if (pageRekapHafalan) pageRekapHafalan.style.display = (page === 'rekap-hafalan') ? 'block' : 'none';
@@ -214,6 +215,7 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
   if (pagePengajarFan) pagePengajarFan.style.display = (page === 'pengajar-fan') ? 'block' : 'none';
   if (pageJadwalKbm) pageJadwalKbm.style.display = (page === 'jadwal-kbm') ? 'block' : 'none';
   if (pageHariKbm) pageHariKbm.style.display = (page === 'hari-kbm') ? 'block' : 'none';
+  if (pagePiagam) pagePiagam.style.display = (page === 'piagam') ? 'block' : 'none';
 
   document.querySelectorAll('.sidebar-overlay .nav-link, .bottom-nav .nav-link').forEach(el => el.classList.remove('active'));
 
@@ -299,6 +301,16 @@ export function showPage(page, onShowFormasi, keepSidebarOpen = false) {
     } else if (page === 'daftar-pendidik') {
       if (typeof window.renderTabelDaftarPendidik === 'function') {
         window.renderTabelDaftarPendidik();
+      }
+    } else if (page === 'piagam') {
+      if (typeof window.updateDatalistModalPiagam === 'function') {
+        window.updateDatalistModalPiagam();
+      }
+      if (typeof window.updateZoomPiagam === 'function') {
+        window.updateZoomPiagam();
+      }
+      if (typeof window.renderPiagamCanvas === 'function') {
+        window.renderPiagamCanvas();
       }
     }
   }
