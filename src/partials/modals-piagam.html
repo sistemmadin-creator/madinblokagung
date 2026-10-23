@@ -1,0 +1,125 @@
+<!-- ============================================== -->
+<!-- MODAL PILIH SANTRI (PENERIMA PIAGAM MASSAL)    -->
+<!-- ============================================== -->
+<div class="modal fade" id="modalSantriPiagam" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header bg-success text-white border-0 py-3">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-people-fill fs-5"></i>
+          <div>
+            <h5 class="modal-title fw-bold m-0" style="font-size: 1.1rem;">Pilih Penerima Piagam (Mailing Santri)</h5>
+            <small class="opacity-75" style="font-size: 11px;">Saring santri berdasarkan kelas, mustahiq, atau kelulusan setoran hafalan tertentu</small>
+          </div>
+        </div>
+        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-3 p-md-4 bg-light">
+        <!-- Panel Filter Multi-Kriteria -->
+        <div class="bg-white p-3 rounded border shadow-sm mb-3">
+          <div class="row g-2">
+            <!-- Pencarian Asatidz / Mustahiq -->
+            <div class="col-md-6 col-12">
+              <label class="form-label text-success fw-bold small mb-1">
+                <i class="bi bi-person-badge me-1"></i> Asatidz / Mustahiq (Pencarian Rombel)
+              </label>
+              <input list="dl_pgm_mustahiq" class="form-control form-control-sm border-success" id="pgm_flt_mustahiq" placeholder="Ketik/Pilih Asatidz...">
+              <datalist id="dl_pgm_mustahiq"></datalist>
+            </div>
+
+            <!-- Filter Khusus: Kelulusan Hafalan Tertentu -->
+            <div class="col-md-6 col-12">
+              <label class="form-label text-primary fw-bold small mb-1">
+                <i class="bi bi-bookmark-check-fill me-1"></i> Filter Santri Lulus Hafalan (Opsional)
+              </label>
+              <input list="dl_pgm_hafalan_lulus" class="form-control form-control-sm border-primary" id="pgm_flt_hafalan_lulus" placeholder="Pilih atau ketik item hafalan...">
+              <datalist id="dl_pgm_hafalan_lulus"></datalist>
+            </div>
+
+            <div class="col-12"><hr class="text-muted opacity-25 my-1"></div>
+
+            <!-- 5 Kolom Filter Rombel -->
+            <div class="col-6 col-md-2">
+              <label class="form-label text-muted fw-bold" style="font-size: 11px;">1. Blok</label>
+              <input list="dl_pgm_blok" class="form-control form-control-sm border-secondary" id="pgm_flt_blok" placeholder="Blok">
+              <datalist id="dl_pgm_blok"></datalist>
+            </div>
+            <div class="col-6 col-md-2">
+              <label class="form-label text-muted fw-bold" style="font-size: 11px;">2. Kelas</label>
+              <input list="dl_pgm_kls" class="form-control form-control-sm border-secondary" id="pgm_flt_kls" placeholder="Kls">
+              <datalist id="dl_pgm_kls"></datalist>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label text-muted fw-bold" style="font-size: 11px;">3. Bagian</label>
+              <input list="dl_pgm_bag" class="form-control form-control-sm border-secondary" id="pgm_flt_bag" placeholder="Bagian">
+              <datalist id="dl_pgm_bag"></datalist>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label text-muted fw-bold" style="font-size: 11px;">4. Tingkat</label>
+              <input list="dl_pgm_tingkat" class="form-control form-control-sm border-secondary" id="pgm_flt_tingkat" placeholder="Tingkat">
+              <datalist id="dl_pgm_tingkat"></datalist>
+            </div>
+            <div class="col-12 col-md-2">
+              <label class="form-label text-muted fw-bold" style="font-size: 11px;">5. Gender</label>
+              <select class="form-select form-select-sm border-secondary" id="pgm_flt_papi">
+                <option value="">Semua (PA &amp; PI)</option>
+                <option value="PA">PA (Putra)</option>
+                <option value="PI">PI (Putri)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Tombol Aksi Filter Cepat -->
+          <div class="d-flex justify-content-between align-items-center mt-3 pt-2 border-top flex-wrap gap-2">
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-sm btn-outline-success" onclick="window.checkAllPiagamInView(true)">
+                <i class="bi bi-check-all me-1"></i> Centang Yang Tampil
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-secondary" onclick="window.checkAllPiagamInView(false)">
+                <i class="bi bi-square me-1"></i> Batal Centang
+              </button>
+            </div>
+            <button type="button" class="btn btn-sm btn-light border text-muted" onclick="window.resetFilterPiagam()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Seluruh Filter
+            </button>
+          </div>
+        </div>
+
+        <!-- Indikator Total Terpilih -->
+        <div class="d-flex justify-content-between align-items-center px-1 mb-2">
+          <span class="text-muted small" id="piagam_table_summary_text">
+            Memuat data santri...
+          </span>
+          <span class="badge bg-success" id="badge_selected_santri_modal">0 Santri Dipilih</span>
+        </div>
+
+        <!-- Tabel Checkbox Santri -->
+        <div class="table-responsive bg-white rounded border shadow-sm">
+          <table id="tableSantriPiagam" class="table table-hover align-middle mb-0 w-100" style="font-size: 0.85rem;">
+            <thead class="table-light">
+              <tr>
+                <th class="text-center" style="width: 40px;">
+                  <input type="checkbox" id="checkAllPiagam" class="form-check-input border-secondary" onchange="window.toggleAllPiagam(this)" title="Pilih Semua di Halaman">
+                </th>
+                <th style="width: 90px;">No. Induk</th>
+                <th style="width: 100px;">Kamar</th>
+                <th>Nama Santri</th>
+                <th>Kelas Diniyyah</th>
+                <th>Riwayat Hafalan Santri</th>
+              </tr>
+            </thead>
+            <tbody id="tbodySantriPiagam"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer bg-white border-top-0 pt-0 mt-2">
+        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-success px-4 fw-bold" onclick="window.terapkanSantriPiagam()">
+          <i class="bi bi-check2-circle me-1"></i> Terapkan Santri Terpilih
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
