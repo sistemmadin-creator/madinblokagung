@@ -8,39 +8,31 @@
   </div>
 
   <nav class="nav flex-column w-100 mt-1">
-    <!-- MENU SETORAN (MUHAFADZOH MADIN) -->
-    <a class="nav-link" id="nav-desk-setoran" onclick="window.showPage('setoran')">
-      <i class="bi bi-grid"></i> <span>Setoran</span>
-    </a>
+    <!-- ============================================== -->
+    <!-- GRUP 1: UTAMA                                 -->
+    <!-- ============================================== -->
+    <div class="sidebar-group-title">
+      <span>Utama</span>
+    </div>
 
-    <!-- MENU REKAP HAFALAN PERTINGKATAN -->
-    <a class="nav-link" id="nav-desk-rekap-hafalan" onclick="window.showPage('rekap-hafalan')">
-      <i class="bi bi-bar-chart-steps"></i> <span>Rekap Hafalan</span>
-    </a>
-
-    <!-- MENU CETAK PIAGAM / SYAHADAH -->
-    <a class="nav-link" id="nav-desk-piagam" onclick="window.showPage('piagam')">
-      <i class="bi bi-award"></i> <span>Cetak Piagam</span>
-    </a>
-
+    <!-- Data Santri -->
     <a class="nav-link active" id="nav-desk-santri" onclick="window.showPage('santri')">
       <i class="bi bi-person"></i> <span>Data Santri</span>
     </a>
-<a class="nav-link" id="nav-desk-asatidz" onclick="window.showPage('asatidz')">
+
+    <!-- Data Asatidz -->
+    <a class="nav-link" id="nav-desk-asatidz" onclick="window.showPage('asatidz')">
       <i class="bi bi-people"></i> <span>Data Asatidz</span>
     </a>
 
-<!-- MENU ABSENSI ASATIDZ -->
-    <a class="nav-link" id="nav-desk-absensi" onclick="window.showPage('absensi')">
-      <i class="bi bi-clipboard-check"></i> <span>Absensi Asatidz</span>
-    </a>
+    <!-- ============================================== -->
+    <!-- GRUP 2: PKM. KURIKULUM                         -->
+    <!-- ============================================== -->
+    <div class="sidebar-group-title">
+      <span>PKM. Kurikulum</span>
+    </div>
 
-    <!-- MENU REKAP ABSENSI ASATIDZ -->
-    <a class="nav-link" id="nav-desk-rekap-absensi" onclick="window.showPage('rekap-absensi')">
-      <i class="bi bi-bar-chart-steps"></i> <span>Rekap Absensi</span>
-    </a>
-
-    <!-- MENU INDUK JADWAL KBM + SUB MENU JADWAL PER KELAS & HARI KBM -->
+    <!-- Jadwal KBM (+ Sub-Menu) -->
     <a class="nav-link d-flex align-items-center justify-content-between" id="nav-desk-jadwal" onclick="window.handleClickMenuJadwal(event)">
       <div class="d-flex align-items-center">
         <i class="bi bi-calendar3"></i> <span>Jadwal KBM</span>
@@ -49,7 +41,7 @@
         <i class="bi bi-chevron-down small submenu-arrow" id="arrow-submenu-jadwal"></i>
       </span>
     </a>
-<div class="sidebar-submenu" id="submenu-desk-jadwal">
+    <div class="sidebar-submenu" id="submenu-desk-jadwal">
       <a class="nav-link submenu-item" id="nav-desk-jadwal-kbm" onclick="window.showPage('jadwal-kbm')">
         <i class="bi bi-calendar3 text-info"></i> <span>Jadwal KBM Per Kelas</span>
       </a>
@@ -58,35 +50,7 @@
       </a>
     </div>
 
-    <!-- MENU ABSEN CEPAT -->
-    <a class="nav-link" id="nav-desk-absen-cepat" onclick="window.showPage('absen-cepat')">
-      <i class="bi bi-lightning-charge"></i> <span>Absen Cepat</span>
-    </a>
-
-    <!-- MENU DAFTAR TENAGA PENDIDIK -->
-    <a class="nav-link" id="nav-desk-daftar-pendidik" onclick="window.showPage('daftar-pendidik')">
-      <i class="bi bi-file-earmark-person"></i> <span>Daftar Pendidik</span>
-    </a>
-
-    <!-- MENU INDUK FAN PELAJARAN + SUB MENU DAFTAR FAN & PENGAJAR FAN -->
-    <a class="nav-link d-flex align-items-center justify-content-between" id="nav-desk-fan" onclick="window.handleClickMenuFan(event)">
-      <div class="d-flex align-items-center">
-        <i class="bi bi-journal-bookmark-fill"></i> <span>Fan Pelajaran</span>
-      </div>
-      <span class="submenu-arrow-wrapper d-inline-flex align-items-center justify-content-center p-1 rounded" onclick="window.toggleSubmenuFan(event)" title="Buka/Tutup Sub-Menu Fan">
-        <i class="bi bi-chevron-down small submenu-arrow" id="arrow-submenu-fan"></i>
-      </span>
-    </a>
-    <div class="sidebar-submenu" id="submenu-desk-fan">
-      <a class="nav-link submenu-item" id="nav-desk-fan-pelajaran" onclick="window.showPage('fan-pelajaran')">
-        <i class="bi bi-list-task text-info"></i> <span>Daftar Fan Pelajaran</span>
-      </a>
-      <a class="nav-link submenu-item" id="nav-desk-pengajar-fan" onclick="window.showPage('pengajar-fan')">
-        <i class="bi bi-person-lines-fill text-warning"></i> <span>Pengajar Fan</span>
-      </a>
-    </div>
-
-    <!-- MENU INDUK FORMASI KELAS + SUB MENU PUTRA & PUTRI -->
+    <!-- Formasi Kelas (+ Sub-Menu) -->
     <a class="nav-link d-flex align-items-center justify-content-between" id="nav-desk-formasi" onclick="window.handleClickMenuFormasi(event)">
       <div class="d-flex align-items-center">
         <i class="bi bi-building"></i> <span>Formasi Kelas</span>
@@ -104,77 +68,162 @@
       </a>
     </div>
 
-    <a class="nav-link" onclick="jQuery('#settingsModal').modal('show')">
-      <i class="bi bi-diagram-3"></i> <span>Hierarki Dropdown</span>
+    <!-- Fan Pelajaran (+ Sub-Menu) -->
+    <a class="nav-link d-flex align-items-center justify-content-between" id="nav-desk-fan" onclick="window.handleClickMenuFan(event)">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-journal-bookmark-fill"></i> <span>Fan Pelajaran</span>
+      </div>
+      <span class="submenu-arrow-wrapper d-inline-flex align-items-center justify-content-center p-1 rounded" onclick="window.toggleSubmenuFan(event)" title="Buka/Tutup Sub-Menu Fan">
+        <i class="bi bi-chevron-down small submenu-arrow" id="arrow-submenu-fan"></i>
+      </span>
     </a>
-    <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
-      <i class="bi bi-journal-text"></i> <span>Log Aktivitas</span>
+    <div class="sidebar-submenu" id="submenu-desk-fan">
+      <a class="nav-link submenu-item" id="nav-desk-fan-pelajaran" onclick="window.showPage('fan-pelajaran')">
+        <i class="bi bi-list-task text-info"></i> <span>Daftar Fan Pelajaran</span>
+      </a>
+      <a class="nav-link submenu-item" id="nav-desk-pengajar-fan" onclick="window.showPage('pengajar-fan')">
+        <i class="bi bi-person-lines-fill text-warning"></i> <span>Pengajar Fan</span>
+      </a>
+    </div>
+
+    <!-- Daftar Pendidik -->
+    <a class="nav-link" id="nav-desk-daftar-pendidik" onclick="window.showPage('daftar-pendidik')">
+      <i class="bi bi-file-earmark-person"></i> <span>Daftar Pendidik</span>
     </a>
+
+    <!-- ============================================== -->
+    <!-- GRUP 3: PKM. MUHAFADZOH                       -->
+    <!-- ============================================== -->
+    <div class="sidebar-group-title">
+      <span>PKM. Muhafadzoh</span>
+    </div>
+
+    <!-- Setoran -->
+    <a class="nav-link" id="nav-desk-setoran" onclick="window.showPage('setoran')">
+      <i class="bi bi-grid"></i> <span>Setoran</span>
+    </a>
+
+    <!-- Rekap Hafalan -->
+    <a class="nav-link" id="nav-desk-rekap-hafalan" onclick="window.showPage('rekap-hafalan')">
+      <i class="bi bi-bar-chart-steps"></i> <span>Rekap Hafalan</span>
+    </a>
+
+    <!-- Cetak Piagam -->
+    <a class="nav-link" id="nav-desk-piagam" onclick="window.showPage('piagam')">
+      <i class="bi bi-award"></i> <span>Cetak Piagam</span>
+    </a>
+
+    <!-- ============================================== -->
+    <!-- GRUP 4: PKM. KESISWAAN                         -->
+    <!-- ============================================== -->
+    <div class="sidebar-group-title">
+      <span>PKM. Kesiswaan</span>
+    </div>
+
+    <!-- Absensi Asatidz -->
+    <a class="nav-link" id="nav-desk-absensi" onclick="window.showPage('absensi')">
+      <i class="bi bi-clipboard-check"></i> <span>Absensi Asatidz</span>
+    </a>
+
+    <!-- Absen Cepat -->
+    <a class="nav-link" id="nav-desk-absen-cepat" onclick="window.showPage('absen-cepat')">
+      <i class="bi bi-lightning-charge"></i> <span>Absen Cepat</span>
+    </a>
+
+    <!-- Rekap Absensi -->
+    <a class="nav-link" id="nav-desk-rekap-absensi" onclick="window.showPage('rekap-absensi')">
+      <i class="bi bi-bar-chart-steps"></i> <span>Rekap Absensi</span>
+    </a>
+
+    <!-- ============================================== -->
+    <!-- GRUP 5: PENGATURAN                            -->
+    <!-- ============================================== -->
+    <div class="sidebar-group-title">
+      <span>Pengaturan</span>
+    </div>
+
+    <!-- Menu Induk Pengaturan (+ Sub-Menu Hierarki & Log) -->
+    <a class="nav-link d-flex align-items-center justify-content-between" id="nav-desk-pengaturan" onclick="window.toggleSubmenuPengaturan(event)">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-gear"></i> <span>Pengaturan</span>
+      </div>
+      <span class="submenu-arrow-wrapper d-inline-flex align-items-center justify-content-center p-1 rounded" title="Buka/Tutup Sub-Menu Pengaturan">
+        <i class="bi bi-chevron-down small submenu-arrow" id="arrow-submenu-pengaturan"></i>
+      </span>
+    </a>
+    <div class="sidebar-submenu" id="submenu-desk-pengaturan">
+      <a class="nav-link submenu-item" onclick="jQuery('#settingsModal').modal('show')">
+        <i class="bi bi-diagram-3 text-info"></i> <span>Hierarki Dropdown</span>
+      </a>
+      <a class="nav-link submenu-item" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
+        <i class="bi bi-journal-text text-warning"></i> <span>Log Aktivitas</span>
+      </a>
+    </div>
   </nav>
 </div>
 
-<!-- BOTTOM NAVIGATION (KHUSUS MOBILE < 768px) -->
+<!-- BOTTOM NAVIGATION BERDASARKAN GRUP (KHUSUS MOBILE < 768px) -->
 <div class="bottom-nav d-md-none">
-  <a class="nav-link" id="nav-mob-setoran" onclick="window.showPage('setoran')">
-    <i class="bi bi-grid"></i><span>Setoran</span>
-  </a>
-  <a class="nav-link" id="nav-mob-rekap-hafalan" onclick="window.showPage('rekap-hafalan')">
-    <i class="bi bi-bar-chart-steps"></i><span>Rekap Haf</span>
-  </a>
-  <a class="nav-link" id="nav-mob-piagam" onclick="window.showPage('piagam')">
-    <i class="bi bi-award"></i><span>Piagam</span>
-  </a>
-  <a class="nav-link active" id="nav-mob-santri" onclick="window.showPage('santri')">
-    <i class="bi bi-person"></i><span>Santri</span>
-  </a>
-<a class="nav-link" id="nav-mob-asatidz" onclick="window.showPage('asatidz')">
-    <i class="bi bi-people"></i><span>Asatidz</span>
-  </a>
-  <a class="nav-link" id="nav-mob-absensi" onclick="window.showPage('absensi')">
-    <i class="bi bi-clipboard-check"></i><span>Absensi</span>
-  </a>
-  <a class="nav-link" id="nav-mob-rekap-absensi" onclick="window.showPage('rekap-absensi')">
-    <i class="bi bi-bar-chart-steps"></i><span>Rekap</span>
-  </a>
+  <!-- 1. GRUP UTAMA -->
   <div class="dropup">
-    <a class="nav-link dropdown-toggle" id="nav-mob-jadwal" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-calendar3"></i><span>Jadwal</span>
+    <a class="nav-link dropdown-toggle active" id="nav-mob-utama" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-people-fill"></i><span>Utama</span>
     </a>
     <ul class="dropdown-menu shadow border-0 mb-2">
-      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('jadwal-kbm'); return false;"><i class="bi bi-calendar3 me-2 text-info"></i>Jadwal Per Kelas</a></li>
-      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('hari-kbm'); return false;"><i class="bi bi-calendar2-day-fill me-2 text-warning"></i>Hari KBM</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('santri'); return false;"><i class="bi bi-person me-2 text-success"></i>Data Santri</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('asatidz'); return false;"><i class="bi bi-people me-2 text-primary"></i>Data Asatidz</a></li>
     </ul>
   </div>
-  <a class="nav-link" id="nav-mob-absen-cepat" onclick="window.showPage('absen-cepat')">
-    <i class="bi bi-lightning-charge"></i><span>Cepat</span>
-  </a>
-  <a class="nav-link" id="nav-mob-daftar-pendidik" onclick="window.showPage('daftar-pendidik')">
-    <i class="bi bi-file-earmark-person"></i><span>Pendidik</span>
-  </a>
+
+  <!-- 2. GRUP KURIKULUM -->
   <div class="dropup">
-    <a class="nav-link dropdown-toggle" id="nav-mob-fan" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-journal-bookmark-fill"></i><span>Fan</span>
+    <a class="nav-link dropdown-toggle" id="nav-mob-kurikulum" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-journal-text"></i><span>Kurikulum</span>
     </a>
     <ul class="dropdown-menu shadow border-0 mb-2">
-      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('fan-pelajaran'); return false;"><i class="bi bi-list-task me-2 text-success"></i>Daftar Fan Pelajaran</a></li>
-      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('pengajar-fan'); return false;"><i class="bi bi-person-lines-fill me-2 text-warning"></i>Pengajar Fan</a></li>
-    </ul>
-  </div>
-  <div class="dropup">
-    <a class="nav-link dropdown-toggle" id="nav-mob-formasi" data-bs-toggle="dropdown" aria-expanded="false">
-      <i class="bi bi-building"></i><span>Formasi</span>
-    </a>
-    <ul class="dropdown-menu shadow border-0 mb-2">
-      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('formasi'); return false;"><i class="bi bi-gear me-2 text-warning"></i>Master Blueprint</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('jadwal-kbm'); return false;"><i class="bi bi-calendar3 me-2 text-info"></i>Jadwal KBM</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('hari-kbm'); return false;"><i class="bi bi-calendar2-day me-2 text-warning"></i>Hari KBM</a></li>
       <li><hr class="dropdown-divider"></li>
-      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('formasi-pa'); return false;"><i class="bi bi-gender-male me-2 text-primary"></i>Kelas Putra</a></li>
-      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('formasi-pi'); return false;"><i class="bi bi-gender-female me-2 text-danger"></i>Kelas Putri</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('formasi-pa'); return false;"><i class="bi bi-gender-male me-2 text-primary"></i>Formasi Putra</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('formasi-pi'); return false;"><i class="bi bi-gender-female me-2 text-danger"></i>Formasi Putri</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('fan-pelajaran'); return false;"><i class="bi bi-list-task me-2 text-success"></i>Fan Pelajaran</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('daftar-pendidik'); return false;"><i class="bi bi-file-earmark-person me-2 text-secondary"></i>Daftar Pendidik</a></li>
     </ul>
   </div>
-  <a class="nav-link" onclick="jQuery('#settingsModal').modal('show')">
-    <i class="bi bi-diagram-3"></i><span>Hierarki</span>
-  </a>
-  <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs()">
-    <i class="bi bi-journal-text"></i><span>Log</span>
-  </a>
+
+  <!-- 3. GRUP MUHAFADZOH -->
+  <div class="dropup">
+    <a class="nav-link dropdown-toggle" id="nav-mob-muhafadzoh" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-award"></i><span>Muhafadzoh</span>
+    </a>
+    <ul class="dropdown-menu shadow border-0 mb-2">
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('setoran'); return false;"><i class="bi bi-grid me-2 text-success"></i>Setoran</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('rekap-hafalan'); return false;"><i class="bi bi-bar-chart-steps me-2 text-info"></i>Rekap Hafalan</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('piagam'); return false;"><i class="bi bi-award me-2 text-warning"></i>Cetak Piagam</a></li>
+    </ul>
+  </div>
+
+  <!-- 4. GRUP KESISWAAN -->
+  <div class="dropup">
+    <a class="nav-link dropdown-toggle" id="nav-mob-kesiswaan" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-clipboard-check"></i><span>Kesiswaan</span>
+    </a>
+    <ul class="dropdown-menu shadow border-0 mb-2">
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('absensi'); return false;"><i class="bi bi-clipboard-check me-2 text-success"></i>Absensi Asatidz</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('absen-cepat'); return false;"><i class="bi bi-lightning-charge me-2 text-warning"></i>Absen Cepat</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="window.showPage('rekap-absensi'); return false;"><i class="bi bi-bar-chart-steps me-2 text-primary"></i>Rekap Absensi</a></li>
+    </ul>
+  </div>
+
+  <!-- 5. GRUP PENGATURAN -->
+  <div class="dropup">
+    <a class="nav-link dropdown-toggle" id="nav-mob-pengaturan" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="bi bi-gear"></i><span>Pengaturan</span>
+    </a>
+    <ul class="dropdown-menu shadow border-0 mb-2">
+      <li><a class="dropdown-item fw-semibold" href="#" onclick="jQuery('#settingsModal').modal('show'); return false;"><i class="bi bi-diagram-3 me-2 text-info"></i>Hierarki Dropdown</a></li>
+      <li><a class="dropdown-item fw-semibold" href="#" data-bs-toggle="modal" data-bs-target="#modalAdminCenter" onclick="window.loadAuditLogs(); return false;"><i class="bi bi-journal-text me-2 text-warning"></i>Log Aktivitas</a></li>
+    </ul>
+  </div>
 </div>
